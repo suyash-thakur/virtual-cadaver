@@ -11,7 +11,8 @@
     "extract": "node tools/extract-content.mjs",
     "assets": "node tools/fetch-bodyparts3d.mjs",
     "vh": "python3 tools/fetch-visible-human.py",
-    "zanatomy": "node tools/import-zanatomy.mjs"
+    "zanatomy": "node tools/import-zanatomy.mjs",
+    "deploy": "node tools/deploy-pages.mjs"
   },
   "dependencies": {
     "three": "^0.186.1",
