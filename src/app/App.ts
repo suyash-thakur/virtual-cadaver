@@ -6,7 +6,7 @@ import { Picker, curveParamNear, setCutTest } from '../engine/picking';
 import type { RT } from '../engine/registry';
 import type { Gfx } from '../engine/renderer';
 import { Specimen, type PaletteMode } from '../engine/specimen';
-import { loadAssets, applyPendingAssets, realSkin } from '../engine/assets';
+import { loadAssets, applyPendingAssets, realSkin, type DownloadProgress } from '../engine/assets';
 import { loadVh, sliceFor, type VhManifest } from './section';
 import { PROGRESS_KEY, emptyProgress, parseProgress, recordLesion, recordSpotter, recordStep, stats, type Progress } from '../logic/progress';
 import { blendState, endState, initialState, isIncisionStep, stepState, type DissectState } from '../logic/dissect';
@@ -99,6 +99,16 @@ export class App {
   get pal() { return this.colorBy[this.mode]; }
   private ctx(): HtmlCtx { return { C: this.C, S: this.S, dotColor: d => this.spec.dotColor(d), famColor: d => this.C.palette.families[d.fam!].c, mode: this.mode, traceSet: this.traceSet }; }
 
+  /** Startup progress bar: downloads are byte-accurate (0–70%), then the build stages. */
+  private setProgress(frac: number, text: string) {
+    const box = el('loading'); const bar = box.querySelector<HTMLElement>('.pfill'); const label = box.querySelector<HTMLElement>('.ptext');
+    if (bar) bar.style.width = `${Math.round(Math.max(0, Math.min(1, frac)) * 100)}%`;
+    if (label) label.textContent = text; else box.textContent = text;
+    box.setAttribute('aria-valuenow', String(Math.round(frac * 100)));
+  }
+  private static mb(n: number) { return (n / 1048576).toFixed(1); }
+  private async nextFrame() { await new Promise(r => requestAnimationFrame(() => r(null))); }
+
   async start() {
     this.spec.palette = this.pal;
     this.applyColors();
@@ -107,15 +117,21 @@ export class App {
     this.updateTargets(); this.renderSheet(); this.layout();
     this.rig.snapTo('specimen');
     requestAnimationFrame(t => this.frame(t));
-    try { const ids = await loadAssets(this.spec); if (ids.length) console.info(`real meshes: ${ids.join(', ')}`); } catch (e) { console.warn('assets', e); }
+    this.setProgress(0, 'Downloading the specimen…');
+    const onDl = (p: DownloadProgress) => { const f = p.total ? p.loaded / p.total : 0; this.setProgress(f * 0.7, p.total ? `Downloading the specimen: ${App.mb(p.loaded)} of ${App.mb(p.total)} MB` : `Downloading the specimen: ${App.mb(p.loaded)} MB`); };
+    try { const ids = await loadAssets(this.spec, onDl); if (ids.length) console.info(`real meshes: ${ids.join(', ')}`); } catch (e) { console.warn('assets', e); }
     this.applyColors();
+    this.setProgress(0.72, 'Fitting the skin…'); await this.nextFrame();
     try { await this.spec.buildBody(realSkin || undefined); }
-    catch (err) { console.error(err); el('loading').textContent = 'The skin layers could not be built on this device. The deeper layers still work.'; setTimeout(() => { el('loading').hidden = true; }, 4000); }
-    if (this.spec.built) el('loading').hidden = true;
+    catch (err) { console.error(err); this.setProgress(0.8, 'The skin layers could not be built on this device. The deeper layers still work.'); }
     this.spec.built = true;
+    this.setProgress(0.84, 'Placing the vessels and nerves…'); await this.nextFrame();
     try { const ids = applyPendingAssets(this.spec); if (ids.length) console.info(`real surface meshes: ${ids.join(', ')}`); } catch (e) { console.warn('pending assets', e); }
+    this.setProgress(0.9, 'Tucking the nerves under the skin…'); await this.nextFrame();
     try { const ids = this.spec.conformToSkin(); if (ids.length) console.info(`conformed to skin: ${ids.join(', ')}`); } catch (e) { console.warn('conform', e); }
+    this.setProgress(0.96, 'Preparing the scalpel…'); await this.nextFrame();
     try { this.spec.buildMasks(this.gfx.renderer); setCutTest((sid, p, n) => this.spec.isCut(sid, p, n)); } catch (e) { console.warn('cut masks', e); }
+    this.setProgress(1, 'Ready'); el('loading').hidden = true;
     this.renderProgress();
     this.refreshLabelColors(); this.updateTargets(); this.renderSheet(); this.applyDissect();
     this.goStep(0, 'jump');

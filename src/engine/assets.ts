@@ -33,7 +33,27 @@ function install(spec: Specimen, d: RT, geo: BufferGeometry) {
  * Structures that are not registered yet (the surface veins built with the body) are kept
  * until `applyPendingAssets` runs. Returns the ids replaced now.
  */
-export async function loadAssets(spec: Specimen, base = import.meta.env.BASE_URL): Promise<string[]> {
+export interface DownloadProgress { loaded: number; total: number; files: number; done: number }
+
+/** Streams a file, reporting bytes as they arrive. `total` comes from Content-Length when the server sends it. */
+async function fetchWithProgress(url: string, onBytes: (delta: number, total: number) => void): Promise<ArrayBuffer> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
+  const total = Number(res.headers.get('content-length') || 0);
+  if (!res.body) { const buf = await res.arrayBuffer(); onBytes(buf.byteLength, total || buf.byteLength); return buf; }
+  const reader = res.body.getReader(); const chunks: Uint8Array[] = []; let got = 0;
+  for (;;) { const { done, value } = await reader.read(); if (done) break; chunks.push(value); got += value.byteLength; onBytes(value.byteLength, total); }
+  const out = new Uint8Array(got); let o = 0; for (const c of chunks) { out.set(c, o); o += c.byteLength; }
+  return out.buffer;
+}
+
+/** Sizes of the asset files, fetched with HEAD requests in parallel so the bar can show a true total from the start. */
+async function totalSize(urls: string[]): Promise<number> {
+  const sizes = await Promise.all(urls.map(u => fetch(u, { method: 'HEAD' }).then(r => Number(r.headers.get('content-length') || 0)).catch(() => 0)));
+  return sizes.reduce((a, b) => a + b, 0);
+}
+
+export async function loadAssets(spec: Specimen, onProgress?: (p: DownloadProgress) => void, base = import.meta.env.BASE_URL): Promise<string[]> {
   let manifest: Manifest;
   try {
     const res = await fetch(`${base}assets/manifest.json`, { cache: 'no-cache' });
@@ -42,10 +62,22 @@ export async function loadAssets(spec: Specimen, base = import.meta.env.BASE_URL
   } catch { return []; }
   const loader = new GLTFLoader();
   const replaced: string[] = [];
-  for (const group of Object.keys(manifest.groups)) {
+  const groups = Object.keys(manifest.groups); const urls = groups.map(g => `${base}assets/${g}.glb`);
+  const prog: DownloadProgress = { loaded: 0, total: 0, files: groups.length, done: 0 };
+  prog.total = await totalSize(urls); onProgress?.(prog);
+  // Download everything in parallel (the files are independent), parse in manifest order.
+  const perFileTotal = new Map<string, number>();
+  const buffers = await Promise.all(urls.map(u => fetchWithProgress(u, (delta, total) => {
+    prog.loaded += delta;
+    if (total && !perFileTotal.has(u)) { perFileTotal.set(u, total); if (!prog.total) prog.total = [...perFileTotal.values()].reduce((a, b) => a + b, 0); }
+    onProgress?.(prog);
+  }).catch(e => { console.warn(`asset ${u} failed to download`, e); return null; })));
+  for (let gi = 0; gi < groups.length; gi++) {
+    const group = groups[gi], buf = buffers[gi]; if (!buf) continue;
     let gltf;
-    try { gltf = await loader.loadAsync(`${base}assets/${group}.glb`); }
-    catch (e) { console.warn(`asset group ${group} failed to load`, e); continue; }
+    try { gltf = await loader.parseAsync(buf, `${base}assets/`); }
+    catch (e) { console.warn(`asset group ${group} failed to parse`, e); continue; }
+    prog.done++; onProgress?.(prog);
     gltf.scene.traverse(obj => {
       if (!(obj instanceof Mesh)) return;
       const id = obj.name; const geo = obj.geometry as BufferGeometry;
