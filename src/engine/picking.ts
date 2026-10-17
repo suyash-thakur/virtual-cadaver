@@ -37,13 +37,15 @@ export class Picker {
   }
 
   occludingIds(anchor: Vector3, own: RT, occluders: Mesh[]): string[] { return occludingIdsOf(this.ray, this.camera, anchor, own, occluders, this.R); }
+  private occRay = Object.assign(new Raycaster(), { firstHitOnly: true });
 
   /** Occlusion test for labels: is the anchor hidden behind another opaque structure? */
   occluded(anchor: Vector3, own: RT, occluders: Mesh[]): boolean {
     const dir = anchor.clone().sub(this.camera.position); const dist = dir.length(); dir.normalize();
-    this.ray.set(this.camera.position, dir); this.ray.far = dist - 0.6;
-    const hits = this.ray.intersectObjects(occluders, false);
-    this.ray.far = Infinity;
+    const ray = this.occRay; ray.set(this.camera.position, dir); ray.far = dist - 0.6;
+    // With firstHitOnly each mesh reports its nearest triangle only; sort and take the closest few.
+    const hits = ray.intersectObjects(occluders, false);
+    ray.far = Infinity;
     for (const h of hits) { const sid = (h.object as Mesh).userData.sid; if (sid === own.id) continue; if (hitIsCut(h, this.R)) continue; return true; }
     return false;
   }

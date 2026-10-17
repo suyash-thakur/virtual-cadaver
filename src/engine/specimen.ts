@@ -3,6 +3,7 @@ import type { Content, Structure, Other, Nerve, Layer } from '../content';
 import { V, v3, armL, DEG } from './coords';
 import { curveOf, sphereGeo, fibreTex, roughen, sheetGeo, plateGeo, deltoidGeo, fatPadGeo } from './geometry/builders';
 import { CENTER } from './coords';
+import { ensureBVH } from './bvh';
 import { collectSplats, frontPt, armPt, proj, type Field } from './geometry/body';
 import type { BodyRequest, BodyResponse } from './geometry/body.worker';
 import { makeMat, peelMaterial } from './materials';
@@ -45,6 +46,7 @@ export class Specimen {
     this.R.add(d); return d;
   }
   private addMesh(d: RT, geo: BufferGeometry, pos?: Vector3): Mesh {
+    ensureBVH(geo);
     const m = new Mesh(geo, d.mat); if (pos) m.position.copy(pos);
     m.userData.sid = d.id; this.scene.add(m); d.meshes.push(m); return m;
   }
@@ -58,7 +60,8 @@ export class Specimen {
       const seg = Math.max(14, Math.round(c.getLength() * 3.4));
       this.addMesh(d, roughen(new TubeGeometry(c, seg, r, 10, false), r * .14, 1.6));
       [pts[0], pts[pts.length - 1]].forEach(p => { const s = this.addMesh(d, sphereGeo, v3(p)); s.scale.setScalar(r); });
-      const hm = new Mesh(new TubeGeometry(c, Math.max(8, Math.round(seg / 2)), Math.max(n.r * 2.6, .75), 6, false), hitMat);
+      const hitGeo = new TubeGeometry(c, Math.max(8, Math.round(seg / 2)), Math.max(n.r * 2.6, .75), 6, false); ensureBVH(hitGeo, 100);
+      const hm = new Mesh(hitGeo, hitMat);
       hm.userData.sid = d.id; this.scene.add(hm); d.hits.push(hm);
       d.cov.push({ curve: c, r });
       if (pi === 0) d.curve = c;
@@ -243,6 +246,7 @@ export class Specimen {
       lines.forEach(pts => { const q = pts.filter((x): x is Vector3 => !!x); if (q.length < 2) return; const c = curveOf(q);
         const seg = Math.max(20, Math.round(c.getLength() * 3));
         const m = this.addMesh(d, new TubeGeometry(c, seg, .09, 6, false)); m.userData.inc = true;
+        (m.geometry as unknown as { disposeBoundsTree?: () => void }).disposeBoundsTree?.(); // drawn progressively, so no BVH
         const gm = new Mesh(new TubeGeometry(c, seg, .055, 5, false), guideMat); gm.visible = false; gm.renderOrder = 3; this.scene.add(gm); d.guides!.push(gm);
         d.lines!.push(c.getSpacedPoints(70));
         if (!d.curve) d.curve = c; });

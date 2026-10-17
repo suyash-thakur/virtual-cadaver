@@ -2,6 +2,7 @@ import { Mesh, Vector3, type BufferGeometry } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import type { Specimen } from './specimen';
 import type { RT } from './registry';
+import { ensureBVH } from './bvh';
 
 interface Manifest { license: string; groups: Record<string, string[]> }
 
@@ -11,7 +12,7 @@ function install(spec: Specimen, d: RT, geo: BufferGeometry) {
   for (const m of d.meshes) { spec.scene.remove(m); m.geometry.dispose(); }
   for (const h of d.hits) { spec.scene.remove(h); h.geometry.dispose(); }
   d.meshes = []; d.hits = [];
-  geo.computeBoundingSphere();
+  geo.computeBoundingSphere(); ensureBVH(geo);
   const mesh = new Mesh(geo, d.mat); mesh.userData.sid = d.id; spec.scene.add(mesh); d.meshes.push(mesh);
   // The body field keeps the smooth procedural coverage; only structures that had none are sampled.
   if (!d.cov.length) {

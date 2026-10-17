@@ -13,6 +13,7 @@ async function boot() {
   try {
     const { App } = await import('./app/App');
     const app = new App(C, gfx, document.getElementById('app') as HTMLElement);
+    if (import.meta.env.DEV) (window as unknown as { __vc: unknown }).__vc = app;
     await app.start();
   } catch (err) {
     console.error(err);

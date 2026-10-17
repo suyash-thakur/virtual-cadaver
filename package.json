@@ -12,7 +12,8 @@
     "assets": "node tools/fetch-bodyparts3d.mjs"
   },
   "dependencies": {
-    "three": "^0.186.1"
+    "three": "^0.186.1",
+    "three-mesh-bvh": "^0.9.16"
   },
   "devDependencies": {
     "@types/three": "^0.186.0",

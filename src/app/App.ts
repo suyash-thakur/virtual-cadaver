@@ -48,6 +48,7 @@ export class App {
   private undoStack: { label: string; undo: () => void }[] = [];
   private stroke: { d: RT } | null = null;
   private pendingRemove: { d: RT; x: number; y: number } | null = null;
+  private pointerMove: { x: number; y: number } | null = null;
   section: { axis: SectionAxis | null; t: number; flip: boolean } = { axis: null, t: 0.5, flip: false };
   progress: Progress = emptyProgress();
 
@@ -61,6 +62,18 @@ export class App {
   private modesEl = document.querySelector('.modes') as HTMLElement;
   private canvas: HTMLCanvasElement;
   private last = performance.now();
+  /* adaptive resolution: drop the pixel ratio when frames run long, raise it back when they are quick */
+  private maxPixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+  private pixelRatio = this.maxPixelRatio;
+  private frameTimes: number[] = [];
+  private adaptResolution(dtMs: number) {
+    const ft = this.frameTimes; ft.push(dtMs); if (ft.length < 30) return;
+    const sorted = ft.slice().sort((a, b) => a - b), median = sorted[sorted.length >> 1]; ft.length = 0;
+    let next = this.pixelRatio;
+    if (median > 28 && next > 0.75) next = Math.max(0.75, next - 0.25);
+    else if (median < 12 && next < this.maxPixelRatio) next = Math.min(this.maxPixelRatio, next + 0.25);
+    if (next !== this.pixelRatio) { this.pixelRatio = next; this.gfx.renderer.setPixelRatio(next); this.layout(); }
+  }
 
   constructor(public C: Content, public gfx: Gfx, private app: HTMLElement) {
     this.canvas = gfx.renderer.domElement;
@@ -388,9 +401,9 @@ export class App {
       if (this.mode === 'explore' && this.tool !== 'turn') { this.toolDown(e.clientX, e.clientY); down = null; return; }
       if (this.hands.on) { this.hands.last = { x: e.clientX, y: e.clientY }; this.handsTrack(e.clientX, e.clientY, true); down = null; return; }
       down = pointers.size === 1 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null; });
-    canvas.addEventListener('pointermove', e => { if (this.stroke) { this.toolMove(e.clientX, e.clientY); return; } if (this.hands.on && this.hands.last) this.handsTrack(e.clientX, e.clientY, false); });
+    canvas.addEventListener('pointermove', e => { if (this.stroke) { this.pointerMove = { x: e.clientX, y: e.clientY }; return; } if (this.hands.on && this.hands.last) this.handsTrack(e.clientX, e.clientY, false); });
     canvas.addEventListener('pointerup', e => { pointers.delete(e.pointerId);
-      if (this.stroke) { this.stroke = null; return; }
+      if (this.stroke) { if (this.pointerMove) { this.toolMove(this.pointerMove.x, this.pointerMove.y); this.pointerMove = null; } this.stroke = null; return; }
       if (this.pendingRemove) { const p = this.pendingRemove; this.pendingRemove = null; if (Math.hypot(e.clientX - p.x, e.clientY - p.y) < 8) this.removeStructure(p.d); return; }
       if (this.hands.on) { this.hands.last = null; down = null; return; }
       if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 8 && performance.now() - down.t < 450) this.onPick(e.clientX, e.clientY);
@@ -573,7 +586,7 @@ export class App {
 
   /* ---------- frame loop ---------- */
   private frame(now: number) {
-    const dt = Math.min(.05, (now - this.last) / 1000); this.last = now;
+    const dt = Math.min(.05, (now - this.last) / 1000); this.adaptResolution(now - this.last); this.last = now;
     if (this.rig.tick(now)) this.labels.dirty = true;
     this.stepDissect(dt);
     if (this.mode === 'dissect' && this.spec.built) this.updateTargetsLite();
@@ -601,7 +614,8 @@ export class App {
       this.pin.style.transform = `translate(${((this.tmpV.x + 1) / 2 * v.W).toFixed(1)}px,${((1 - this.tmpV.y) / 2 * v.H).toFixed(1)}px)`; }
     else if (!this.pin.hidden) this.pin.hidden = true;
     if (q && this.labels.dirty) this.spotterGhost(q);
-    if (this.labels.dirty) this.labels.update(this.labelIds(), this.labelPriority, this.sel, v, this.spec.occluders());
+    if (this.pointerMove) { const pm = this.pointerMove; this.pointerMove = null; this.toolMove(pm.x, pm.y); }
+    if (this.labels.dirty) this.labels.update(this.labelIds(), this.labelPriority, this.sel, v, () => this.spec.occluders(), now);
     this.gfx.renderer.render(this.gfx.scene, this.gfx.camera);
     requestAnimationFrame(t => this.frame(t));
   }

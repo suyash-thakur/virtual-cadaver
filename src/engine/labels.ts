@@ -14,13 +14,21 @@ interface Item { d: RT; x: number; y: number; side: number; lx: number; ly: numb
 export class Labels {
   dirty = true;
   maxLabels = 14;
+  /** Occlusion results are expensive to refresh; keep them for a short while during camera motion. */
+  private occluded = new Map<string, boolean>();
+  private occAt = -1;
+  private occCam = new Matrix4();
+  occInterval = 150;
   private tmp = new Vector3();
   private lastCam = new Matrix4();
   constructor(private R: Registry, private camera: PerspectiveCamera, private leaders: SVGSVGElement, private picker: Picker) {}
 
-  update(ids: Set<string>, priority: (d: RT) => number, selected: string | null, view: Viewport, occluders: Mesh[], force = false) {
+  update(ids: Set<string>, priority: (d: RT) => number, selected: string | null, view: Viewport, occluders: () => Mesh[], now = performance.now(), force = false) {
     if (!force && !this.dirty && this.lastCam.equals(this.camera.matrixWorld)) return;
     this.lastCam.copy(this.camera.matrixWorld); this.dirty = false;
+    const refreshOcc = force || now - this.occAt > this.occInterval || !this.occCam.equals(this.camera.matrixWorld);
+    let occList: Mesh[] | null = null;
+    if (refreshOcc) { this.occAt = now; this.occCam.copy(this.camera.matrixWorld); this.occluded.clear(); }
     const W = view.W, H = view.H, Wv = W - view.pr, tmp = this.tmp;
     tmp.copy(CENTER).project(this.camera);
     const cx = (tmp.x + 1) / 2 * W, cy = (1 - tmp.y) / 2 * H;
@@ -38,7 +46,11 @@ export class Labels {
     const kept: Item[] = [];
     for (const it of items) {
       if (kept.length >= this.maxLabels) { it.d.lbl.hidden = true; continue; }
-      if (it.d.id !== selected && it.pri < 50 && this.picker.occluded(it.d.anchor, it.d, occluders)) { it.d.lbl.hidden = true; continue; }
+      if (it.d.id !== selected && it.pri < 50) {
+        let occ = this.occluded.get(it.d.id);
+        if (occ === undefined) { if (!occList) occList = occluders(); occ = this.picker.occluded(it.d.anchor, it.d, occList); this.occluded.set(it.d.id, occ); }
+        if (occ) { it.d.lbl.hidden = true; continue; }
+      }
       kept.push(it);
     }
     items = kept;
