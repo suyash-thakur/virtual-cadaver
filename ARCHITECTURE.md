@@ -69,7 +69,9 @@ blob in the worker is still used.
 ## Keeping everything inside the skin
 
 Three mechanisms, in order. (1) One pose field (`tools/lib/mesh.mjs` `poseWeight`) moves
-skin, bones, muscles and vessels together into the abducted-arm pose, and every asset is
+skin, bones, muscles and vessels together into the abducted-arm pose; the patient's left
+arm (skin only) is posed as a mirror image, because in the reduced skin mesh a hanging arm
+is fused with the side of the trunk and reads as a bulge, and every asset is
 cut at the same rest-frame level just below the elbow, so nothing hangs out of the arm
 stump. (2) At load, `inflateToEnclose` pushes skin vertices outward wherever a real mesh
 would poke through (the reduced BodyParts3D skin sits inside the true surface at the neck

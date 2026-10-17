@@ -59,7 +59,10 @@ export function makeFrame(humerus) {
   const t = [HEAD_WORLD[0] - hw[0], HEAD_WORLD[1] - hw[1], HEAD_WORLD[2] - hw[2]];
   const toWorld = p => { const m = map(p); return [m[0] + t[0], m[1] + t[1], m[2] + t[2]]; };
   console.log(`scale ${s.toFixed(4)} units/mm, humeral head at mm (${head.map(v => v.toFixed(0)).join(', ')})`);
-  return { toWorld, headMm: head, headWorld: HEAD_WORLD, armQuat: quatFromTo([0, -1, 0], ARM_DIR_WORLD) };
+  // The patient's left arm is posed as a mirror image so the specimen lies symmetrically, arms out.
+  const headL = [-head[0], head[1], head[2]];
+  return { toWorld, headMm: head, headWorld: HEAD_WORLD, armQuat: quatFromTo([0, -1, 0], ARM_DIR_WORLD),
+    headMmL: headL, headWorldL: toWorld(headL), armQuatL: quatFromTo([0, -1, 0], [-ARM_DIR_WORLD[0], ARM_DIR_WORLD[1], ARM_DIR_WORLD[2]]) };
 }
 
 /**
@@ -98,8 +101,10 @@ export function transform(mesh, frame, pose) {
     const mm = [mesh.pos[i], mesh.pos[i + 1], mesh.pos[i + 2]];
     let p = frame.toWorld(mm);
     // Arm-only structures stay rigid; structures and skin that cross from trunk to arm are skinned.
-    const w = pose ? poseWeight(mm, frame.headMm) : 0;
-    if (w > 0) { const h = frame.headWorld; const q = w >= 1 ? frame.armQuat : slerpId(frame.armQuat, w); const r = rotate(q, [p[0] - h[0], p[1] - h[1], p[2] - h[2]]); p = [r[0] + h[0], r[1] + h[1], r[2] + h[2]]; }
+    const left = mm[0] > 0; // BodyParts3D x points to the patient's left
+    const headMm = left ? frame.headMmL : frame.headMm;
+    const w = pose ? poseWeight(mm, headMm) : 0;
+    if (w > 0) { const h = left ? frame.headWorldL : frame.headWorld; const base = left ? frame.armQuatL : frame.armQuat; const q = w >= 1 ? base : slerpId(base, w); const r = rotate(q, [p[0] - h[0], p[1] - h[1], p[2] - h[2]]); p = [r[0] + h[0], r[1] + h[1], r[2] + h[2]]; }
     out[i] = p[0]; out[i + 1] = p[1]; out[i + 2] = p[2];
   }
   return out;
