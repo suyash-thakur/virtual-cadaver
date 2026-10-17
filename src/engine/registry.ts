@@ -1,0 +1,32 @@
+import type { CatmullRomCurve3, Mesh, Vector3 } from 'three';
+import type { Family, Info, Layer, Root } from '../content';
+import type { Cov } from './geometry/body';
+import type { DeltoidGeo, SheetGeo } from './geometry/builders';
+import type { Mat, PeelUniforms } from './materials';
+
+/** Runtime record for one structure: content fields plus meshes, materials and animation state. */
+export interface RT {
+  id: string; name: string; label?: string; kind: string; layer: Layer;
+  info?: Info; key?: boolean; landmark?: boolean; lm?: boolean; noCover?: boolean;
+  fam?: Family; roots?: Root[]; parents: string[]; children: string[];
+  op: number; color: string; cad?: string;
+  mat: Mat; meshes: Mesh[]; hits: Mesh[]; cov: Cov[];
+  /** Current and target visibility, 0..1. */
+  cur: number; target: number; eBase: number;
+  anchor: Vector3; curve?: CatmullRomCurve3;
+  lbl: HTMLButtonElement; lw?: number;
+  fold?: number; foldCur: number; foldSign?: number; sg?: SheetGeo; dg?: DeltoidGeo;
+  shellKey?: 'skin' | 'fat' | 'fascia'; peel?: PeelUniforms;
+  lines?: Vector3[][]; guides?: Mesh[]; isNerveLike?: boolean;
+  /** True for the surface helpers (skin layers, superficial veins, landmarks) that are not in structures.json. */
+  surface?: boolean;
+}
+
+export class Registry {
+  S: Record<string, RT> = {};
+  order: RT[] = [];
+  has(id: string) { return id in this.S; }
+  get(id: string): RT { const d = this.S[id]; if (!d) throw new Error(`unknown structure ${id}`); return d; }
+  add(d: RT) { if (this.S[d.id]) throw new Error(`duplicate ${d.id}`); this.S[d.id] = d; this.order.push(d); }
+  nerves() { return this.order.filter(d => d.layer === 'nerves'); }
+}

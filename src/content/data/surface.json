@@ -1,0 +1,167 @@
+{
+ "version": 1,
+ "surfaces": {
+  "skin": {
+   "name": "Skin",
+   "kind": "Layer",
+   "info": {
+    "lies": "Thin over the clavicle and sternum. Incisions go through the skin only; the flaps are lifted with the knife against their underside."
+   }
+  },
+  "fat": {
+   "name": "Superficial fascia",
+   "kind": "Layer",
+   "info": {
+    "lies": "The fatty layer under the skin. It carries the cutaneous nerves, the superficial veins and, in the neck, platysma."
+   }
+  },
+  "deepFascia": {
+   "name": "Deep fascia",
+   "kind": "Layer",
+   "info": {
+    "lies": "The pectoral fascia over pectoralis major, the deltoid fascia, and in the neck the investing layer of deep cervical fascia, which forms the roof of the posterior triangle."
+   }
+  },
+  "platysma": {
+   "name": "Platysma",
+   "kind": "Muscle",
+   "info": {
+    "lies": "A thin sheet of muscle inside the superficial fascia of the neck and upper chest.",
+    "supplies": "Supplied by the cervical branch of the facial nerve.",
+    "clinical": "Reflect it upward to reach the deep fascia of the neck."
+   }
+  },
+  "cephalicV": {
+   "name": "Cephalic vein",
+   "kind": "Superficial vein",
+   "info": {
+    "lies": "Runs up the lateral side of the arm and along the deltopectoral groove, then pierces the clavipectoral fascia to join the axillary vein.",
+    "clinical": "Your guide to the deltopectoral groove; preserve it while cleaning the fascia."
+   }
+  },
+  "basilicV": {
+   "name": "Basilic vein",
+   "kind": "Superficial vein",
+   "info": {
+    "lies": "Runs up the medial side of the forearm and arm, pierces the deep fascia in the middle of the arm and joins the brachial veins to form the axillary vein."
+   }
+  },
+  "ejv": {
+   "name": "External jugular vein",
+   "kind": "Superficial vein",
+   "info": {
+    "lies": "Crosses sternocleidomastoid obliquely under platysma, pierces the deep fascia just above the clavicle and drains into the subclavian vein."
+   }
+  },
+  "supraclav": {
+   "name": "Supraclavicular nerves",
+   "kind": "Cutaneous nerves",
+   "info": {
+    "lies": "Branches of the cervical plexus (C3, C4), not the brachial plexus. They emerge at the posterior border of sternocleidomastoid and cross the clavicle to supply the skin of the upper chest and shoulder."
+   }
+  },
+  "incisions": {
+   "name": "Skin incisions",
+   "kind": "Dissection step",
+   "info": {
+    "lies": "Midline from the suprasternal notch to the xiphoid process; along the clavicle to the acromion; from the xiphoid process round to the posterior axillary line; and down the front of the arm to its middle."
+   }
+  },
+  "lmNotch": {
+   "name": "Suprasternal notch",
+   "kind": "Surface landmark",
+   "info": {
+    "lies": "The dip at the top of the manubrium, between the two sternoclavicular joints."
+   }
+  },
+  "lmAngle": {
+   "name": "Sternal angle",
+   "kind": "Surface landmark",
+   "info": {
+    "lies": "The ridge where the manubrium meets the body of the sternum. The second costal cartilage joins here, so ribs are counted from this point."
+   }
+  },
+  "lmAcromion": {
+   "name": "Acromion",
+   "kind": "Surface landmark",
+   "info": {
+    "lies": "The bony point at the tip of the shoulder, felt at the lateral end of the clavicle."
+   }
+  },
+  "lmInfraclav": {
+   "name": "Infraclavicular fossa",
+   "kind": "Surface landmark",
+   "info": {
+    "lies": "The hollow below the lateral part of the clavicle. Press deeply here to feel the coracoid process."
+   }
+  },
+  "lmGroove": {
+   "name": "Deltopectoral groove",
+   "kind": "Surface landmark",
+   "info": {
+    "lies": "The line between deltoid and pectoralis major, where the cephalic vein runs."
+   }
+  },
+  "lmAntFold": {
+   "name": "Anterior axillary fold",
+   "kind": "Surface landmark",
+   "info": {
+    "lies": "Formed by the lower border of pectoralis major."
+   }
+  },
+  "lmPostFold": {
+   "name": "Posterior axillary fold",
+   "kind": "Surface landmark",
+   "info": {
+    "lies": "Formed by latissimus dorsi and teres major."
+   }
+  }
+ },
+ "shells": [
+  {
+   "id": "skin",
+   "key": "skin",
+   "iso": 0,
+   "color": "#D8AE8E",
+   "cad": "#BE9F82",
+   "inner": "#E0A49A",
+   "rough": 0.75,
+   "op": 1,
+   "tone": [
+    0.9,
+    0.1,
+    0.45
+   ]
+  },
+  {
+   "id": "fat",
+   "key": "fat",
+   "iso": -0.45,
+   "color": "#DCB967",
+   "cad": "#CFAD5C",
+   "inner": "#F0E0B0",
+   "rough": 0.55,
+   "op": 1,
+   "tone": [
+    0.86,
+    0.18,
+    1.4
+   ]
+  },
+  {
+   "id": "deepFascia",
+   "key": "fascia",
+   "iso": -1,
+   "color": "#EEEAE0",
+   "cad": "#E8E3D7",
+   "inner": "#FFFFFF",
+   "rough": 0.28,
+   "op": 0.62,
+   "tone": [
+    0.95,
+    0.05,
+    0.8
+   ]
+  }
+ ]
+}

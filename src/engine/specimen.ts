@@ -1,0 +1,250 @@
+import { BoxGeometry, BufferAttribute, BufferGeometry, Color, CylinderGeometry, Float32BufferAttribute, Mesh, MeshBasicMaterial, Scene, TubeGeometry, Vector3 } from 'three';
+import type { Content, Structure, Other, Nerve, Layer } from '../content';
+import { V, v3, armL, DEG } from './coords';
+import { curveOf, sphereGeo, fibreTex, roughen, sheetGeo, plateGeo, deltoidGeo, fatPadGeo } from './geometry/builders';
+import { collectSplats, frontPt, armPt, proj, type Field } from './geometry/body';
+import type { BodyRequest, BodyResponse } from './geometry/body.worker';
+import { makeMat, peelMaterial } from './materials';
+import { Registry, type RT } from './registry';
+
+export type PaletteMode = 'cadaver' | 'cord' | 'classic';
+
+const hitMat = new MeshBasicMaterial({ visible: false });
+const tmpA = new Vector3(), tmpB = new Vector3();
+
+/** Builds and owns every mesh of the specimen. Visibility, colour and fold state are applied here. */
+export class Specimen {
+  R = new Registry();
+  built = false;
+  field: Field | null = null;
+  palette: PaletteMode = 'cadaver';
+  private texSheet = fibreTex(true, 3); private texTube = fibreTex(false, 5); private texNerve = fibreTex(false, 7);
+
+  constructor(public C: Content, public scene: Scene, private labelsEl: HTMLElement, private onLabel: (id: string) => void) {
+    this.texSheet.repeat.set(5, 1); this.texTube.repeat.set(2, 1); this.texNerve.repeat.set(6, 1);
+    for (const st of C.structures) { if (st.layer === 'nerves') this.buildNerve(st); else this.buildOther(st); }
+    for (const n of C.nerves) this.R.get(n.id).children = n.children.slice();
+  }
+
+  get S() { return this.R.S; }
+  get order() { return this.R.order; }
+
+  colorFor(d: RT): string {
+    if (d.layer === 'nerves') { const p = this.palette; return p === 'cord' ? this.C.palette.families[d.fam!].c : (p === 'classic' ? this.C.palette.classicNerve : this.C.palette.cadaverNerve); }
+    return this.palette === 'cadaver' ? (d.cad || d.color) : d.color;
+  }
+  /** Colour for swatches and chips: nerves keep their family colour even in cadaver mode. */
+  dotColor(d: RT): string { return d.layer === 'nerves' && this.palette === 'cadaver' ? this.C.palette.families[d.fam!].c : this.colorFor(d); }
+
+  private register(partial: Omit<RT, 'meshes' | 'hits' | 'cov' | 'cur' | 'target' | 'eBase' | 'lbl' | 'foldCur' | 'children' | 'parents'> & { parents?: string[] }): RT {
+    const b = document.createElement('button'); b.className = 'lbl'; b.type = 'button'; b.hidden = true;
+    b.textContent = partial.label || partial.name; b.addEventListener('click', () => this.onLabel(partial.id));
+    this.labelsEl.appendChild(b);
+    const d: RT = { ...partial, parents: partial.parents || [], children: [], meshes: [], hits: [], cov: [], cur: 1, target: 1, eBase: 0, lbl: b, foldCur: 0 };
+    this.R.add(d); return d;
+  }
+  private addMesh(d: RT, geo: BufferGeometry, pos?: Vector3): Mesh {
+    const m = new Mesh(geo, d.mat); if (pos) m.position.copy(pos);
+    m.userData.sid = d.id; this.scene.add(m); d.meshes.push(m); return m;
+  }
+
+  private buildNerve(n: Nerve) {
+    const d = this.register({ id: n.id, name: n.name, label: n.label, kind: n.kind, layer: 'nerves', info: n.info, key: n.key, fam: n.fam, roots: n.roots, parents: n.parents, op: 1, color: '', mat: makeMat('#fff', 1, false), anchor: new Vector3() });
+    d.mat.color.set(this.colorFor(d)); d.mat.roughness = .42; d.eBase = .07;
+    d.mat.map = this.texNerve; d.mat.bumpMap = this.texNerve; d.mat.bumpScale = .25; (d.mat as any).clearcoat = .25; (d.mat as any).clearcoatRoughness = .5;
+    n.paths.forEach((pts, pi) => {
+      const r = n.r * (pi ? 0.8 : 1), c = curveOf(pts.map(v3));
+      const seg = Math.max(14, Math.round(c.getLength() * 3.4));
+      this.addMesh(d, roughen(new TubeGeometry(c, seg, r, 10, false), r * .14, 1.6));
+      [pts[0], pts[pts.length - 1]].forEach(p => { const s = this.addMesh(d, sphereGeo, v3(p)); s.scale.setScalar(r); });
+      const hm = new Mesh(new TubeGeometry(c, Math.max(8, Math.round(seg / 2)), Math.max(n.r * 2.6, .75), 6, false), hitMat);
+      hm.userData.sid = d.id; this.scene.add(hm); d.hits.push(hm);
+      d.cov.push({ curve: c, r });
+      if (pi === 0) d.curve = c;
+    });
+    d.anchor = d.curve!.getPoint(n.lu == null ? .5 : n.lu);
+  }
+
+  private buildOther(o: Other) {
+    const double = !!(o.sheet || o.plate || o.custom || (o.tubes && o.tubes.some(t => t.open)));
+    const d = this.register({ id: o.id, name: o.name, label: o.label, kind: o.kind, layer: o.layer, info: o.info, landmark: o.landmark, noCover: o.noCover, fold: o.fold, op: o.op, color: o.color, cad: o.cad, mat: makeMat('#fff', o.op, double), anchor: v3(o.anchor) });
+    const m = d.mat as any;
+    m.color.set(this.colorFor(d));
+    m.roughness = o.layer === 'vessels' ? .35 : (o.layer === 'bones' ? .8 : .65);
+    d.eBase = o.layer === 'bones' ? .14 : .05;
+    if (o.kind === 'Muscle') { m.map = (o.sheet || o.custom) ? this.texSheet : this.texTube; m.bumpMap = m.map; m.bumpScale = .35; m.clearcoat = .3; m.clearcoatRoughness = .5; }
+    if (o.layer === 'vessels') { m.clearcoat = .55; m.clearcoatRoughness = .35; }
+    if (o.kind === 'Fascia') { m.clearcoat = .9; m.clearcoatRoughness = .25; m.roughness = .3; m.depthWrite = false; }
+    if (o.custom === 'fatpad') { m.roughness = .55; m.clearcoat = .4; m.clearcoatRoughness = .4; }
+    (o.tubes || []).forEach(t => {
+      const c = curveOf(t.pts.map(v3));
+      this.addMesh(d, roughen(new TubeGeometry(c, Math.max(14, Math.round(c.getLength() * 3)), t.r, t.open ? 20 : 12, false), o.kind === 'Muscle' ? .09 : (o.layer === 'vessels' ? .03 : 0), 0.9));
+      if (t.caps) [t.pts[0], t.pts[t.pts.length - 1]].forEach(p => { const s = this.addMesh(d, sphereGeo, v3(p)); s.scale.setScalar(t.r); });
+      d.cov.push({ curve: c, r: t.r });
+    });
+    (o.spheres || []).forEach(s => { const c = v3(s.c); const mm = this.addMesh(d, sphereGeo, c); mm.scale.setScalar(s.r); d.cov.push({ pt: c, r: s.r }); });
+    (o.boxes || []).forEach(b => { const c = v3(b.c); this.addMesh(d, new BoxGeometry(b.s[0], b.s[1], b.s[2]), c);
+      for (let y = -b.s[1] / 2; y <= b.s[1] / 2; y += .8) d.cov.push({ pt: c.clone().add(new Vector3(0, y, 0)), r: Math.max(b.s[0], b.s[2]) / 2 }); });
+    (o.cyls || []).forEach(b => { const c = v3(b.c); this.addMesh(d, new CylinderGeometry(b.r, b.r, b.h, 18), c); d.cov.push({ pt: c, r: b.r }); });
+    if (o.sheet) { const sg = sheetGeo(o.sheet.o.map(v3), o.sheet.i.map(v3), o.sheet.bulge, o.sheet.bdir); d.sg = sg; this.addMesh(d, sg.g); d.cov.push({ arr: sg.base, r: .3 }); }
+    if (o.plate) { const pg = plateGeo(o.plate.c, o.plate.ring, o.plate.shrink, o.plate.dz); this.addMesh(d, pg.g); pg.pts.forEach(p => d.cov.push({ pt: p, r: .3 })); }
+    if (o.custom === 'fatpad') this.addMesh(d, fatPadGeo());
+    if (o.custom === 'deltoid') { const dg = deltoidGeo(); d.dg = dg; this.addMesh(d, dg.g); d.cov.push({ arr: dg.base, r: .35 }); }
+  }
+
+  /** Muscle reflection: rotates the sheet about an axis through its insertion. */
+  applyFold(d: RT) {
+    const f = d.foldCur, mesh = d.meshes[d.meshes.length - 1], posA = mesh.geometry.attributes.position;
+    if (d.sg) {
+      const sg = d.sg, axis = new Vector3().subVectors(sg.oc, sg.ic).cross(new Vector3(0, 0, 1)).normalize();
+      if (d.foldSign == null) { const probe = sg.oc.clone().sub(sg.ic).applyAxisAngle(axis, .2).add(sg.ic); d.foldSign = probe.z > sg.oc.z ? 1 : -1; }
+      const ang = f * (d.fold || 0) * d.foldSign;
+      for (let a = 0; a <= sg.nu; a++) { const I = sg.ins[a];
+        for (let b = 0; b <= sg.nv; b++) { const k = (a * (sg.nv + 1) + b) * 3;
+          tmpA.set(sg.base[k], sg.base[k + 1], sg.base[k + 2]).sub(I).applyAxisAngle(axis, ang).add(I);
+          posA.setXYZ(k / 3, tmpA.x, tmpA.y, tmpA.z); } }
+    } else if (d.dg) {
+      const dg = d.dg, D = V(0.643, -0.766, 0).normalize();
+      if (d.foldSign == null) { const r0 = dg.rad[0];
+        const ax = new Vector3().crossVectors(D, r0).normalize();
+        const p0 = tmpA.set(dg.base[0], dg.base[1], dg.base[2]); const moved = p0.clone().sub(dg.ins).applyAxisAngle(ax, .2).add(dg.ins);
+        d.foldSign = moved.sub(p0).dot(r0) > 0 ? 1 : -1; }
+      for (let k = 0; k < dg.rad.length; k++) { const ax = tmpB.crossVectors(D, dg.rad[k]).normalize();
+        tmpA.set(dg.base[k * 3], dg.base[k * 3 + 1], dg.base[k * 3 + 2]).sub(dg.ins).applyAxisAngle(ax, f * (d.fold || 0) * d.foldSign).add(dg.ins);
+        posA.setXYZ(k, tmpA.x, tmpA.y, tmpA.z); }
+    } else return;
+    posA.needsUpdate = true; mesh.geometry.computeVertexNormals(); mesh.geometry.computeBoundingSphere();
+  }
+
+  applyVis(d: RT) {
+    const o = d.cur * d.op, m = d.mat, tr = o < .995;
+    m.opacity = o;
+    if (m.transparent !== tr) { m.transparent = tr; m.needsUpdate = true; }
+    if (d.kind !== 'Fascia' && d.id !== 'deepFascia') m.depthWrite = o > .5;
+    const vis = o > .015;
+    d.meshes.forEach(x => { x.visible = vis; });
+  }
+
+  applyColors(override: (d: RT) => string | null) {
+    for (const d of this.order) d.mat.color.set(override(d) || this.colorFor(d));
+  }
+
+  /** Sets the peel uniforms of the three shells and the drawn length of the incisions. */
+  applyDissect(skin: [number, number], fat: [number, number], fascia: [number, number], inc: number, fold: Record<string, number>) {
+    if (this.built) {
+      const set = (id: string, c: [number, number]) => { const u = this.R.get(id).peel!; u.uCutT.value = c[0]; u.uCutA.value = c[1]; };
+      set('skin', skin); set('fat', fat); set('deepFascia', fascia);
+      const incD = this.R.S.incisions;
+      if (incD) { const tubes = incD.meshes.filter(m => m.userData.inc), n = tubes.length;
+        tubes.forEach((m, k) => { const p = Math.max(0, Math.min(1, inc * n - k)); const cnt = m.geometry.index!.count; m.geometry.setDrawRange(0, Math.floor(cnt * p / 6) * 6); }); }
+    }
+    for (const id of Object.keys(fold)) { const d = this.R.S[id]; if (d && d.foldCur !== fold[id]) { d.foldCur = fold[id]; this.applyFold(d); } }
+  }
+
+  /** Meshes that can hide a label anchor: visible, mostly opaque, not nerves' hit tubes. */
+  occluders(): Mesh[] {
+    const out: Mesh[] = [];
+    for (const d of this.order) if (d.cur * d.op > .6) for (const m of d.meshes) if (m.visible) out.push(m);
+    return out;
+  }
+
+  /** Builds the skin layers in a worker, then the structures that sit on them. Resolves when done. */
+  async buildBody(): Promise<void> {
+    const splats = collectSplats(this.order);
+    const worker = new Worker(new URL('./geometry/body.worker.ts', import.meta.url), { type: 'module' });
+    const req: BodyRequest = { splats, h: 0.45, shells: this.C.shells.map(s => ({ id: s.id, iso: s.iso, tone: s.tone })) };
+    const res = await new Promise<BodyResponse>((resolve, reject) => {
+      worker.onmessage = (e: MessageEvent<BodyResponse>) => resolve(e.data);
+      worker.onerror = (e) => reject(new Error(e.message));
+      worker.postMessage(req);
+    });
+    worker.terminate();
+    this.field = res.field;
+    const G = this.field;
+    for (const sh of this.C.shells) {
+      const m = res.shells.find(x => x.id === sh.id)!;
+      const g = new BufferGeometry();
+      g.setAttribute('position', new BufferAttribute(m.pos, 3)); g.setAttribute('peel', new BufferAttribute(m.peel, 1));
+      g.setAttribute('warm', new BufferAttribute(m.warm, 1)); g.setAttribute('color', new BufferAttribute(m.col, 3));
+      g.setIndex(new BufferAttribute(m.idx, 1)); g.computeVertexNormals();
+      const inf = this.C.surfaces[sh.id];
+      const d = this.register({ id: sh.id, name: inf.name, kind: inf.kind, info: inf.info, layer: 'skin', noCover: true, surface: true, color: sh.color, cad: sh.cad, op: sh.op, shellKey: sh.key, mat: makeMat('#fff', 1, true), anchor: new Vector3() });
+      const pm = peelMaterial(this.colorFor(d), sh.rough, sh.op, sh.inner); d.mat = pm.mat; d.peel = pm.u; d.eBase = 0;
+      if (sh.op < 1) d.mat.depthWrite = false;
+      const mesh = this.addMesh(d, g); mesh.userData.shell = true; mesh.renderOrder = sh.op < 1 ? 2 : 0;
+    }
+    const toV = (q: number[] | null) => q ? V(q[0], q[1], q[2]) : null;
+    const S = this.R.S;
+    S.skin.anchor = toV(frontPt(G, 6, -5, 0)) || V(6, -5, 7);
+    S.fat.anchor = toV(frontPt(G, 6, -6, -.45)) || V(6, -6, 7);
+    S.deepFascia.anchor = toV(frontPt(G, 6, -7, -1)) || V(6, -7, 6);
+
+    const P = this.C.palette;
+    const addSurface = (id: string, extra: Partial<RT> & { color: string; op: number }) => {
+      const inf = this.C.surfaces[id];
+      return this.register({ id, name: inf.name, kind: inf.kind, info: inf.info, layer: 'skin', noCover: true, surface: true, mat: makeMat('#fff', 1, false), anchor: new Vector3(), ...extra });
+    };
+    const tubeStruct = (id: string, paths: (Vector3 | null)[][], r: number, color: string, cad: string) => {
+      const d = addSurface(id, { color, cad, op: 1 });
+      d.mat.color.set(this.colorFor(d)); d.mat.roughness = .45; d.eBase = .05;
+      paths.forEach(pts => { const q = pts.filter((x): x is Vector3 => !!x); if (q.length < 2) return; const c = curveOf(q);
+        this.addMesh(d, new TubeGeometry(c, Math.max(12, Math.round(c.getLength() * 3)), r, 8, false));
+        [q[0], q[q.length - 1]].forEach(p => { const s = this.addMesh(d, sphereGeo, p); s.scale.setScalar(r); });
+        if (!d.curve) d.curve = c; });
+      d.anchor = d.curve ? d.curve.getPoint(.5) : new Vector3();
+      return d;
+    };
+    const ap = (t: number, th: number, iso: number) => toV(armPt(G, t, th, iso));
+    const fp = (l: number, s: number, iso: number) => toV(frontPt(G, l, s, iso));
+    const A = (t: number, n: number, z: number) => { const q = armL(t, n, z); return V(q[0], q[1], q[2]); };
+    tubeStruct('cephalicV', [[ap(18, 72 * DEG, -.75), ap(13, 72 * DEG, -.75), ap(8, 74 * DEG, -.75), ap(3, 78 * DEG, -.8), ap(-0.5, 82 * DEG, -.85), fp(13.6, 2.6, -.85), V(11.4, 2.3, 2.7), V(10.1, 1.8, 2.1), V(9.2, 1.6, 1.8)]], .3, P.vein, P.veinCadaver);
+    tubeStruct('basilicV', [[ap(26, 150 * DEG, -.75), ap(20, 152 * DEG, -.75), ap(15, 156 * DEG, -.8), A(12, 4.5, 0.75), A(10, 4.5, 0.7)]], .3, P.vein, P.veinCadaver);
+    tubeStruct('ejv', [[fp(3.2, 15.5, -.6), fp(4.2, 12, -.6), fp(5.2, 8.6, -.65), fp(5.7, 6.2, -1.3), V(6.1, 4.0, 2.3), V(6.2, 3.2, 2.2)]], .27, P.vein, P.veinCadaver);
+    const sc = (l1: number, s1: number, iso: number) => { const out: (Vector3 | null)[] = []; for (let k = 0; k <= 9; k++) { const f = k / 9; out.push(fp(4.9 + (l1 - 4.9) * f, 10 + (s1 - 10) * f, -1.15 + (iso + 1.15) * f)); } return out; };
+    const scd = tubeStruct('supraclav', [sc(2.4, -3.5, -.7), sc(7.8, -3.0, -.7), sc(14.6, 0.5, -.7)], .14, P.cadaverNerve, P.cadaverNerve);
+    scd.isNerveLike = true;
+    { const d = addSurface('platysma', { color: '#C27060', cad: '#9A6050', op: .9 });
+      d.mat = makeMat(this.colorFor(d), .9, true); (d.mat as any).map = this.texSheet; d.mat.roughness = .6; d.eBase = .04;
+      const nu = 12, nv = 18, pos: number[] = [], uv: number[] = [], idx: number[] = []; let last = [0, 0, 0];
+      for (let a = 0; a <= nu; a++) for (let b = 0; b <= nv; b++) { const u = a / nu, v = b / nv, s = -3 + 20 * v, lmax = s < 4 ? 12.5 : Math.max(5.5, 12.5 - (s - 4) * 0.55), l = 1.2 + (lmax - 1.2) * u;
+        const q = frontPt(G, l, s, -.55) || last; last = q; pos.push(-q[0], q[1], q[2]); uv.push(u, v); }
+      for (let a = 0; a < nu; a++) for (let b = 0; b < nv; b++) { const p = a * (nv + 1) + b, q = p + nv + 1; idx.push(p, q, p + 1, q, q + 1, p + 1); }
+      const g = new BufferGeometry(); g.setAttribute('position', new Float32BufferAttribute(pos, 3));
+      g.setAttribute('uv', new Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
+      this.addMesh(d, g); d.anchor = fp(6.5, 10, -.5) || V(6.5, 10, 3);
+    }
+    { const d = addSurface('incisions', { color: '#6E1B16', cad: '#6E1B16', op: 1 });
+      d.mat.color.set(this.colorFor(d)); d.mat.roughness = .4; d.eBase = .1;
+      const lines: (Vector3 | null)[][] = [];
+      const mid: (Vector3 | null)[] = []; for (let s = 7.3; s >= -14; s -= .5) mid.push(fp(0, s, .04)); lines.push(mid);
+      const cl: (Vector3 | null)[] = [], cp = [[0.4, 2.6], [5, 3.1], [8.5, 4.0], [12, 4.7], [14.6, 5.2], [16.8, 5.4]];
+      for (let k = 0; k < cp.length - 1; k++) for (let f = 0; f < 1; f += .25) cl.push(fp(cp[k][0] + (cp[k + 1][0] - cp[k][0]) * f, cp[k][1] + (cp[k + 1][1] - cp[k][1]) * f, .04));
+      lines.push(cl);
+      const inf: (Vector3 | null)[] = []; for (let th = 0; th <= 115; th += 4) { const r = th * DEG; inf.push(toV(proj(G, [Math.sin(r) * 25, -14, -0.6 + Math.cos(r) * 25], [-Math.sin(r), 0, -Math.cos(r)], .04))); } lines.push(inf);
+      const arm: (Vector3 | null)[] = []; for (let t = -2; t <= 16; t += .75) arm.push(ap(t, 90 * DEG, .04));
+      for (let th = 86; th >= 10; th -= 6) arm.push(ap(16, th * DEG, .04)); lines.push(arm);
+      d.lines = []; d.guides = [];
+      const guideMat = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .8 });
+      lines.forEach(pts => { const q = pts.filter((x): x is Vector3 => !!x); if (q.length < 2) return; const c = curveOf(q);
+        const seg = Math.max(20, Math.round(c.getLength() * 3));
+        const m = this.addMesh(d, new TubeGeometry(c, seg, .09, 6, false)); m.userData.inc = true;
+        const gm = new Mesh(new TubeGeometry(c, seg, .055, 5, false), guideMat); gm.visible = false; gm.renderOrder = 3; this.scene.add(gm); d.guides!.push(gm);
+        d.lines!.push(c.getSpacedPoints(70));
+        if (!d.curve) d.curve = c; });
+      d.anchor = d.curve!.getPoint(.4);
+    }
+    const LM: Record<string, Vector3 | null> = { lmNotch: fp(0.3, 7.3, .05), lmAngle: fp(0.3, -0.4, .05), lmAcromion: toV(proj(G, [17.4, 14, -1.6], [0, -1, 0], .05)),
+      lmInfraclav: fp(13.4, 2.2, .05), lmGroove: ap(4, 76 * DEG, .05), lmAntFold: fp(14.4, -5.5, .05), lmPostFold: toV(proj(G, [13.6, -6.5, -16], [0, 0, 1], .05)) };
+    for (const id of Object.keys(LM)) { const p = LM[id]; if (!p) continue;
+      const d = addSurface(id, { color: '#3B2A22', cad: '#3B2A22', op: 1, lm: true, anchor: p });
+      d.mat.color.set(this.colorFor(d)); d.eBase = 0; const m = this.addMesh(d, sphereGeo, p); m.scale.setScalar(.32); }
+    this.built = true;
+  }
+
+  /** Pool of structures a spotter session can pin: real anatomy, not helpers. */
+  spotterPool(layers: Record<Layer, boolean>): Structure[] {
+    return this.C.structures.filter(s => s.layer === 'nerves' || layers[s.layer]);
+  }
+
+  static lerpColor(a: string, b: string, t: number) { return '#' + new Color(a).lerp(new Color(b), t).getHexString(); }
+}

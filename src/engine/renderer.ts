@@ -1,0 +1,25 @@
+import { DirectionalLight, HemisphereLight, PerspectiveCamera, Scene, SRGBColorSpace, WebGLRenderer, ACESFilmicToneMapping } from 'three';
+
+export interface Gfx { renderer: WebGLRenderer; scene: Scene; camera: PerspectiveCamera }
+
+/** Creates the renderer, or returns null when WebGL is unavailable so the app can fall back to the 2D lesson. */
+export function createGfx(canvas: HTMLCanvasElement): Gfx | null {
+  let renderer: WebGLRenderer;
+  try {
+    const probe = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    if (!probe) return null;
+    renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+  } catch (e) { console.error('WebGL unavailable', e); return null; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x000000, 0);
+  renderer.outputColorSpace = SRGBColorSpace;
+  renderer.toneMapping = ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  const scene = new Scene();
+  const camera = new PerspectiveCamera(36, 1, 0.5, 1200);
+  // Physically based light units (three r155+): legacy intensities are scaled by pi.
+  scene.add(new HemisphereLight(0xf2f7f5, 0x34443f, 0.9 * Math.PI));
+  const key = new DirectionalLight(0xfff1dc, 0.85 * Math.PI); key.position.set(-25, 35, 40); scene.add(key);
+  const fill = new DirectionalLight(0xe8f0ff, 0.25 * Math.PI); fill.position.set(30, 5, 20); scene.add(fill);
+  const rim = new DirectionalLight(0xcfe0ff, 0.4 * Math.PI); rim.position.set(15, -10, -35); scene.add(rim);
+  return { renderer, scene, camera };
+}

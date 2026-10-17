@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virtual cadaver: brachial plexus</title>
+<meta name="description" content="Layer-by-layer virtual dissection of the brachial plexus for MBBS students, with tracing, lesion simulation and spotter practice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Spectral:wght@500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+  <canvas id="c" aria-label="3D dissection model of the right brachial plexus" tabindex="0"></canvas>
+  <svg id="leaders" aria-hidden="true"></svg>
+  <div id="labels"></div>
+  <div id="knife" hidden></div>
+  <div class="viewer" id="photoViewer" hidden><img alt=""></div>
+
+  <header class="bar">
+    <div class="title">
+      <h1>Brachial plexus</h1>
+      <p>Right upper limb, layer by layer</p>
+    </div>
+    <div class="tools">
+      <button class="icon" id="btnLayers" aria-label="Layers and colours" aria-expanded="false" aria-controls="layersPop">
+        <svg viewBox="0 0 24 24"><path d="M12 3 2.5 8 12 13l9.5-5L12 3Z"/><path d="m2.5 12.5 9.5 5 9.5-5"/><path d="m2.5 16.5 9.5 5 9.5-5"/></svg>
+      </button>
+      <button class="icon" id="btnReset" aria-label="Reset view">
+        <svg viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 3.5v5h5"/></svg>
+      </button>
+      <button class="icon" id="btnHelp" aria-label="How to use" aria-expanded="false" aria-controls="helpPop">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.8"/><path d="M12 17.2h.01"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="modes" role="tablist" aria-label="Mode">
+    <button role="tab" data-mode="dissect" aria-selected="true">Dissect</button>
+    <button role="tab" data-mode="explore" aria-selected="false">Explore</button>
+    <button role="tab" data-mode="trace" aria-selected="false">Trace</button>
+    <button role="tab" data-mode="lesion" aria-selected="false">Lesion</button>
+    <button role="tab" data-mode="spotter" aria-selected="false">Spotter</button>
+  </nav>
+
+  <div class="loading" id="loading" role="status">Preparing the specimen…</div>
+
+  <div class="pop" id="layersPop" hidden>
+    <h2>Layers</h2>
+    <h3 class="sec">Show in Explore, Trace and Spotter</h3>
+    <div class="seg" id="segLayers">
+      <button data-layer="skin" aria-pressed="false">Skin and fascia</button>
+      <button data-layer="supmus" aria-pressed="false">Outer muscles</button>
+      <button data-layer="deepmus" aria-pressed="true">Deep muscles</button>
+      <button data-layer="bones" aria-pressed="true">Bones</button>
+      <button data-layer="vessels" aria-pressed="true">Vessels</button>
+    </div>
+    <h3 class="sec">Labels</h3>
+    <div class="seg" id="segLabels">
+      <button data-labels="off" aria-pressed="false">Off</button>
+      <button data-labels="key" aria-pressed="true">Main</button>
+      <button data-labels="all" aria-pressed="false">All</button>
+    </div>
+    <h3 class="sec">Colours</h3>
+    <div class="seg" id="segColor">
+      <button data-color="cadaver" aria-pressed="false">Cadaver</button>
+      <button data-color="cord" aria-pressed="true">By cord</button>
+      <button data-color="classic" aria-pressed="false">Atlas yellow</button>
+    </div>
+    <p class="muted" id="layersNote"></p>
+  </div>
+
+  <div class="pop" id="helpPop" hidden>
+    <h2>How to use</h2>
+    <ul>
+      <li>Drag with one finger to turn the specimen.</li>
+      <li>Pinch to zoom; drag with two fingers to move it.</li>
+      <li>Tap any structure or label to learn about it.</li>
+      <li>Keyboard: arrow keys turn, + and − zoom, N and P step through the dissection.</li>
+    </ul>
+    <p><b>Dissect</b> takes you through the specimen in the order of a dissection manual. <b>Explore</b> lets you switch layers on and off freely. <b>Trace</b> lights up the fibres carried by any root or branch. <b>Lesion</b> cuts a nerve and shows which muscles are paralysed and where feeling is lost. <b>Spotter</b> pins structures and quizzes you the way a practical exam does, returning to the ones you missed.</p>
+    <p class="muted small">This is a teaching model. Relations follow standard descriptions, but shapes and sizes are schematic. Check details against your dissection manual and your teachers.</p>
+  </div>
+
+  <aside class="sheet" id="sheet" data-state="open" aria-live="polite">
+    <button class="grab" id="grab" aria-label="Expand or collapse the panel"></button>
+    <div class="sheet-body" id="sheetBody"></div>
+  </aside>
+
+  <div id="fallback" class="fallback" hidden></div>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

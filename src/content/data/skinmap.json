@@ -1,0 +1,74 @@
+{
+ "version": 1,
+ "limb": "<polygon points=\"38,14 82,14 79,120 73,215 76,252 45,252 47,215 41,120\"/><polygon points=\"46,222 35,252 41,257 50,240\"/><rect x=\"47\" y=\"252\" width=\"8\" height=\"36\" rx=\"3.5\"/><rect x=\"56\" y=\"252\" width=\"8\" height=\"42\" rx=\"3.5\"/><rect x=\"65\" y=\"252\" width=\"7\" height=\"38\" rx=\"3.5\"/><rect x=\"73\" y=\"252\" width=\"6\" height=\"28\" rx=\"3.5\"/>",
+ "regions": {
+  "badge": [
+   "<ellipse cx=\"43\" cy=\"56\" rx=\"6\" ry=\"17\"/>",
+   "<ellipse cx=\"45\" cy=\"56\" rx=\"9\" ry=\"19\"/>"
+  ],
+  "medArm": [
+   "<polygon points=\"70,20 82,20 79,118 69,118\"/>",
+   "<polygon points=\"73,24 82,24 79,118 72,118\"/>"
+  ],
+  "latForearm": [
+   "<polygon points=\"41,122 60,122 60,213 47,213\"/>",
+   "<polygon points=\"41,124 47,124 49,212 47,212\"/>"
+  ],
+  "medForearm": [
+   "<polygon points=\"60,122 79,122 73,213 60,213\"/>",
+   "<polygon points=\"72,124 79,124 73,212 69,212\"/>"
+  ],
+  "rPostArm": [
+   "",
+   "<polygon points=\"47,30 70,30 68,118 49,118\"/>"
+  ],
+  "rPostForearm": [
+   "",
+   "<polygon points=\"49,124 67,124 65,212 53,212\"/>"
+  ],
+  "rDorsum": [
+   "",
+   "<polygon points=\"47,215 65,215 66,252 45,252\"/><polygon points=\"46,222 35,252 41,257 50,240\"/><rect x=\"47\" y=\"252\" width=\"8\" height=\"18\" rx=\"3.5\"/><rect x=\"56\" y=\"252\" width=\"8\" height=\"18\" rx=\"3.5\"/><rect x=\"65\" y=\"252\" width=\"3.5\" height=\"18\" rx=\"3.5\"/>"
+  ],
+  "uDorsum": [
+   "",
+   "<polygon points=\"65,215 73,215 76,252 66,252\"/><rect x=\"73\" y=\"252\" width=\"6\" height=\"28\" rx=\"3.5\"/><rect x=\"68.5\" y=\"252\" width=\"3.5\" height=\"38\" rx=\"3.5\"/>"
+  ],
+  "mPalm": [
+   "<polygon points=\"47,215 64,215 66,252 45,252\"/>",
+   ""
+  ],
+  "uPalm": [
+   "<polygon points=\"64,215 73,215 76,252 66,252\"/>",
+   ""
+  ],
+  "mDigits": [
+   "<polygon points=\"46,222 35,252 41,257 50,240\"/><rect x=\"47\" y=\"252\" width=\"8\" height=\"36\" rx=\"3.5\"/><rect x=\"56\" y=\"252\" width=\"8\" height=\"42\" rx=\"3.5\"/><rect x=\"65\" y=\"252\" width=\"3.5\" height=\"38\" rx=\"3.5\"/>",
+   "<rect x=\"47\" y=\"272\" width=\"8\" height=\"16\" rx=\"3.5\"/><rect x=\"56\" y=\"272\" width=\"8\" height=\"22\" rx=\"3.5\"/><rect x=\"65\" y=\"272\" width=\"3.5\" height=\"18\" rx=\"3.5\"/>"
+  ],
+  "uDigits": [
+   "<rect x=\"73\" y=\"252\" width=\"6\" height=\"28\" rx=\"3.5\"/><rect x=\"68.5\" y=\"252\" width=\"3.5\" height=\"38\" rx=\"3.5\"/>",
+   "<rect x=\"73\" y=\"252\" width=\"6\" height=\"28\" rx=\"3.5\"/><rect x=\"68.5\" y=\"252\" width=\"3.5\" height=\"38\" rx=\"3.5\"/>"
+  ],
+  "dC5": [
+   "<polygon points=\"38,16 56,16 55,112 40,112\"/>",
+   "<polygon points=\"38,16 56,16 55,112 40,112\"/>"
+  ],
+  "dC6": [
+   "<polygon points=\"41,118 56,118 54,213 47,213\"/><polygon points=\"46,222 35,252 41,257 50,240\"/><rect x=\"47\" y=\"252\" width=\"8\" height=\"36\" rx=\"3.5\"/>",
+   "<polygon points=\"41,118 56,118 54,213 47,213\"/><polygon points=\"46,222 35,252 41,257 50,240\"/><rect x=\"47\" y=\"252\" width=\"8\" height=\"36\" rx=\"3.5\"/>"
+  ],
+  "dC7": [
+   "<rect x=\"56\" y=\"252\" width=\"8\" height=\"42\" rx=\"3.5\"/><polygon points=\"55,226 65,226 65,252 55,252\"/>",
+   "<rect x=\"56\" y=\"252\" width=\"8\" height=\"42\" rx=\"3.5\"/><polygon points=\"55,226 65,226 65,252 55,252\"/>"
+  ],
+  "dC8": [
+   "<polygon points=\"66,180 77,180 73,215 76,252 65,252\"/><rect x=\"73\" y=\"252\" width=\"6\" height=\"28\" rx=\"3.5\"/><rect x=\"65\" y=\"252\" width=\"7\" height=\"38\" rx=\"3.5\"/>",
+   "<polygon points=\"66,180 77,180 73,215 76,252 65,252\"/><rect x=\"73\" y=\"252\" width=\"6\" height=\"28\" rx=\"3.5\"/><rect x=\"65\" y=\"252\" width=\"7\" height=\"38\" rx=\"3.5\"/>"
+  ],
+  "dT1": [
+   "<polygon points=\"64,96 80,96 77,180 63,180\"/>",
+   "<polygon points=\"64,96 80,96 77,180 63,180\"/>"
+  ]
+ }
+}

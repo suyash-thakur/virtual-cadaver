@@ -1,0 +1,4938 @@
+{
+ "version": 1,
+ "region": "brachial-plexus",
+ "structures": [
+  {
+   "id": "c5",
+   "name": "C5 root",
+   "label": "C5",
+   "kind": "Root",
+   "fam": "rt",
+   "roots": [
+    "C5"
+   ],
+   "parents": [],
+   "r": 0.32,
+   "key": true,
+   "lu": 0.3,
+   "paths": [
+    [
+     [
+      -2.2,
+      14,
+      -1.4
+     ],
+     [
+      -4,
+      12.6,
+      -1.1
+     ],
+     [
+      -5.6,
+      11,
+      -0.9
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Ventral ramus of C5. It leaves between the C4 and C5 vertebrae and passes between scalenus anterior and scalenus medius.",
+    "clinical": "C5–C6 injury (a fall on the shoulder, or traction on the head during a difficult birth) causes Erb’s palsy: the arm hangs adducted and medially rotated with the forearm pronated, the ‘waiter’s tip’ position."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "c6",
+   "name": "C6 root",
+   "label": "C6",
+   "kind": "Root",
+   "fam": "rt",
+   "roots": [
+    "C6"
+   ],
+   "parents": [],
+   "r": 0.32,
+   "key": true,
+   "lu": 0.3,
+   "paths": [
+    [
+     [
+      -2.2,
+      12,
+      -1.4
+     ],
+     [
+      -4,
+      11.4,
+      -1.1
+     ],
+     [
+      -5.6,
+      11,
+      -0.9
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Ventral ramus of C6, between the C5 and C6 vertebrae. It joins C5 at Erb’s point.",
+    "clinical": "Part of the Erb’s palsy picture with C5. The biceps and brachioradialis (supinator) jerks test C5–C6."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "c7",
+   "name": "C7 root",
+   "label": "C7",
+   "kind": "Root",
+   "fam": "rt",
+   "roots": [
+    "C7"
+   ],
+   "parents": [],
+   "r": 0.32,
+   "key": true,
+   "lu": 0.3,
+   "paths": [
+    [
+     [
+      -2.2,
+      10,
+      -1.4
+     ],
+     [
+      -4.2,
+      9.2,
+      -1.1
+     ],
+     [
+      -5.8,
+      8.4,
+      -0.95
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Ventral ramus of C7. It is the only root that continues on its own, as the middle trunk.",
+    "clinical": "The triceps jerk tests mainly C7."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "c8",
+   "name": "C8 root",
+   "label": "C8",
+   "kind": "Root",
+   "fam": "rt",
+   "roots": [
+    "C8"
+   ],
+   "parents": [],
+   "r": 0.32,
+   "key": true,
+   "lu": 0.3,
+   "paths": [
+    [
+     [
+      -2.2,
+      8,
+      -1.4
+     ],
+     [
+      -4,
+      7,
+      -1.2
+     ],
+     [
+      -5.6,
+      6,
+      -1
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Ventral ramus of C8. It leaves between the C7 and T1 vertebrae: there are eight cervical nerves but only seven cervical vertebrae.",
+    "clinical": "C8–T1 injury (a sudden upward pull on the arm, or a breech delivery) causes Klumpke’s palsy: claw hand with wasting of the small muscles of the hand."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "t1",
+   "name": "T1 root",
+   "label": "T1",
+   "kind": "Root",
+   "fam": "rt",
+   "roots": [
+    "T1"
+   ],
+   "parents": [],
+   "r": 0.32,
+   "key": true,
+   "lu": 0.3,
+   "paths": [
+    [
+     [
+      -2.2,
+      5.8,
+      -1.4
+     ],
+     [
+      -3.9,
+      6.1,
+      -1.3
+     ],
+     [
+      -5.6,
+      6,
+      -1
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Ventral ramus of T1. It crosses the neck of the first rib to join C8.",
+    "clinical": "Part of Klumpke’s palsy. If T1 is torn close to the spinal cord, sympathetic fibres travelling with it are cut too, adding Horner syndrome (drooping eyelid, small pupil) on the same side."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "upperTrunk",
+   "name": "Upper trunk",
+   "kind": "Trunk",
+   "fam": "rt",
+   "roots": [
+    "C5",
+    "C6"
+   ],
+   "parents": [
+    "c5",
+    "c6"
+   ],
+   "r": 0.38,
+   "key": true,
+   "lu": 0.45,
+   "paths": [
+    [
+     [
+      -5.6,
+      11,
+      -0.9
+     ],
+     [
+      -7.6,
+      8,
+      -0.7
+     ],
+     [
+      -9.4,
+      5,
+      -0.6
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Formed by C5 and C6 at Erb’s point, in the posterior triangle of the neck about 2–3 cm above the clavicle.",
+    "clinical": "Six nerves meet at Erb’s point: the C5 and C6 roots, the two divisions of the upper trunk, the suprascapular nerve and the nerve to subclavius. Injury here gives Erb’s palsy."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "middleTrunk",
+   "name": "Middle trunk",
+   "kind": "Trunk",
+   "fam": "rt",
+   "roots": [
+    "C7"
+   ],
+   "parents": [
+    "c7"
+   ],
+   "r": 0.38,
+   "key": true,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -5.8,
+      8.4,
+      -0.95
+     ],
+     [
+      -7.8,
+      6.3,
+      -0.8
+     ],
+     [
+      -9.6,
+      4,
+      -0.7
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "The continuation of C7, lying between the upper and lower trunks in the posterior triangle of the neck."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "lowerTrunk",
+   "name": "Lower trunk",
+   "kind": "Trunk",
+   "fam": "rt",
+   "roots": [
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "c8",
+    "t1"
+   ],
+   "r": 0.38,
+   "key": true,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -5.6,
+      6,
+      -1
+     ],
+     [
+      -7.5,
+      4.6,
+      -0.9
+     ],
+     [
+      -9.4,
+      3.1,
+      -0.8
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Formed by C8 and T1. It rests on the first rib, behind the subclavian artery.",
+    "clinical": "A cervical rib or a narrow thoracic outlet can compress it, causing pain and tingling along the inner forearm and weakness of the small hand muscles."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "divAU",
+   "name": "Upper trunk, anterior division",
+   "label": "Anterior (upper)",
+   "kind": "Division",
+   "fam": "lat",
+   "roots": [
+    "C5",
+    "C6"
+   ],
+   "parents": [
+    "upperTrunk"
+   ],
+   "r": 0.3,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -9.4,
+      5,
+      -0.6
+     ],
+     [
+      -10.4,
+      4,
+      -0.1
+     ],
+     [
+      -11.2,
+      2.9,
+      0.1
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Behind the clavicle. Joins the anterior division of the middle trunk to form the lateral cord. Anterior divisions carry fibres for flexor muscles; posterior divisions carry fibres for extensors."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "divAM",
+   "name": "Middle trunk, anterior division",
+   "label": "Anterior (middle)",
+   "kind": "Division",
+   "fam": "lat",
+   "roots": [
+    "C7"
+   ],
+   "parents": [
+    "middleTrunk"
+   ],
+   "r": 0.3,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -9.6,
+      4,
+      -0.7
+     ],
+     [
+      -10.4,
+      3.4,
+      -0.2
+     ],
+     [
+      -11.2,
+      2.9,
+      0.1
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Behind the clavicle. Joins the anterior division of the upper trunk to form the lateral cord. Anterior divisions carry fibres for flexor muscles; posterior divisions carry fibres for extensors."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "divAL",
+   "name": "Lower trunk, anterior division",
+   "label": "Anterior (lower)",
+   "kind": "Division",
+   "fam": "med",
+   "roots": [
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "lowerTrunk"
+   ],
+   "r": 0.3,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -9.4,
+      3.1,
+      -0.8
+     ],
+     [
+      -10.3,
+      2,
+      -1
+     ],
+     [
+      -11.2,
+      1,
+      -0.95
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Behind the clavicle. Continues on its own as the medial cord. Anterior divisions carry fibres for flexor muscles; posterior divisions carry fibres for extensors."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "divPU",
+   "name": "Upper trunk, posterior division",
+   "label": "Posterior (upper)",
+   "kind": "Division",
+   "fam": "post",
+   "roots": [
+    "C5",
+    "C6"
+   ],
+   "parents": [
+    "upperTrunk"
+   ],
+   "r": 0.3,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -9.4,
+      5,
+      -0.6
+     ],
+     [
+      -10.3,
+      4.2,
+      -1.4
+     ],
+     [
+      -11.2,
+      2.2,
+      -1.5
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Behind the clavicle. All three posterior divisions unite to form the posterior cord. Anterior divisions carry fibres for flexor muscles; posterior divisions carry fibres for extensors."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "divPM",
+   "name": "Middle trunk, posterior division",
+   "label": "Posterior (middle)",
+   "kind": "Division",
+   "fam": "post",
+   "roots": [
+    "C7"
+   ],
+   "parents": [
+    "middleTrunk"
+   ],
+   "r": 0.3,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -9.6,
+      4,
+      -0.7
+     ],
+     [
+      -10.4,
+      3.3,
+      -1.4
+     ],
+     [
+      -11.2,
+      2.2,
+      -1.5
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Behind the clavicle. All three posterior divisions unite to form the posterior cord. Anterior divisions carry fibres for flexor muscles; posterior divisions carry fibres for extensors."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "divPL",
+   "name": "Lower trunk, posterior division",
+   "label": "Posterior (lower)",
+   "kind": "Division",
+   "fam": "post",
+   "roots": [
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "lowerTrunk"
+   ],
+   "r": 0.3,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -9.4,
+      3.1,
+      -0.8
+     ],
+     [
+      -10.3,
+      2.6,
+      -1.6
+     ],
+     [
+      -11.2,
+      2.2,
+      -1.5
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Behind the clavicle. The smallest division; it joins the other two posterior divisions to form the posterior cord. Anterior divisions carry fibres for flexor muscles; posterior divisions carry fibres for extensors."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "latCord",
+   "name": "Lateral cord",
+   "kind": "Cord",
+   "fam": "lat",
+   "roots": [
+    "C5",
+    "C6",
+    "C7"
+   ],
+   "parents": [
+    "divAU",
+    "divAM"
+   ],
+   "r": 0.4,
+   "key": true,
+   "lu": 0.45,
+   "paths": [
+    [
+     [
+      -11.2,
+      2.9,
+      0.1
+     ],
+     [
+      -12.3,
+      1.75,
+      0.25
+     ],
+     [
+      -13.27,
+      0.59,
+      0.35
+     ],
+     [
+      -15.1342,
+      -1.07965,
+      0.45
+     ],
+     [
+      -16.137,
+      -2.1965,
+      0.5
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Formed by the anterior divisions of the upper and middle trunks. It lies lateral to the second part of the axillary artery, behind pectoralis minor.",
+    "clinical": "The cords are named by their position around the axillary artery, not by their position in the body."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "medCord",
+   "name": "Medial cord",
+   "kind": "Cord",
+   "fam": "med",
+   "roots": [
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "divAL"
+   ],
+   "r": 0.4,
+   "key": true,
+   "lu": 0.55,
+   "paths": [
+    [
+     [
+      -11.2,
+      1,
+      -0.95
+     ],
+     [
+      -11.6,
+      0,
+      -0.6
+     ],
+     [
+      -11.9,
+      -0.93,
+      0.05
+     ],
+     [
+      -13.6022,
+      -2.36565,
+      -0.25
+     ],
+     [
+      -14.528400000000001,
+      -3.5468,
+      -0.2
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "The continuation of the anterior division of the lower trunk. It passes behind the first part of the axillary artery to lie medial to its second part."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "postCord",
+   "name": "Posterior cord",
+   "kind": "Cord",
+   "fam": "post",
+   "roots": [
+    "C5",
+    "C6",
+    "C7",
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "divPU",
+    "divPM",
+    "divPL"
+   ],
+   "r": 0.4,
+   "key": true,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -11.2,
+      2.2,
+      -1.5
+     ],
+     [
+      -12,
+      0.8,
+      -1.2
+     ],
+     [
+      -12.6,
+      -0.15,
+      -0.95
+     ],
+     [
+      -14.2533,
+      -1.8191000000000002,
+      -1
+     ],
+     [
+      -15.2178,
+      -2.9681,
+      -1.1
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Formed by all three posterior divisions. It lies behind the second part of the axillary artery.",
+    "clinical": "Its five branches: upper subscapular, thoracodorsal, lower subscapular, axillary and radial nerves."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "musculocut",
+   "name": "Musculocutaneous nerve",
+   "label": "Musculocutaneous",
+   "kind": "Terminal branch",
+   "fam": "lat",
+   "roots": [
+    "C5",
+    "C6",
+    "C7"
+   ],
+   "parents": [
+    "latCord"
+   ],
+   "r": 0.3,
+   "key": true,
+   "lu": 0.42,
+   "paths": [
+    [
+     [
+      -16.137,
+      -2.1965,
+      0.5
+     ],
+     [
+      -18.5256,
+      -4.108700000000001,
+      0.35
+     ],
+     [
+      -21.404,
+      -6.915500000000001,
+      0.9
+     ],
+     [
+      -23.669600000000003,
+      -10.236699999999999,
+      1.2
+     ],
+     [
+      -27.5276,
+      -14.832699999999999,
+      1.35
+     ],
+     [
+      -32.6576,
+      -17.0552,
+      0.6
+     ],
+     [
+      -36.1024,
+      -20.6923,
+      0.5
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the lateral cord. It pierces coracobrachialis, then runs between biceps and brachialis.",
+    "supplies": "Coracobrachialis, biceps brachii and brachialis.",
+    "skin": "Lateral side of the forearm, as the lateral cutaneous nerve of the forearm.",
+    "clinical": "Injury weakens elbow flexion and supination, with numbness over the lateral forearm."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "latRoot",
+   "name": "Lateral root of the median nerve",
+   "label": "Lateral root",
+   "kind": "Root of the median nerve",
+   "fam": "lat",
+   "roots": [
+    "C5",
+    "C6",
+    "C7"
+   ],
+   "parents": [
+    "latCord"
+   ],
+   "r": 0.3,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -16.137,
+      -2.1965,
+      0.5
+     ],
+     [
+      -16.795099999999998,
+      -3.6027000000000005,
+      1
+     ],
+     [
+      -17.529799999999998,
+      -4.9446,
+      1.25
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the lateral cord. It joins the medial root in front of the axillary artery to form the median nerve.",
+    "clinical": "With the musculocutaneous nerve, the median nerve, the medial root and the ulnar nerve, it forms the ‘M’ you look for in front of the axillary artery in dissection."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "medRoot",
+   "name": "Medial root of the median nerve",
+   "label": "Medial root",
+   "kind": "Root of the median nerve",
+   "fam": "med",
+   "roots": [
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "medCord"
+   ],
+   "r": 0.3,
+   "lu": 0.5,
+   "paths": [
+    [
+     [
+      -14.528400000000001,
+      -3.5468,
+      -0.2
+     ],
+     [
+      -14.9525,
+      -3.9742499999999996,
+      0.9
+     ],
+     [
+      -16.016799999999996,
+      -4.3866000000000005,
+      1.35
+     ],
+     [
+      -17.529799999999998,
+      -4.9446,
+      1.25
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the medial cord. It crosses in front of the axillary artery to join the lateral root."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "median",
+   "name": "Median nerve",
+   "label": "Median",
+   "kind": "Terminal branch",
+   "fam": "median",
+   "roots": [
+    "C5",
+    "C6",
+    "C7",
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "latRoot",
+    "medRoot"
+   ],
+   "r": 0.36,
+   "key": true,
+   "lu": 0.3,
+   "paths": [
+    [
+     [
+      -17.529799999999998,
+      -4.9446,
+      1.25
+     ],
+     [
+      -20.5614,
+      -7.622800000000001,
+      0.9
+     ],
+     [
+      -23.2785,
+      -11.87075,
+      1.45
+     ],
+     [
+      -25.9956,
+      -16.1187,
+      0.9
+     ],
+     [
+      -29.517000000000003,
+      -19.691499999999998,
+      1.1
+     ],
+     [
+      -33.421400000000006,
+      -22.9428,
+      1.2
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Formed by the lateral and medial roots. It runs lateral to the brachial artery, crosses in front of it in the middle of the arm, then lies medial to it. It gives no branches in the arm.",
+    "supplies": "Most flexors of the forearm (except flexor carpi ulnaris and the medial half of flexor digitorum profundus), the pronators, the thenar muscles and the lateral two lumbricals.",
+    "skin": "Lateral part of the palm and the palmar side of the lateral three and a half fingers.",
+    "clinical": "Compression in the carpal tunnel causes tingling in the lateral fingers and thenar wasting. Injury above the elbow gives the ‘hand of benediction’ when the patient tries to make a fist."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "ulnar",
+   "name": "Ulnar nerve",
+   "label": "Ulnar",
+   "kind": "Terminal branch",
+   "fam": "med",
+   "roots": [
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "medCord"
+   ],
+   "r": 0.34,
+   "key": true,
+   "lu": 0.35,
+   "paths": [
+    [
+     [
+      -14.528400000000001,
+      -3.5468,
+      -0.2
+     ],
+     [
+      -16.947200000000002,
+      -6.7394,
+      0
+     ],
+     [
+      -20.2388,
+      -10.505099999999999,
+      -0.4
+     ],
+     [
+      -23.6836,
+      -14.142199999999999,
+      -1.4
+     ],
+     [
+      -27.3582,
+      -17.586399999999998,
+      -2.4
+     ],
+     [
+      -31.277700000000003,
+      -21.477899999999998,
+      -2.85
+     ],
+     [
+      -33.757999999999996,
+      -23.966,
+      -1.8
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the medial cord. It runs medial to the axillary and brachial arteries, pierces the medial intermuscular septum and passes behind the medial epicondyle. It gives no branches in the arm.",
+    "supplies": "Flexor carpi ulnaris, the medial half of flexor digitorum profundus and most small muscles of the hand (hypothenar muscles, interossei, medial two lumbricals, adductor pollicis).",
+    "skin": "Medial part of the hand and the medial one and a half fingers.",
+    "clinical": "Injury at the medial epicondyle (the ‘funny bone’) causes clawing of the ring and little fingers and a positive Froment’s sign. Some texts add C7 fibres reaching it from the lateral cord."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "radial",
+   "name": "Radial nerve",
+   "label": "Radial",
+   "kind": "Terminal branch",
+   "fam": "post",
+   "roots": [
+    "C5",
+    "C6",
+    "C7",
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "postCord"
+   ],
+   "r": 0.4,
+   "key": true,
+   "lu": 0.42,
+   "paths": [
+    [
+     [
+      -15.2178,
+      -2.9681,
+      -1.1
+     ],
+     [
+      -17.3,
+      -5.1375,
+      -1.5
+     ],
+     [
+      -19.9184,
+      -6.856800000000001,
+      -2.4
+     ],
+     [
+      -22.7666,
+      -8.383199999999999,
+      -2.75
+     ],
+     [
+      -26.411,
+      -10.546999999999999,
+      -2.4
+     ],
+     [
+      -29.6724,
+      -13.0323,
+      -1.4
+     ],
+     [
+      -32.397600000000004,
+      -15.9677,
+      -0.2
+     ],
+     [
+      -34.7398,
+      -19.224600000000002,
+      0.5
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "The largest branch of the plexus, from the posterior cord. It runs behind the humerus in the radial (spiral) groove with the profunda brachii artery, then passes in front of the lateral epicondyle.",
+    "supplies": "Triceps, anconeus, brachioradialis and the extensors of the wrist and fingers (through its deep branch, the posterior interosseous nerve).",
+    "skin": "Back of the arm and forearm, and the lateral part of the back of the hand.",
+    "clinical": "A fracture of the shaft of the humerus, or pressure on the arm over a chair back (‘Saturday night palsy’), causes wrist drop."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "axillary",
+   "name": "Axillary nerve",
+   "label": "Axillary",
+   "kind": "Terminal branch",
+   "fam": "post",
+   "roots": [
+    "C5",
+    "C6"
+   ],
+   "parents": [
+    "postCord"
+   ],
+   "r": 0.3,
+   "key": true,
+   "lu": 0.6,
+   "paths": [
+    [
+     [
+      -15.2178,
+      -2.9681,
+      -1.1
+     ],
+     [
+      -16.7185,
+      -3.6670000000000003,
+      -2.2
+     ],
+     [
+      -18.1124,
+      -3.1498000000000004,
+      -3.3
+     ],
+     [
+      -19.4912,
+      -1.9924000000000004,
+      -2.9
+     ],
+     [
+      -20.306399999999996,
+      -0.7858,
+      -1.6
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the posterior cord. It passes through the quadrangular space with the posterior circumflex humeral artery and winds round the surgical neck of the humerus.",
+    "supplies": "Deltoid and teres minor.",
+    "skin": "Over the lower part of the deltoid, the ‘regimental badge’ area.",
+    "clinical": "A fracture of the surgical neck or a shoulder dislocation can injure it: loss of abduction beyond the first 15°, a flattened shoulder contour and numbness over the regimental badge area."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "mcnArm",
+   "name": "Medial cutaneous nerve of the arm",
+   "label": "Medial cutaneous n. of arm",
+   "kind": "Branch",
+   "fam": "med",
+   "roots": [
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "medCord"
+   ],
+   "r": 0.17,
+   "lu": 0.7,
+   "paths": [
+    [
+     [
+      -14.528400000000001,
+      -3.5468,
+      -0.2
+     ],
+     [
+      -14.971799999999998,
+      -5.7861,
+      -0.2
+     ],
+     [
+      -17.880399999999998,
+      -9.8733,
+      0
+     ],
+     [
+      -21.248600000000003,
+      -13.5747,
+      0.3
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "The smallest branch of the plexus, from the medial cord.",
+    "skin": "Medial side of the arm."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "mcnForearm",
+   "name": "Medial cutaneous nerve of the forearm",
+   "label": "Medial cutaneous n. of forearm",
+   "kind": "Branch",
+   "fam": "med",
+   "roots": [
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "medCord"
+   ],
+   "r": 0.19,
+   "lu": 0.55,
+   "paths": [
+    [
+     [
+      -14.528400000000001,
+      -3.5468,
+      -0.2
+     ],
+     [
+      -16.250799999999998,
+      -5.36535,
+      0.95
+     ],
+     [
+      -19.8256,
+      -9.5462,
+      1.45
+     ],
+     [
+      -24.816399999999998,
+      -15.8028,
+      1.4
+     ],
+     [
+      -28.827600000000004,
+      -20.2702,
+      1.5
+     ],
+     [
+      -31.706000000000003,
+      -23.076999999999998,
+      1.6
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the medial cord. It runs with the axillary and brachial arteries before becoming superficial.",
+    "skin": "Medial side of the forearm."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "latPec",
+   "name": "Lateral pectoral nerve",
+   "label": "Lateral pectoral",
+   "kind": "Branch",
+   "fam": "lat",
+   "roots": [
+    "C5",
+    "C6",
+    "C7"
+   ],
+   "parents": [
+    "latCord"
+   ],
+   "r": 0.2,
+   "lu": 0.65,
+   "paths": [
+    [
+     [
+      -13.27,
+      0.59,
+      0.35
+     ],
+     [
+      -13,
+      1.3,
+      1.6
+     ],
+     [
+      -12.2,
+      1.2,
+      3
+     ],
+     [
+      -10.6,
+      0.2,
+      4.3
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the lateral cord. It pierces the clavipectoral fascia above pectoralis minor.",
+    "supplies": "Pectoralis major.",
+    "clinical": "Named after the cord it comes from: in the body it actually lies medial to the medial pectoral nerve."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "medPec",
+   "name": "Medial pectoral nerve",
+   "label": "Medial pectoral",
+   "kind": "Branch",
+   "fam": "med",
+   "roots": [
+    "C8",
+    "T1"
+   ],
+   "parents": [
+    "medCord"
+   ],
+   "r": 0.2,
+   "lu": 0.62,
+   "paths": [
+    [
+     [
+      -11.9,
+      -0.93,
+      0.05
+     ],
+     [
+      -12.6,
+      -1.4,
+      0.9
+     ],
+     [
+      -11.5,
+      -2.4,
+      2.4
+     ],
+     [
+      -10.4,
+      -3.4,
+      4.2
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the medial cord. It pierces pectoralis minor to reach pectoralis major.",
+    "supplies": "Pectoralis minor and pectoralis major."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "upperSub",
+   "name": "Upper subscapular nerve",
+   "label": "Upper subscapular",
+   "kind": "Branch",
+   "fam": "post",
+   "roots": [
+    "C5",
+    "C6"
+   ],
+   "parents": [
+    "postCord"
+   ],
+   "r": 0.18,
+   "lu": 0.7,
+   "paths": [
+    [
+     [
+      -12,
+      0.8,
+      -1.2
+     ],
+     [
+      -11.6,
+      0.4,
+      -2.6
+     ],
+     [
+      -10.8,
+      -0.4,
+      -4.2
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the posterior cord, passing back to the front surface of the scapula.",
+    "supplies": "Upper part of subscapularis."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "thoraco",
+   "name": "Thoracodorsal nerve",
+   "label": "Thoracodorsal",
+   "kind": "Branch",
+   "fam": "post",
+   "roots": [
+    "C6",
+    "C7",
+    "C8"
+   ],
+   "parents": [
+    "postCord"
+   ],
+   "r": 0.2,
+   "lu": 0.6,
+   "paths": [
+    [
+     [
+      -14.2533,
+      -1.8191000000000002,
+      -1
+     ],
+     [
+      -13.8,
+      -3.6,
+      -2.4
+     ],
+     [
+      -12.8,
+      -7,
+      -3.5
+     ],
+     [
+      -12,
+      -11,
+      -4.5
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the posterior cord. It runs down the posterior wall of the axilla.",
+    "supplies": "Latissimus dorsi.",
+    "clinical": "At risk during clearance of axillary lymph nodes. Surgeons keep it intact when latissimus dorsi is used as a flap for breast reconstruction."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "lowerSub",
+   "name": "Lower subscapular nerve",
+   "label": "Lower subscapular",
+   "kind": "Branch",
+   "fam": "post",
+   "roots": [
+    "C5",
+    "C6"
+   ],
+   "parents": [
+    "postCord"
+   ],
+   "r": 0.18,
+   "lu": 0.7,
+   "paths": [
+    [
+     [
+      -12.6,
+      -0.15,
+      -0.95
+     ],
+     [
+      -12.2,
+      -1.5,
+      -2.4
+     ],
+     [
+      -11.4,
+      -3.2,
+      -4.2
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the posterior cord.",
+    "supplies": "Lower part of subscapularis and teres major."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "dorsalScap",
+   "name": "Dorsal scapular nerve",
+   "label": "Dorsal scapular",
+   "kind": "Branch of a root",
+   "fam": "rtc",
+   "roots": [
+    "C5"
+   ],
+   "parents": [
+    "c5"
+   ],
+   "r": 0.18,
+   "lu": 0.55,
+   "paths": [
+    [
+     [
+      -4,
+      12.6,
+      -1.1
+     ],
+     [
+      -4,
+      11.9,
+      -2.6
+     ],
+     [
+      -5,
+      10,
+      -5
+     ],
+     [
+      -6.2,
+      6.5,
+      -7.6
+     ],
+     [
+      -6.6,
+      2,
+      -8.2
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the C5 root. It pierces scalenus medius and runs down along the medial border of the scapula.",
+    "supplies": "Rhomboid major, rhomboid minor and levator scapulae (which also gets branches from C3–C4)."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "longThoracic",
+   "name": "Long thoracic nerve",
+   "label": "Long thoracic",
+   "kind": "Branch of the roots",
+   "fam": "rtc",
+   "roots": [
+    "C5",
+    "C6",
+    "C7"
+   ],
+   "parents": [
+    "c5",
+    "c6",
+    "c7"
+   ],
+   "r": 0.2,
+   "lu": 0.62,
+   "paths": [
+    [
+     [
+      -4,
+      11.4,
+      -1.1
+     ],
+     [
+      -4.5,
+      9.6,
+      -2.9
+     ],
+     [
+      -5.6,
+      6.2,
+      -3.4
+     ],
+     [
+      -7.6,
+      2.4,
+      -3.2
+     ],
+     [
+      -10,
+      1,
+      -2.9
+     ],
+     [
+      -11,
+      -3,
+      -2.6
+     ],
+     [
+      -11.8,
+      -9,
+      -2.2
+     ]
+    ],
+    [
+     [
+      -4,
+      12.6,
+      -1.1
+     ],
+     [
+      -4.3,
+      11,
+      -2.3
+     ],
+     [
+      -4.5,
+      9.6,
+      -2.9
+     ]
+    ],
+    [
+     [
+      -4.2,
+      9.2,
+      -1.1
+     ],
+     [
+      -4.6,
+      8.2,
+      -2.6
+     ],
+     [
+      -5.6,
+      6.2,
+      -3.4
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "From the C5, C6 and C7 roots. It runs down behind the plexus and then on the outer surface of serratus anterior, on the medial wall of the axilla.",
+    "supplies": "Serratus anterior.",
+    "clinical": "Injury (for example during mastectomy, or from carrying heavy loads on the shoulder) causes winging of the scapula, best seen when the patient pushes against a wall."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "suprascap",
+   "name": "Suprascapular nerve",
+   "label": "Suprascapular",
+   "kind": "Branch of a trunk",
+   "fam": "rtc",
+   "roots": [
+    "C5",
+    "C6"
+   ],
+   "parents": [
+    "upperTrunk"
+   ],
+   "r": 0.22,
+   "lu": 0.55,
+   "paths": [
+    [
+     [
+      -7.6,
+      8,
+      -0.7
+     ],
+     [
+      -9,
+      7.2,
+      -2.2
+     ],
+     [
+      -10.4,
+      5.4,
+      -3.8
+     ],
+     [
+      -11,
+      4.6,
+      -4.9
+     ],
+     [
+      -12.2,
+      3.6,
+      -6
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the upper trunk. It runs laterally and passes through the suprascapular notch, below the superior transverse scapular ligament.",
+    "supplies": "Supraspinatus and infraspinatus.",
+    "clinical": "Injury weakens the start of abduction and lateral rotation of the shoulder."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "nSubclavius",
+   "name": "Nerve to subclavius",
+   "label": "Nerve to subclavius",
+   "kind": "Branch of a trunk",
+   "fam": "rtc",
+   "roots": [
+    "C5",
+    "C6"
+   ],
+   "parents": [
+    "upperTrunk"
+   ],
+   "r": 0.15,
+   "lu": 0.6,
+   "paths": [
+    [
+     [
+      -7.6,
+      8,
+      -0.7
+     ],
+     [
+      -8.5,
+      6.2,
+      0.2
+     ],
+     [
+      -9.4,
+      4.4,
+      1
+     ],
+     [
+      -10,
+      3,
+      1.9
+     ]
+    ]
+   ],
+   "info": {
+    "lies": "Branch of the upper trunk. It passes down in front of the plexus and the subclavian artery to the underside of the clavicle.",
+    "supplies": "Subclavius.",
+    "clinical": "It sometimes gives an accessory phrenic nerve, which joins the phrenic nerve."
+   },
+   "layer": "nerves"
+  },
+  {
+   "id": "clavicle",
+   "name": "Clavicle",
+   "layer": "bones",
+   "kind": "Bone",
+   "color": "#E6DCC6",
+   "cad": "#D9CBAE",
+   "op": 1,
+   "landmark": true,
+   "anchor": [
+    -10,
+    3.5,
+    2.7
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -1.3,
+       1.4,
+       4.1
+      ],
+      [
+       -5,
+       2.4,
+       3.6
+      ],
+      [
+       -8.5,
+       3.3,
+       3
+      ],
+      [
+       -12,
+       4,
+       1.6
+      ],
+      [
+       -14.6,
+       4.5,
+       0
+      ],
+      [
+       -16.6,
+       4.7,
+       -1
+      ]
+     ],
+     "r": 0.62,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "The divisions of the plexus lie behind its middle third. Subclavius hangs from its underside.",
+    "clinical": "Fragments of a fractured clavicle can injure the plexus or the subclavian vessels."
+   }
+  },
+  {
+   "id": "rib1",
+   "name": "First rib",
+   "layer": "bones",
+   "kind": "Bone",
+   "color": "#E6DCC6",
+   "cad": "#D9CBAE",
+   "op": 1,
+   "landmark": true,
+   "anchor": [
+    -7.9,
+    3.2,
+    0.6
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -1.3,
+       6.8,
+       -2.6
+      ],
+      [
+       -3,
+       6.6,
+       -3.3
+      ],
+      [
+       -5.5,
+       5.5,
+       -2.6
+      ],
+      [
+       -7.2,
+       4.2,
+       -1
+      ],
+      [
+       -8,
+       3,
+       0.6
+      ],
+      [
+       -7.6,
+       1.8,
+       2.4
+      ],
+      [
+       -5.2,
+       1,
+       3.6
+      ],
+      [
+       -1.6,
+       0.6,
+       4.3
+      ]
+     ],
+     "r": 0.45,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "The lower trunk rests on it behind the subclavian artery. The axillary artery begins at its outer border.",
+    "clinical": "An extra cervical rib above it can compress the lower trunk."
+   }
+  },
+  {
+   "id": "ribs",
+   "name": "Ribs 2–6",
+   "layer": "bones",
+   "kind": "Bone",
+   "color": "#E6DCC6",
+   "cad": "#D9CBAE",
+   "op": 0.55,
+   "anchor": [
+    -10.6,
+    -6.5,
+    -0.5
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -1.3082271490246151,
+       -1,
+       4.936742446820207
+      ],
+      [
+       -2.2740658186368767,
+       -0.8275862068965516,
+       4.806922220793977
+      ],
+      [
+       -3.214989347261286,
+       -0.6551724137931036,
+       4.608002035108405
+      ],
+      [
+       -4.1206887798173275,
+       -0.48275862068965525,
+       4.342161300944586
+      ],
+      [
+       -4.981241083792126,
+       -0.31034482758620685,
+       4.012312625016769
+      ],
+      [
+       -5.787217868061188,
+       -0.13793103448275867,
+       3.6220698984436925
+      ],
+      [
+       -6.5297886823145745,
+       0.034482758620689724,
+       3.1757087022012325
+      ],
+      [
+       -7.200817765318393,
+       0.2068965517241379,
+       2.6781194629625062
+      ],
+      [
+       -7.792953182017393,
+       0.3793103448275863,
+       2.134753872559854
+      ],
+      [
+       -8.299707372873913,
+       0.5517241379310345,
+       1.5515651581082905
+      ],
+      [
+       -8.715528232927802,
+       0.7241379310344828,
+       0.9349428572034277
+      ],
+      [
+       -9.035859941820197,
+       0.896551724137931,
+       0.29164281281049464
+      ],
+      [
+       -9.257192878314756,
+       1.0689655172413794,
+       -0.37128684516495225
+      ],
+      [
+       -9.377102072442348,
+       1.2413793103448276,
+       -1.046582920663186
+      ],
+      [
+       -9.394273773979501,
+       1.4137931034482758,
+       -1.7268467285662563
+      ],
+      [
+       -9.308519846170762,
+       1.5862068965517242,
+       -2.404625156240425
+      ],
+      [
+       -9.120779826994367,
+       1.7586206896551724,
+       -3.0724923213978403
+      ],
+      [
+       -8.83311063538754,
+       1.9310344827586206,
+       -3.7231309316168466
+      ],
+      [
+       -8.44866403521217,
+       2.103448275862069,
+       -4.349412454129004
+      ]
+     ],
+     "r": 0.36,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -1.405648319696661,
+       -4,
+       4.936742446820207
+      ],
+      [
+       -2.443411145556644,
+       -3.8275862068965516,
+       4.806922220793977
+      ],
+      [
+       -3.4544034475892538,
+       -3.6551724137931036,
+       4.608002035108405
+      ],
+      [
+       -4.427548582569681,
+       -3.4827586206896552,
+       4.342161300944586
+      ],
+      [
+       -5.352184568755369,
+       -3.310344827586207,
+       4.012312625016769
+      ],
+      [
+       -6.218180900789148,
+       -3.137931034482759,
+       3.6220698984436925
+      ],
+      [
+       -7.016049541635872,
+       -2.9655172413793105,
+       3.1757087022012325
+      ],
+      [
+       -7.737048875501678,
+       -2.793103448275862,
+       2.6781194629625062
+      ],
+      [
+       -8.373279482805922,
+       -2.6206896551724137,
+       2.134753872559854
+      ],
+      [
+       -8.91777068787516,
+       -2.4482758620689653,
+       1.5515651581082905
+      ],
+      [
+       -9.364556931124552,
+       -2.2758620689655173,
+       0.9349428572034277
+      ],
+      [
+       -9.708743128977021,
+       -2.103448275862069,
+       0.29164281281049464
+      ],
+      [
+       -9.9465583054233,
+       -1.9310344827586206,
+       -0.37128684516495225
+      ],
+      [
+       -10.075396907624224,
+       -1.7586206896551724,
+       -1.046582920663186
+      ],
+      [
+       -10.093847352892867,
+       -1.5862068965517242,
+       -1.7268467285662563
+      ],
+      [
+       -10.00170749428986,
+       -1.4137931034482758,
+       -2.404625156240425
+      ],
+      [
+       -9.799986835387564,
+       -1.2413793103448276,
+       -3.0724923213978403
+      ],
+      [
+       -9.490895469937675,
+       -1.0689655172413794,
+       -3.7231309316168466
+      ],
+      [
+       -9.077819867621585,
+       -0.896551724137931,
+       -4.349412454129004
+      ]
+     ],
+     "r": 0.36,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -1.4752348701766935,
+       -7,
+       4.936742446820207
+      ],
+      [
+       -2.5643720933564778,
+       -6.827586206896552,
+       4.806922220793977
+      ],
+      [
+       -3.6254135192520884,
+       -6.655172413793103,
+       4.608002035108405
+      ],
+      [
+       -4.646734155964221,
+       -6.482758620689655,
+       4.342161300944586
+      ],
+      [
+       -5.617144200871972,
+       -6.310344827586206,
+       4.012312625016769
+      ],
+      [
+       -6.526011638451978,
+       -6.137931034482759,
+       3.6220698984436925
+      ],
+      [
+       -7.3633787268653705,
+       -5.9655172413793105,
+       3.1757087022012325
+      ],
+      [
+       -8.120071097061167,
+       -5.793103448275862,
+       2.6781194629625062
+      ],
+      [
+       -8.787798269083442,
+       -5.620689655172414,
+       2.134753872559854
+      ],
+      [
+       -9.359244484304625,
+       -5.448275862068965,
+       1.5515651581082905
+      ],
+      [
+       -9.828148858407946,
+       -5.275862068965517,
+       0.9349428572034277
+      ],
+      [
+       -10.18937397694618,
+       -5.103448275862069,
+       0.29164281281049464
+      ],
+      [
+       -10.438962181929405,
+       -4.931034482758621,
+       -0.37128684516495225
+      ],
+      [
+       -10.574178932754137,
+       -4.758620689655173,
+       -1.046582920663186
+      ],
+      [
+       -10.593542766402415,
+       -4.586206896551724,
+       -1.7268467285662563
+      ],
+      [
+       -10.496841528660646,
+       -4.413793103448276,
+       -2.404625156240425
+      ],
+      [
+       -10.285134698525562,
+       -4.241379310344827,
+       -3.0724923213978403
+      ],
+      [
+       -9.960741780330629,
+       -4.068965517241379,
+       -3.7231309316168466
+      ],
+      [
+       -9.52721689077117,
+       -3.896551724137931,
+       -4.349412454129004
+      ]
+     ],
+     "r": 0.36,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -1.5309041105607197,
+       -10,
+       4.936742446820207
+      ],
+      [
+       -2.661140851596345,
+       -9.827586206896552,
+       4.806922220793977
+      ],
+      [
+       -3.762221576582356,
+       -9.655172413793103,
+       4.608002035108405
+      ],
+      [
+       -4.822082614679852,
+       -9.482758620689655,
+       4.342161300944586
+      ],
+      [
+       -5.829111906565254,
+       -9.310344827586206,
+       4.012312625016769
+      ],
+      [
+       -6.772276228582241,
+       -9.137931034482758,
+       3.6220698984436925
+      ],
+      [
+       -7.64124207504897,
+       -8.96551724137931,
+       3.1757087022012325
+      ],
+      [
+       -8.426488874308758,
+       -8.793103448275861,
+       2.6781194629625062
+      ],
+      [
+       -9.119413298105458,
+       -8.620689655172413,
+       2.134753872559854
+      ],
+      [
+       -9.712423521448196,
+       -8.448275862068966,
+       1.5515651581082905
+      ],
+      [
+       -10.19902240023466,
+       -8.275862068965518,
+       0.9349428572034277
+      ],
+      [
+       -10.573878655321508,
+       -8.10344827586207,
+       0.29164281281049464
+      ],
+      [
+       -10.832885283134289,
+       -7.931034482758621,
+       -0.37128684516495225
+      ],
+      [
+       -10.973204552858066,
+       -7.758620689655173,
+       -1.046582920663186
+      ],
+      [
+       -10.993299097210054,
+       -7.586206896551724,
+       -1.7268467285662563
+      ],
+      [
+       -10.892948756157274,
+       -7.413793103448276,
+       -2.404625156240425
+      ],
+      [
+       -10.67325298903596,
+       -7.241379310344827,
+       -3.0724923213978403
+      ],
+      [
+       -10.336618828644992,
+       -7.068965517241379,
+       -3.7231309316168466
+      ],
+      [
+       -9.886734509290836,
+       -6.896551724137931,
+       -4.349412454129004
+      ]
+     ],
+     "r": 0.36,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -1.5587387307527327,
+       -13,
+       4.936742446820207
+      ],
+      [
+       -2.7095252307162783,
+       -12.827586206896552,
+       4.806922220793977
+      ],
+      [
+       -3.8306256052474894,
+       -12.655172413793103,
+       4.608002035108405
+      ],
+      [
+       -4.909756844037666,
+       -12.482758620689655,
+       4.342161300944586
+      ],
+      [
+       -5.935095759411895,
+       -12.310344827586206,
+       4.012312625016769
+      ],
+      [
+       -6.895408523647372,
+       -12.137931034482758,
+       3.6220698984436925
+      ],
+      [
+       -7.7801737491407685,
+       -11.96551724137931,
+       3.1757087022012325
+      ],
+      [
+       -8.579697762932554,
+       -11.793103448275861,
+       2.6781194629625062
+      ],
+      [
+       -9.285220812616467,
+       -11.620689655172413,
+       2.134753872559854
+      ],
+      [
+       -9.88901304001998,
+       -11.448275862068966,
+       1.5515651581082905
+      ],
+      [
+       -10.384459171148018,
+       -11.275862068965518,
+       0.9349428572034277
+      ],
+      [
+       -10.76613099450917,
+       -11.10344827586207,
+       0.29164281281049464
+      ],
+      [
+       -11.029846833736729,
+       -10.931034482758621,
+       -0.37128684516495225
+      ],
+      [
+       -11.17271736291003,
+       -10.758620689655173,
+       -1.046582920663186
+      ],
+      [
+       -11.193177262613872,
+       -10.586206896551724,
+       -1.7268467285662563
+      ],
+      [
+       -11.091002369905587,
+       -10.413793103448276,
+       -2.404625156240425
+      ],
+      [
+       -10.86731213429116,
+       -10.241379310344827,
+       -3.0724923213978403
+      ],
+      [
+       -10.524557352802173,
+       -10.068965517241379,
+       -3.7231309316168466
+      ],
+      [
+       -10.06649331855067,
+       -9.89655172413793,
+       -4.349412454129004
+      ]
+     ],
+     "r": 0.36,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Form the medial wall of the axilla, covered by serratus anterior."
+   }
+  },
+  {
+   "id": "sternum",
+   "name": "Sternum",
+   "layer": "bones",
+   "kind": "Bone",
+   "color": "#E6DCC6",
+   "cad": "#D9CBAE",
+   "op": 0.85,
+   "anchor": [
+    0,
+    -6,
+    5.3
+   ],
+   "boxes": [
+    {
+     "c": [
+      0,
+      -6.2,
+      4.85
+     ],
+     "s": [
+      2.8,
+      16.4,
+      0.9
+     ]
+    }
+   ],
+   "info": {
+    "lies": "Pectoralis major and the sternal head of sternocleidomastoid arise from its front. The sternal angle marks the second costal cartilage."
+   }
+  },
+  {
+   "id": "vertebrae",
+   "name": "Vertebrae C4 to T2",
+   "layer": "bones",
+   "kind": "Bone",
+   "color": "#E6DCC6",
+   "cad": "#D9CBAE",
+   "op": 0.85,
+   "anchor": [
+    0,
+    11,
+    -2.4
+   ],
+   "cyls": [
+    {
+     "c": [
+      0,
+      15,
+      -2.4
+     ],
+     "r": 1.25,
+     "h": 1.5
+    },
+    {
+     "c": [
+      0,
+      13,
+      -2.4
+     ],
+     "r": 1.25,
+     "h": 1.5
+    },
+    {
+     "c": [
+      0,
+      11,
+      -2.4
+     ],
+     "r": 1.25,
+     "h": 1.5
+    },
+    {
+     "c": [
+      0,
+      9,
+      -2.4
+     ],
+     "r": 1.25,
+     "h": 1.5
+    },
+    {
+     "c": [
+      0,
+      7,
+      -2.4
+     ],
+     "r": 1.25,
+     "h": 1.5
+    },
+    {
+     "c": [
+      0,
+      5,
+      -2.4
+     ],
+     "r": 1.25,
+     "h": 1.5
+    }
+   ],
+   "boxes": [
+    {
+     "c": [
+      -1.7,
+      15,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      1.7,
+      15,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      -1.7,
+      13,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      1.7,
+      13,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      -1.7,
+      11,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      1.7,
+      11,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      -1.7,
+      9,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      1.7,
+      9,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      -1.7,
+      7,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      1.7,
+      7,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      -1.7,
+      5,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    },
+    {
+     "c": [
+      1.7,
+      5,
+      -2.1
+     ],
+     "s": [
+      1.4,
+      0.5,
+      0.6
+     ]
+    }
+   ],
+   "info": {
+    "lies": "Each cervical root leaves above the vertebra of the same number; C8 leaves between C7 and T1, and T1 below the T1 vertebra."
+   }
+  },
+  {
+   "id": "humerus",
+   "name": "Humerus",
+   "layer": "bones",
+   "kind": "Bone",
+   "color": "#E6DCC6",
+   "cad": "#D9CBAE",
+   "op": 1,
+   "landmark": true,
+   "anchor": [
+    -26.288,
+    -11.956,
+    -1.2
+   ],
+   "spheres": [
+    {
+     "c": [
+      -16.3064,
+      0.5572,
+      -1.6
+     ],
+     "r": 2
+    },
+    {
+     "c": [
+      -31.507500000000004,
+      -21.285,
+      -1.2
+     ],
+     "r": 0.85
+    },
+    {
+     "c": [
+      -34.265100000000004,
+      -18.9702,
+      -1.2
+     ],
+     "r": 0.65
+    }
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -16.8482,
+       -0.5549,
+       -1.45
+      ],
+      [
+       -22.43,
+       -7.36,
+       -1.25
+      ],
+      [
+       -28.86,
+       -15.02,
+       -1.2
+      ],
+      [
+       -32.769999999999996,
+       -19.833499999999997,
+       -1.2
+      ]
+     ],
+     "r": 0.95
+    },
+    {
+     "pts": [
+      [
+       -34.562,
+       -19.634999999999998,
+       -0.9
+      ],
+      [
+       -32.3926,
+       -21.7172,
+       -0.9
+      ]
+     ],
+     "r": 0.75,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Three nerves touch it: the axillary nerve at the surgical neck, the radial nerve in the spiral groove, and the ulnar nerve behind the medial epicondyle.",
+    "clinical": "Fractures at these three sites are classic exam questions: each injures a different nerve."
+   }
+  },
+  {
+   "id": "scapula",
+   "name": "Scapula",
+   "layer": "bones",
+   "kind": "Bone",
+   "color": "#EDE4D0",
+   "cad": "#D9CBAE",
+   "op": 0.82,
+   "anchor": [
+    -10.4,
+    -6,
+    -5.8
+   ],
+   "plate": {
+    "c": [
+     10.6,
+     -1.5,
+     -5.4
+    ],
+    "ring": [
+     [
+      14.6,
+      2,
+      -2.2
+     ],
+     [
+      14.4,
+      -1,
+      -2.4
+     ],
+     [
+      12.6,
+      -6,
+      -4.6
+     ],
+     [
+      10.6,
+      -12.5,
+      -6.8
+     ],
+     [
+      7.2,
+      -4,
+      -7.6
+     ],
+     [
+      7,
+      4.8,
+      -7
+     ],
+     [
+      10.6,
+      4.4,
+      -5
+     ]
+    ],
+    "shrink": 0,
+    "dz": 0
+   },
+   "tubes": [
+    {
+     "pts": [
+      [
+       -13.6,
+       2.9,
+       -2.6
+      ],
+      [
+       -13.4,
+       3.3,
+       -1.2
+      ],
+      [
+       -13.9,
+       2.4,
+       0.8
+      ],
+      [
+       -14,
+       2,
+       1.6
+      ]
+     ],
+     "r": 0.45,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -8,
+       2.6,
+       -8.4
+      ],
+      [
+       -12.5,
+       3.2,
+       -7.6
+      ],
+      [
+       -15.5,
+       4.2,
+       -4.6
+      ],
+      [
+       -17.4,
+       4.5,
+       -2.2
+      ],
+      [
+       -17.6,
+       4.3,
+       -0.9
+      ]
+     ],
+     "r": 0.5,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Subscapularis covers its front surface and forms the posterior wall of the axilla. The suprascapular nerve passes through the notch on its upper border; pectoralis minor, coracobrachialis and the short head of biceps attach to the coracoid process."
+   }
+  },
+  {
+   "id": "pecMajor",
+   "name": "Pectoralis major",
+   "layer": "supmus",
+   "kind": "Muscle",
+   "color": "#B04C3F",
+   "cad": "#8B5444",
+   "op": 0.95,
+   "landmark": true,
+   "anchor": [
+    -8.5,
+    -7,
+    6
+   ],
+   "fold": 2.6,
+   "sheet": {
+    "o": [
+     [
+      -8,
+      3.4,
+      3.9
+     ],
+     [
+      -4.5,
+      2.9,
+      4.4
+     ],
+     [
+      -1.6,
+      2,
+      5.2
+     ],
+     [
+      -1.3,
+      -3,
+      5.6
+     ],
+     [
+      -1.3,
+      -8,
+      5.6
+     ],
+     [
+      -2.2,
+      -12.5,
+      5.3
+     ],
+     [
+      -5,
+      -14.5,
+      4.6
+     ]
+    ],
+    "i": [
+     [
+      -18.8264,
+      -2.2893000000000003,
+      0.8
+     ],
+     [
+      -20.3053,
+      -4.0511,
+      0.8
+     ],
+     [
+      -21.848499999999998,
+      -5.8895,
+      0.8
+     ]
+    ],
+    "bulge": 2.6
+   },
+   "info": {
+    "lies": "Forms the front wall of the axilla. It arises from the medial half of the clavicle, the sternum and the upper costal cartilages and inserts into the lateral lip of the intertubercular groove.",
+    "supplies": "Supplied by the lateral and medial pectoral nerves."
+   }
+  },
+  {
+   "id": "deltoid",
+   "name": "Deltoid",
+   "layer": "supmus",
+   "kind": "Muscle",
+   "color": "#B9553F",
+   "cad": "#8E5545",
+   "op": 0.96,
+   "landmark": true,
+   "anchor": [
+    -21.896,
+    -1.2795,
+    -0.6
+   ],
+   "custom": "deltoid",
+   "fold": 1.15,
+   "info": {
+    "lies": "From the lateral third of the clavicle, the acromion and the spine of the scapula to the deltoid tuberosity. The deltopectoral groove separates it from pectoralis major.",
+    "supplies": "Supplied by the axillary nerve.",
+    "clinical": "Reflect it downward from its origin to see the axillary nerve winding round the surgical neck on its deep surface."
+   }
+  },
+  {
+   "id": "scm",
+   "name": "Sternocleidomastoid",
+   "label": "Sternocleidomastoid",
+   "layer": "supmus",
+   "kind": "Muscle",
+   "color": "#B04C3F",
+   "cad": "#8B5444",
+   "op": 0.95,
+   "landmark": true,
+   "anchor": [
+    -3.3,
+    10,
+    2.5
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -0.9,
+       2.4,
+       4.7
+      ],
+      [
+       -1.9,
+       6,
+       3.5
+      ],
+      [
+       -3.1,
+       9,
+       2.6
+      ],
+      [
+       -3.8,
+       11.5,
+       2.05
+      ],
+      [
+       -4.3,
+       13.5,
+       1.2
+      ],
+      [
+       -4.6,
+       16.5,
+       -0.6
+      ]
+     ],
+     "r": 0.66,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -3.6,
+       2.3,
+       3.9
+      ],
+      [
+       -3.5,
+       5.5,
+       3.2
+      ],
+      [
+       -3.2,
+       8.5,
+       2.6
+      ]
+     ],
+     "r": 0.55,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "From the manubrium and the medial third of the clavicle to the mastoid process. Its posterior border is the front boundary of the posterior triangle.",
+    "supplies": "Supplied by the spinal accessory nerve."
+   }
+  },
+  {
+   "id": "trapezius",
+   "name": "Trapezius",
+   "layer": "supmus",
+   "kind": "Muscle",
+   "color": "#A9493D",
+   "cad": "#83503F",
+   "op": 0.95,
+   "landmark": true,
+   "anchor": [
+    -7.5,
+    8.3,
+    -5.6
+   ],
+   "sheet": {
+    "o": [
+     [
+      -0.5,
+      18,
+      -5.4
+     ],
+     [
+      -0.5,
+      13,
+      -5.6
+     ],
+     [
+      -0.5,
+      8,
+      -6.4
+     ],
+     [
+      -0.5,
+      3,
+      -7.8
+     ],
+     [
+      -0.5,
+      -3,
+      -8.4
+     ]
+    ],
+    "i": [
+     [
+      -12.5,
+      4.9,
+      0.6
+     ],
+     [
+      -16.4,
+      5.2,
+      -1.2
+     ],
+     [
+      -17.2,
+      4.9,
+      -2.6
+     ],
+     [
+      -13.5,
+      4,
+      -7.4
+     ],
+     [
+      -9,
+      2.8,
+      -8.6
+     ]
+    ],
+    "bulge": 1.2,
+    "bdir": [
+     0,
+     0.35,
+     -1
+    ]
+   },
+   "info": {
+    "lies": "Its anterior border is the back boundary of the posterior triangle. The upper fibres insert on the lateral third of the clavicle, the acromion and the spine of the scapula.",
+    "supplies": "Supplied by the spinal accessory nerve, which crosses the posterior triangle."
+   }
+  },
+  {
+   "id": "biceps",
+   "name": "Biceps brachii",
+   "label": "Biceps",
+   "layer": "supmus",
+   "kind": "Muscle",
+   "color": "#BC5948",
+   "cad": "#8B5444",
+   "op": 0.95,
+   "anchor": [
+    -24.244100000000003,
+    -9.75445,
+    3.9
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -14,
+       2,
+       1.6
+      ],
+      [
+       -17.4694,
+       -2.3838,
+       2.4
+      ],
+      [
+       -21.557199999999998,
+       -6.7869,
+       2.7
+      ],
+      [
+       -26.2114,
+       -12.020299999999999,
+       2.7
+      ],
+      [
+       -30.3758,
+       -16.359099999999998,
+       2.2
+      ],
+      [
+       -33.820600000000006,
+       -19.9962,
+       0.9
+      ]
+     ],
+     "r": 1.2,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Front of the arm. The musculocutaneous nerve runs between it and brachialis.",
+    "supplies": "Supplied by the musculocutaneous nerve."
+   }
+  },
+  {
+   "id": "triceps",
+   "name": "Triceps brachii",
+   "label": "Triceps",
+   "layer": "supmus",
+   "kind": "Muscle",
+   "color": "#B04C3F",
+   "cad": "#8B5444",
+   "op": 0.95,
+   "anchor": [
+    -24.7722,
+    -10.6169,
+    -6
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -14.190679999999999,
+       -2.21116,
+       -3.2
+      ],
+      [
+       -18.6324,
+       -5.324800000000001,
+       -4.4
+      ],
+      [
+       -23.4096,
+       -9.149199999999999,
+       -4.6
+      ],
+      [
+       -28.86,
+       -15.02,
+       -4.1
+      ],
+      [
+       -32.641400000000004,
+       -19.6803,
+       -3.3
+      ]
+     ],
+     "r": 1.3,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Back of the arm. The radial nerve and profunda brachii artery run in the spiral groove between its lateral and medial heads.",
+    "supplies": "Supplied by the radial nerve."
+   }
+  },
+  {
+   "id": "pecMinor",
+   "name": "Pectoralis minor",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#C76552",
+   "cad": "#94594A",
+   "op": 0.95,
+   "landmark": true,
+   "anchor": [
+    -11.2,
+    -2.8,
+    2.9
+   ],
+   "fold": 2.6,
+   "sheet": {
+    "o": [
+     [
+      -7.6,
+      -3.5,
+      2.8
+     ],
+     [
+      -8.2,
+      -6,
+      2.6
+     ],
+     [
+      -8.7,
+      -8.5,
+      2.4
+     ]
+    ],
+    "i": [
+     [
+      -13.6,
+      2.1,
+      1.8
+     ],
+     [
+      -13.9,
+      1.95,
+      1.65
+     ],
+     [
+      -14.2,
+      1.8,
+      1.5
+     ]
+    ],
+    "bulge": 0.5
+   },
+   "info": {
+    "lies": "From ribs 3–5 to the coracoid process. It crosses in front of the axillary artery and divides it into three parts.",
+    "clinical": "The key landmark of the axilla: the cords are named by their position around the second part of the artery, which lies behind this muscle. The medial pectoral nerve pierces it."
+   }
+  },
+  {
+   "id": "antScalene",
+   "name": "Scalenus anterior",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#B75546",
+   "cad": "#8B5444",
+   "op": 0.95,
+   "landmark": true,
+   "anchor": [
+    -5.2,
+    9,
+    1
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -2.9,
+       15.2,
+       0.1
+      ],
+      [
+       -4,
+       11.5,
+       0.5
+      ],
+      [
+       -5.8,
+       7.2,
+       1.1
+      ],
+      [
+       -7.2,
+       3.6,
+       1.3
+      ]
+     ],
+     "r": 0.62,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Runs from the transverse processes of C3–C6 to the scalene tubercle of the first rib. The roots and the subclavian artery pass behind it; the subclavian vein passes in front. The phrenic nerve runs down its front surface."
+   }
+  },
+  {
+   "id": "midScalene",
+   "name": "Scalenus medius",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#A94E41",
+   "cad": "#8B5444",
+   "op": 0.95,
+   "landmark": true,
+   "anchor": [
+    -3.4,
+    11.6,
+    -2.6
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -2.4,
+       15.6,
+       -2.6
+      ],
+      [
+       -3.4,
+       11.2,
+       -2.6
+      ],
+      [
+       -4.9,
+       7.6,
+       -2.5
+      ],
+      [
+       -6.4,
+       4.8,
+       -2.4
+      ]
+     ],
+     "r": 0.72,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "The roots emerge in the gap between this muscle and scalenus anterior, the site of an interscalene block. The dorsal scapular and long thoracic nerves pierce it."
+   }
+  },
+  {
+   "id": "omohyoid",
+   "name": "Omohyoid (inferior belly)",
+   "label": "Omohyoid",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#C06A5A",
+   "cad": "#93594A",
+   "op": 0.95,
+   "landmark": true,
+   "anchor": [
+    -8.6,
+    7,
+    0.9
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -10.8,
+       4.6,
+       -4.6
+      ],
+      [
+       -10.2,
+       5.6,
+       -2.2
+      ],
+      [
+       -8.6,
+       7,
+       1
+      ],
+      [
+       -6.4,
+       7.4,
+       2.35
+      ],
+      [
+       -4,
+       7.8,
+       2.3
+      ]
+     ],
+     "r": 0.35,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "The inferior belly crosses the lower part of the posterior triangle, superficial to the trunks, on its way from the upper border of the scapula to its tendon under sternocleidomastoid.",
+    "clinical": "It divides the posterior triangle into an upper occipital part and a lower subclavian part; the trunks of the plexus lie in the subclavian part."
+   }
+  },
+  {
+   "id": "subclavius",
+   "name": "Subclavius",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#C06A5A",
+   "cad": "#93594A",
+   "op": 0.95,
+   "anchor": [
+    -6,
+    2,
+    2.9
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -2.6,
+       1.2,
+       3.4
+      ],
+      [
+       -6,
+       2,
+       2.9
+      ],
+      [
+       -10,
+       3,
+       2.1
+      ]
+     ],
+     "r": 0.4,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Small muscle running from the first rib to the underside of the clavicle. The clavipectoral fascia splits to enclose it.",
+    "supplies": "Supplied by the nerve to subclavius."
+   }
+  },
+  {
+   "id": "coraco",
+   "name": "Coracobrachialis",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#C4685A",
+   "cad": "#93594A",
+   "op": 0.95,
+   "landmark": true,
+   "anchor": [
+    -19.811600000000002,
+    -5.640700000000001,
+    0.5
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -14,
+       2,
+       1.6
+      ],
+      [
+       -16.1834,
+       -0.8518,
+       1.6
+      ],
+      [
+       -19.2069,
+       -4.84255,
+       0.6
+      ],
+      [
+       -23.5164,
+       -10.3653,
+       -0.4
+      ]
+     ],
+     "r": 0.6,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "From the tip of the coracoid process to the middle of the humerus. The musculocutaneous nerve pierces it, which makes it a reliable landmark for finding that nerve."
+   }
+  },
+  {
+   "id": "serratus",
+   "name": "Serratus anterior",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#B65E4E",
+   "cad": "#8C5546",
+   "op": 0.95,
+   "anchor": [
+    -11.8,
+    -6,
+    -1.6
+   ],
+   "sheet": {
+    "o": [
+     [
+      -9.4,
+      1.2,
+      -0.6
+     ],
+     [
+      -10.4,
+      -3,
+      -0.5
+     ],
+     [
+      -11.2,
+      -7,
+      -0.7
+     ],
+     [
+      -11.6,
+      -11,
+      -0.9
+     ],
+     [
+      -11.6,
+      -15,
+      -1.1
+     ]
+    ],
+    "i": [
+     [
+      -7.1,
+      4.6,
+      -6.7
+     ],
+     [
+      -7.3,
+      0,
+      -7.3
+     ],
+     [
+      -7.6,
+      -4,
+      -7.4
+     ],
+     [
+      -9,
+      -9,
+      -7.1
+     ],
+     [
+      -10.4,
+      -12.6,
+      -6.7
+     ]
+    ],
+    "bulge": 1.7,
+    "bdir": [
+     1,
+     0,
+     -0.15
+    ]
+   },
+   "info": {
+    "lies": "Covers the side of the chest wall and forms the medial wall of the axilla, running back to the medial border of the scapula. The long thoracic nerve lies on its outer surface.",
+    "supplies": "Supplied by the long thoracic nerve."
+   }
+  },
+  {
+   "id": "subscap",
+   "name": "Subscapularis",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#B65E4E",
+   "cad": "#8C5546",
+   "op": 0.95,
+   "anchor": [
+    -11,
+    -3,
+    -4.3
+   ],
+   "plate": {
+    "c": [
+     10.6,
+     -1.5,
+     -5.4
+    ],
+    "ring": [
+     [
+      14.6,
+      2,
+      -2.2
+     ],
+     [
+      14.4,
+      -1,
+      -2.4
+     ],
+     [
+      12.6,
+      -6,
+      -4.6
+     ],
+     [
+      10.6,
+      -12.5,
+      -6.8
+     ],
+     [
+      7.2,
+      -4,
+      -7.6
+     ],
+     [
+      7,
+      4.8,
+      -7
+     ],
+     [
+      10.6,
+      4.4,
+      -5
+     ]
+    ],
+    "shrink": 0.12,
+    "dz": 0.7
+   },
+   "info": {
+    "lies": "Covers the front of the scapula and forms most of the posterior wall of the axilla.",
+    "supplies": "Supplied by the upper and lower subscapular nerves."
+   }
+  },
+  {
+   "id": "clavipectoral",
+   "name": "Clavipectoral fascia",
+   "layer": "deepmus",
+   "kind": "Fascia",
+   "color": "#E6E1D5",
+   "cad": "#E6E1D5",
+   "op": 0.55,
+   "noCover": true,
+   "anchor": [
+    -11,
+    1.6,
+    2.8
+   ],
+   "sheet": {
+    "o": [
+     [
+      -7.2,
+      2.2,
+      2.9
+     ],
+     [
+      -10,
+      2.9,
+      2.5
+     ],
+     [
+      -12.8,
+      3.4,
+      2.1
+     ]
+    ],
+    "i": [
+     [
+      -9.2,
+      -1.3,
+      2.95
+     ],
+     [
+      -11.3,
+      0.2,
+      2.65
+     ],
+     [
+      -13.2,
+      1.75,
+      2.2
+     ]
+    ],
+    "bulge": 0.15
+   },
+   "info": {
+    "lies": "Sheet of fascia between subclavius and the upper border of pectoralis minor.",
+    "clinical": "Four structures pierce it: the cephalic vein and lymphatics pass inward; the thoracoacromial artery and the lateral pectoral nerve pass outward."
+   }
+  },
+  {
+   "id": "axSheath",
+   "name": "Axillary sheath",
+   "layer": "deepmus",
+   "kind": "Fascia",
+   "color": "#E6E1D5",
+   "cad": "#E6E1D5",
+   "op": 0.4,
+   "noCover": true,
+   "anchor": [
+    -10.6,
+    1.9,
+    1.6
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -8.8,
+       3.6,
+       -0.2
+      ],
+      [
+       -10.5,
+       1.9,
+       -0.2
+      ],
+      [
+       -12.8,
+       0.05,
+       -0.1
+      ],
+      [
+       -15.524200000000002,
+       -2.7108999999999996,
+       0
+      ],
+      [
+       -17.9279,
+       -5.2633,
+       0.3
+      ]
+     ],
+     "r": 1.95,
+     "open": true
+    }
+   ],
+   "info": {
+    "lies": "A sleeve of fascia carried down from the prevertebral layer of deep cervical fascia. It encloses the axillary artery and the cords of the plexus; the axillary vein lies at its medial side."
+   }
+  },
+  {
+   "id": "subclavianA",
+   "name": "Subclavian artery",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "landmark": true,
+   "anchor": [
+    -5.2,
+    4.9,
+    0.3
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -1.2,
+       0.8,
+       2.6
+      ],
+      [
+       -2.8,
+       3.4,
+       1.2
+      ],
+      [
+       -4.8,
+       4.9,
+       0.3
+      ],
+      [
+       -6.6,
+       4.8,
+       0.1
+      ],
+      [
+       -8.2,
+       3.7,
+       0.3
+      ]
+     ],
+     "r": 0.5,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Arches over the first rib behind scalenus anterior and in front of the lower trunk. It becomes the axillary artery at the outer border of the first rib."
+   }
+  },
+  {
+   "id": "axillaryA",
+   "name": "Axillary artery",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "landmark": true,
+   "anchor": [
+    -12,
+    0.4,
+    0.2
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -8.2,
+       3.7,
+       0.3
+      ],
+      [
+       -10,
+       2.2,
+       0.4
+      ],
+      [
+       -12,
+       0.4,
+       0.2
+      ],
+      [
+       -13,
+       -0.55,
+       0.15
+      ],
+      [
+       -14.613100000000001,
+       -2.16995,
+       0.2
+      ],
+      [
+       -16.2972,
+       -4.02065,
+       0.28
+      ],
+      [
+       -18.0196,
+       -5.8392,
+       0.35
+      ]
+     ],
+     "r": 0.5,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "From the outer border of the first rib to the lower border of teres major. Pectoralis minor crosses in front of it and divides it into three parts.",
+    "clinical": "The cords surround the second part. The two roots of the median nerve clasp the third part."
+   }
+  },
+  {
+   "id": "brachialA",
+   "name": "Brachial artery",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "anchor": [
+    -23.263180000000002,
+    -11.88361,
+    0.65
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -18.0196,
+       -5.8392,
+       0.35
+      ],
+      [
+       -21.9542,
+       -10.370899999999999,
+       0.6
+      ],
+      [
+       -25.9654,
+       -14.8383,
+       0.8
+      ],
+      [
+       -30.206400000000002,
+       -19.1128,
+       0.9
+      ],
+      [
+       -32.916500000000006,
+       -21.408,
+       1
+      ]
+     ],
+     "r": 0.42,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Continuation of the axillary artery. The median nerve crosses in front of it, from lateral to medial, in the middle of the arm."
+   }
+  },
+  {
+   "id": "thoracoacromial",
+   "name": "Thoracoacromial artery",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "anchor": [
+    -11.7,
+    1.7,
+    2.5
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -12.5,
+       -0.08,
+       0.17
+      ],
+      [
+       -12,
+       0.9,
+       1.5
+      ],
+      [
+       -11.7,
+       1.7,
+       2.5
+      ]
+     ],
+     "r": 0.22,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -11.7,
+       1.7,
+       2.5
+      ],
+      [
+       -11,
+       0.6,
+       3.4
+      ],
+      [
+       -9.8,
+       -1.2,
+       4.3
+      ]
+     ],
+     "r": 0.15,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -11.7,
+       1.7,
+       2.5
+      ],
+      [
+       -10.9,
+       2.3,
+       2.8
+      ],
+      [
+       -10.2,
+       2.6,
+       2.9
+      ]
+     ],
+     "r": 0.15,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -11.7,
+       1.7,
+       2.5
+      ],
+      [
+       -13.6,
+       2.3,
+       3.2
+      ],
+      [
+       -15.8,
+       3.4,
+       2.6
+      ]
+     ],
+     "r": 0.15,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -11.7,
+       1.7,
+       2.5
+      ],
+      [
+       -13.8,
+       1.4,
+       3.6
+      ],
+      [
+       -16,
+       0.4,
+       3.6
+      ]
+     ],
+     "r": 0.15,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "A short trunk from the second part of the axillary artery. It pierces the clavipectoral fascia and divides into pectoral, clavicular, acromial and deltoid branches."
+   }
+  },
+  {
+   "id": "axillaryV",
+   "name": "Axillary vein",
+   "layer": "vessels",
+   "kind": "Vein",
+   "color": "#2F3F86",
+   "cad": "#2C3566",
+   "op": 1,
+   "anchor": [
+    -9.8,
+    1.2,
+    1.7
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -18.983,
+       -10.2535,
+       0.7
+      ],
+      [
+       -16.411,
+       -7.189500000000001,
+       0.6
+      ],
+      [
+       -14.328799999999998,
+       -5.0201,
+       0.6
+      ],
+      [
+       -12.7979,
+       -3.0408,
+       0.6
+      ],
+      [
+       -11.8,
+       -1.1,
+       1.2
+      ],
+      [
+       -10.6,
+       0.6,
+       1.5
+      ],
+      [
+       -9.2,
+       1.6,
+       1.8
+      ],
+      [
+       -8,
+       2.8,
+       2.1
+      ]
+     ],
+     "r": 0.5,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Lies medial to the axillary artery, outside the axillary sheath. It continues as the subclavian vein at the outer border of the first rib."
+   }
+  },
+  {
+   "id": "subclavianV",
+   "name": "Subclavian vein",
+   "layer": "vessels",
+   "kind": "Vein",
+   "color": "#2F3F86",
+   "cad": "#2C3566",
+   "op": 1,
+   "anchor": [
+    -4.6,
+    2.7,
+    2.3
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -8,
+       2.8,
+       2.1
+      ],
+      [
+       -6.2,
+       3,
+       2.2
+      ],
+      [
+       -4,
+       2.6,
+       2.5
+      ],
+      [
+       -2,
+       1.4,
+       3
+      ]
+     ],
+     "r": 0.55,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Passes in front of scalenus anterior, which separates it from the subclavian artery behind."
+   }
+  },
+  {
+   "id": "latissimus",
+   "name": "Latissimus dorsi",
+   "layer": "supmus",
+   "kind": "Muscle",
+   "color": "#A9493D",
+   "cad": "#83503F",
+   "op": 0.95,
+   "landmark": true,
+   "anchor": [
+    -12.6,
+    -10,
+    -8.2
+   ],
+   "sheet": {
+    "o": [
+     [
+      -1,
+      -7,
+      -9.4
+     ],
+     [
+      -1.5,
+      -12,
+      -9.4
+     ],
+     [
+      -3.5,
+      -17,
+      -9
+     ],
+     [
+      -8,
+      -18.5,
+      -7
+     ]
+    ],
+    "i": [
+     [
+      -17.5611,
+      -2.9597,
+      -0.8
+     ],
+     [
+      -18.36485,
+      -3.9172000000000002,
+      -0.85
+     ],
+     [
+      -19.1686,
+      -4.874700000000001,
+      -0.9
+     ]
+    ],
+    "bulge": 3,
+    "bdir": [
+     0.6,
+     0,
+     -1
+    ]
+   },
+   "info": {
+    "lies": "From the lower thoracic spines, the thoracolumbar fascia and the iliac crest, it sweeps up round teres major to insert into the floor of the intertubercular groove. With teres major it forms the posterior axillary fold.",
+    "supplies": "Supplied by the thoracodorsal nerve."
+   }
+  },
+  {
+   "id": "teresMajor",
+   "name": "Teres major",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#B65E4E",
+   "cad": "#8C5546",
+   "op": 0.95,
+   "anchor": [
+    -13.6,
+    -7.8,
+    -5.2
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -11.4,
+       -10.6,
+       -6.5
+      ],
+      [
+       -13.6,
+       -7.8,
+       -5.2
+      ],
+      [
+       -17.3766,
+       -5.0732,
+       -3
+      ],
+      [
+       -18.8102,
+       -4.9144000000000005,
+       -1.6
+      ]
+     ],
+     "r": 0.85,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "From the lower lateral border of the scapula to the medial lip of the intertubercular groove. Its lower border marks the end of the axillary artery.",
+    "supplies": "Supplied by the lower subscapular nerve."
+   }
+  },
+  {
+   "id": "teresMinor",
+   "name": "Teres minor",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#B65E4E",
+   "cad": "#8C5546",
+   "op": 0.95,
+   "anchor": [
+    -15.2,
+    -2.4,
+    -4.9
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -13.2,
+       -4.6,
+       -5
+      ],
+      [
+       -15.2,
+       -2.4,
+       -4.9
+      ],
+      [
+       -17,
+       -0.8,
+       -3.3
+      ]
+     ],
+     "r": 0.6,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "From the lateral border of the scapula to the greater tubercle. It forms the upper border of the quadrangular space.",
+    "supplies": "Supplied by the axillary nerve."
+   }
+  },
+  {
+   "id": "brachialis",
+   "name": "Brachialis",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#B65E4E",
+   "cad": "#8C5546",
+   "op": 0.95,
+   "anchor": [
+    -29.1664,
+    -14.7628,
+    1
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -24.7571,
+       -9.976700000000001,
+       0.3
+      ],
+      [
+       -26.931,
+       -12.722,
+       0.4
+      ],
+      [
+       -30.712400000000002,
+       -17.3823,
+       0.5
+      ],
+      [
+       -33.2229,
+       -21.1508,
+       0.15
+      ]
+     ],
+     "r": 0.65,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Lies deep to biceps on the front of the lower half of the humerus. It is the main flexor of the elbow.",
+    "supplies": "Supplied by the musculocutaneous nerve, with a small branch from the radial nerve."
+   }
+  },
+  {
+   "id": "supraspinatus",
+   "name": "Supraspinatus",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#B65E4E",
+   "cad": "#8C5546",
+   "op": 0.95,
+   "anchor": [
+    -11,
+    3.9,
+    -6.4
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -7.8,
+       3.8,
+       -7.2
+      ],
+      [
+       -12,
+       3.9,
+       -6
+      ],
+      [
+       -15,
+       3.5,
+       -3.6
+      ],
+      [
+       -17.6,
+       2.8,
+       -2
+      ]
+     ],
+     "r": 0.75,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Fills the supraspinous fossa and passes under the acromion to the greater tubercle. It starts abduction of the arm.",
+    "supplies": "Supplied by the suprascapular nerve."
+   }
+  },
+  {
+   "id": "infraspinatus",
+   "name": "Infraspinatus",
+   "layer": "deepmus",
+   "kind": "Muscle",
+   "color": "#B65E4E",
+   "cad": "#8C5546",
+   "op": 0.95,
+   "anchor": [
+    -10.6,
+    -4,
+    -7.4
+   ],
+   "plate": {
+    "c": [
+     10.9,
+     -2.5,
+     -6.6
+    ],
+    "ring": [
+     [
+      8.4,
+      2,
+      -8.3
+     ],
+     [
+      12.6,
+      2.6,
+      -7.7
+     ],
+     [
+      14.2,
+      1.2,
+      -3.7
+     ],
+     [
+      14,
+      -1.3,
+      -3.3
+     ],
+     [
+      12.4,
+      -6,
+      -5.4
+     ],
+     [
+      10.6,
+      -12,
+      -7.6
+     ],
+     [
+      7.4,
+      -4,
+      -8.3
+     ]
+    ],
+    "shrink": 0.06,
+    "dz": 0
+   },
+   "info": {
+    "lies": "Fills the infraspinous fossa and inserts into the greater tubercle. It laterally rotates the arm.",
+    "supplies": "Supplied by the suprascapular nerve."
+   }
+  },
+  {
+   "id": "phrenic",
+   "name": "Phrenic nerve",
+   "layer": "deepmus",
+   "kind": "Nerve (cervical plexus)",
+   "color": "#E4D7B0",
+   "cad": "#ECE3CC",
+   "op": 1,
+   "landmark": true,
+   "anchor": [
+    -5.2,
+    8.5,
+    1.8
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -3.4,
+       15,
+       0.85
+      ],
+      [
+       -4,
+       11,
+       1.35
+      ],
+      [
+       -5.5,
+       7,
+       1.85
+      ],
+      [
+       -5.2,
+       4,
+       1.95
+      ],
+      [
+       -4.6,
+       2,
+       1.6
+      ],
+      [
+       -3.8,
+       0,
+       1.4
+      ]
+     ],
+     "r": 0.15,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "From C3, C4 and C5. It runs down on the front of scalenus anterior, under the prevertebral fascia, and enters the thorax between the subclavian artery and vein.",
+    "clinical": "It supplies the diaphragm. Because C5 contributes to it, a high C5 root injury can paralyse part of the diaphragm on that side."
+   }
+  },
+  {
+   "id": "accessory",
+   "name": "Spinal accessory nerve",
+   "label": "Accessory nerve",
+   "layer": "deepmus",
+   "kind": "Nerve (cranial)",
+   "color": "#E4D7B0",
+   "cad": "#ECE3CC",
+   "op": 1,
+   "landmark": true,
+   "anchor": [
+    -7.6,
+    10.2,
+    -2.5
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -4.4,
+       13.8,
+       0.3
+      ],
+      [
+       -6.5,
+       11.5,
+       -1.6
+      ],
+      [
+       -8.6,
+       9,
+       -3.4
+      ],
+      [
+       -9.6,
+       7.5,
+       -4.6
+      ]
+     ],
+     "r": 0.14,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "Leaves the deep surface of sternocleidomastoid and crosses the posterior triangle on levator scapulae to reach trapezius.",
+    "clinical": "It lies just under the deep fascia here and can be cut during a lymph node biopsy in the triangle. The patient then cannot shrug the shoulder or raise the arm fully."
+   }
+  },
+  {
+   "id": "icb",
+   "name": "Intercostobrachial nerve",
+   "label": "Intercostobrachial",
+   "layer": "deepmus",
+   "kind": "Cutaneous nerve (T2)",
+   "color": "#E4D7B0",
+   "cad": "#ECE3CC",
+   "op": 1,
+   "anchor": [
+    -12,
+    -2.8,
+    -0.9
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -10.2,
+       -1.6,
+       -0.6
+      ],
+      [
+       -12,
+       -2.8,
+       -0.9
+      ],
+      [
+       -13.639399999999998,
+       -5.5988,
+       -0.5
+      ],
+      [
+       -17.0842,
+       -9.2359,
+       0
+      ]
+     ],
+     "r": 0.12,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "The lateral cutaneous branch of the second intercostal nerve. It crosses the axilla to the medial side of the arm and joins the medial cutaneous nerve of the arm.",
+    "clinical": "Often cut during axillary clearance, leaving numbness on the inner arm. Its T2 fibres help explain why heart pain can be felt down the inner arm."
+   }
+  },
+  {
+   "id": "nodes",
+   "name": "Axillary lymph nodes",
+   "label": "Lymph nodes",
+   "layer": "deepmus",
+   "kind": "Lymph nodes",
+   "color": "#7FAE5E",
+   "cad": "#BCA88A",
+   "op": 1,
+   "anchor": [
+    -12.6,
+    -3.8,
+    -0.4
+   ],
+   "spheres": [
+    {
+     "c": [
+      -10,
+      -4.6,
+      1.4
+     ],
+     "r": 0.45
+    },
+    {
+     "c": [
+      -10.5,
+      -6.6,
+      1.2
+     ],
+     "r": 0.4
+    },
+    {
+     "c": [
+      -12.6,
+      -3.8,
+      -0.4
+     ],
+     "r": 0.55
+    },
+    {
+     "c": [
+      -13.1,
+      -5.4,
+      -0.6
+     ],
+     "r": 0.45
+    },
+    {
+     "c": [
+      -14.6,
+      -6.6,
+      -1.8
+     ],
+     "r": 0.45
+    },
+    {
+     "c": [
+      -14.7571,
+      -6.619200000000001,
+      0
+     ],
+     "r": 0.45
+    },
+    {
+     "c": [
+      -8.8,
+      1,
+      2.4
+     ],
+     "r": 0.45
+    }
+   ],
+   "info": {
+    "lies": "Five groups: pectoral nodes along the lateral thoracic vessels, subscapular nodes on the posterior wall, lateral nodes along the axillary vein, central nodes in the axillary fat, and apical nodes at the apex, which drain into the subclavian lymph trunk.",
+    "clinical": "They drain most of the breast, so they are examined and removed in breast cancer surgery."
+   }
+  },
+  {
+   "id": "axFat",
+   "name": "Axillary fat",
+   "layer": "skin",
+   "kind": "Layer",
+   "color": "#DCB967",
+   "cad": "#CFAD5C",
+   "op": 1,
+   "noCover": true,
+   "custom": "fatpad",
+   "anchor": [
+    -14.2,
+    -4,
+    2.6
+   ],
+   "info": {
+    "lies": "Loose fat filling the axilla around the vessels, nerves and lymph nodes. It must be picked away before the axillary sheath can be seen."
+   }
+  },
+  {
+   "id": "superiorThoracic",
+   "name": "Superior thoracic artery",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "anchor": [
+    -9.4,
+    1.4,
+    -0.3
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -10,
+       2.2,
+       0.4
+      ],
+      [
+       -9.4,
+       1.4,
+       -0.3
+      ],
+      [
+       -8.9,
+       0.2,
+       -0.6
+      ]
+     ],
+     "r": 0.12,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "A small branch of the first part of the axillary artery, running to the first and second intercostal spaces."
+   }
+  },
+  {
+   "id": "lateralThoracic",
+   "name": "Lateral thoracic artery",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "anchor": [
+    -11.3,
+    -4.8,
+    0.5
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -12.6,
+       -0.4,
+       0.3
+      ],
+      [
+       -12.2,
+       -1.8,
+       0.5
+      ],
+      [
+       -11.6,
+       -3.6,
+       0.6
+      ],
+      [
+       -11,
+       -6,
+       0.4
+      ],
+      [
+       -10.6,
+       -9,
+       0.2
+      ]
+     ],
+     "r": 0.15,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "From the second part of the axillary artery. It runs along the lower border of pectoralis minor on serratus anterior, with the pectoral lymph nodes along it."
+   }
+  },
+  {
+   "id": "subscapularA",
+   "name": "Subscapular artery",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "anchor": [
+    -14.3,
+    -6,
+    -2.6
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -15.937399999999998,
+       -3.6698000000000004,
+       0.1
+      ],
+      [
+       -15,
+       -4.6,
+       -1.3
+      ],
+      [
+       -14.3,
+       -6,
+       -2.6
+      ],
+      [
+       -13.6,
+       -8.6,
+       -3.6
+      ],
+      [
+       -12.9,
+       -11.5,
+       -4.4
+      ]
+     ],
+     "r": 0.22,
+     "caps": true
+    },
+    {
+     "pts": [
+      [
+       -14.3,
+       -6,
+       -2.6
+      ],
+      [
+       -13.6,
+       -6.2,
+       -4.4
+      ],
+      [
+       -12.6,
+       -6,
+       -6.6
+      ]
+     ],
+     "r": 0.15,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "The largest branch of the axillary artery, from its third part. It runs down the posterior wall with the thoracodorsal nerve and gives the circumflex scapular artery, which passes through the triangular space."
+   }
+  },
+  {
+   "id": "antCircHumeral",
+   "name": "Anterior circumflex humeral artery",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "anchor": [
+    -18.676000000000002,
+    -3.1990000000000007,
+    0
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -17.505200000000002,
+       -5.2264,
+       0.4
+      ],
+      [
+       -18.1918,
+       -3.8666,
+       -0.1
+      ],
+      [
+       -19.160200000000003,
+       -2.5314,
+       0
+      ],
+      [
+       -19.7976,
+       -1.7352,
+       -0.9
+      ]
+     ],
+     "r": 0.12,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "A small branch of the third part of the axillary artery that winds round the front of the surgical neck of the humerus."
+   }
+  },
+  {
+   "id": "postCircHumeral",
+   "name": "Posterior circumflex humeral artery",
+   "label": "Post. circumflex humeral",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "anchor": [
+    -18.011200000000002,
+    -3.4959000000000002,
+    -3
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -16.104300000000002,
+       -3.79085,
+       0.2
+      ],
+      [
+       -16.782799999999998,
+       -3.7436000000000003,
+       -1.9
+      ],
+      [
+       -18.011200000000002,
+       -3.4959000000000002,
+       -3
+      ],
+      [
+       -19.530900000000003,
+       -2.3508000000000004,
+       -2.6
+      ]
+     ],
+     "r": 0.14,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "From the third part of the axillary artery. It passes through the quadrangular space with the axillary nerve and winds round the back of the surgical neck."
+   }
+  },
+  {
+   "id": "profunda",
+   "name": "Profunda brachii artery",
+   "label": "Profunda brachii",
+   "layer": "vessels",
+   "kind": "Artery",
+   "color": "#C3322C",
+   "cad": "#A22D27",
+   "op": 1,
+   "anchor": [
+    -23.1032,
+    -9.4064,
+    -3
+   ],
+   "tubes": [
+    {
+     "pts": [
+      [
+       -18.7009,
+       -6.57305,
+       0.45
+      ],
+      [
+       -19.688599999999997,
+       -7.0497000000000005,
+       -1.4
+      ],
+      [
+       -22.307000000000002,
+       -8.769,
+       -3
+      ],
+      [
+       -26.028,
+       -10.8685,
+       -2.9
+      ],
+      [
+       -29.4426,
+       -13.2252,
+       -2
+      ]
+     ],
+     "r": 0.15,
+     "caps": true
+    }
+   ],
+   "info": {
+    "lies": "A branch of the brachial artery that runs with the radial nerve in the spiral groove."
+   }
+  }
+ ]
+}

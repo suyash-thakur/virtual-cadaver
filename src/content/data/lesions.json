@@ -1,0 +1,313 @@
+{
+ "version": 1,
+ "rootIds": [
+  "c5",
+  "c6",
+  "c7",
+  "c8",
+  "t1"
+ ],
+ "lesions": [
+  {
+   "id": "erb",
+   "group": "Roots and trunks",
+   "name": "Erb–Duchenne palsy",
+   "at": [
+    [
+     "upperTrunk",
+     0.12
+    ]
+   ],
+   "site": "Upper trunk (C5, C6) at Erb’s point",
+   "cause": "A fall on the shoulder that forces the head and shoulder apart, or traction on the head during a difficult birth.",
+   "sees": "‘Waiter’s tip’: the arm hangs by the side, adducted and medially rotated, with the elbow extended, the forearm pronated and the wrist flexed.",
+   "moves": "Abduction and lateral rotation of the shoulder, flexion of the elbow and supination of the forearm.",
+   "reflex": "Biceps and supinator (brachioradialis) jerks lost.",
+   "signs": "Serratus anterior and the rhomboids still work, because their nerves leave the roots above the trunk. If they are weak too, suspect the roots have been torn from the spinal cord."
+  },
+  {
+   "id": "klumpke",
+   "group": "Roots and trunks",
+   "name": "Klumpke’s palsy",
+   "at": [
+    [
+     "c8",
+     0.5
+    ],
+    [
+     "t1",
+     0.5
+    ]
+   ],
+   "site": "Roots C8 and T1",
+   "cause": "The arm is pulled upward, for example clutching at a branch during a fall, or a breech delivery with the arm above the head. A cervical rib or an apical lung tumour can compress the lower trunk more slowly.",
+   "sees": "Claw hand: the knuckles are hyperextended and the finger joints flexed, with wasting of the small muscles of the hand.",
+   "moves": "Fine movements of the fingers, spreading and closing the fingers, and grip.",
+   "reflex": "The finger flexor jerk (C8) is reduced.",
+   "signs": "Horner syndrome (drooping eyelid, small pupil, dry face on that side) if T1 is torn close to the spinal cord."
+  },
+  {
+   "id": "complete",
+   "group": "Roots and trunks",
+   "name": "Complete plexus injury",
+   "at": [
+    [
+     "c5",
+     0.5
+    ],
+    [
+     "c6",
+     0.5
+    ],
+    [
+     "c7",
+     0.5
+    ],
+    [
+     "c8",
+     0.5
+    ],
+    [
+     "t1",
+     0.5
+    ]
+   ],
+   "site": "All roots, C5 to T1",
+   "cause": "High-energy traction on the arm, typically a motorcycle accident.",
+   "sees": "A flail, numb arm hanging by the side.",
+   "moves": "All movements of the arm, forearm and hand. Only shrugging the shoulder (trapezius, supplied by the spinal accessory nerve) remains.",
+   "reflex": "All upper-limb tendon reflexes lost.",
+   "signs": "Horner syndrome and winging of the scapula point to roots torn from the spinal cord, which has a worse outlook."
+  },
+  {
+   "id": "latcord",
+   "group": "Cords",
+   "name": "Lateral cord injury",
+   "at": [
+    [
+     "latCord",
+     0.5
+    ]
+   ],
+   "site": "Lateral cord (C5–C7)",
+   "cause": "Penetrating wounds, or fractures and dislocations around the shoulder.",
+   "sees": "No fixed deformity; the elbow is weak to bend.",
+   "moves": "Elbow flexion and supination are weak (musculocutaneous), and pronation and wrist flexion are weakened (median fibres from the lateral root).",
+   "reflex": "Biceps jerk reduced or lost.",
+   "signs": "Numbness on the lateral side of the forearm."
+  },
+  {
+   "id": "medcord",
+   "group": "Cords",
+   "name": "Medial cord injury",
+   "at": [
+    [
+     "medCord",
+     0.5
+    ]
+   ],
+   "site": "Medial cord (C8, T1)",
+   "cause": "Penetrating wounds, or compression near the first rib.",
+   "sees": "Claw hand with wasting of the small muscles of the hand.",
+   "moves": "Fine finger movements, spreading and closing the fingers, and opposing the thumb.",
+   "reflex": "Finger flexor jerk reduced.",
+   "signs": "Numbness along the medial side of the arm, forearm and hand."
+  },
+  {
+   "id": "postcord",
+   "group": "Cords",
+   "name": "Posterior cord injury",
+   "at": [
+    [
+     "postCord",
+     0.5
+    ]
+   ],
+   "site": "Posterior cord (C5–T1)",
+   "cause": "Pressure from a badly fitted crutch in the axilla, or an anterior shoulder dislocation.",
+   "sees": "Wrist drop, with a flattened shoulder.",
+   "moves": "Abduction of the shoulder beyond 15°, extension of the elbow, wrist and fingers; adduction and medial rotation of the arm are weaker.",
+   "reflex": "Triceps jerk lost.",
+   "signs": "Numbness over the back of the arm and forearm, the regimental badge area and the lateral back of the hand."
+  },
+  {
+   "id": "longthor",
+   "group": "Nerves",
+   "name": "Long thoracic nerve",
+   "at": [
+    [
+     "longThoracic",
+     0.62
+    ]
+   ],
+   "site": "Long thoracic nerve on the chest wall",
+   "cause": "Surgery in the axilla (mastectomy, axillary clearance) or carrying heavy loads on the shoulder.",
+   "sees": "Winging of the scapula: its medial border lifts off the chest wall, best seen when the patient pushes against a wall.",
+   "moves": "Protraction of the scapula and raising the arm above the head.",
+   "reflex": "No reflex change.",
+   "signs": "No sensory loss."
+  },
+  {
+   "id": "suprascap",
+   "group": "Nerves",
+   "name": "Suprascapular nerve",
+   "at": [
+    [
+     "suprascap",
+     0.75
+    ]
+   ],
+   "site": "Suprascapular nerve at the suprascapular notch",
+   "cause": "Fracture of the scapula, or entrapment at the notch.",
+   "sees": "Wasting above and below the spine of the scapula.",
+   "moves": "Starting abduction (first 15°) and lateral rotation of the shoulder.",
+   "reflex": "No reflex change.",
+   "signs": "No patch of skin numbness, though a deep ache over the shoulder is common."
+  },
+  {
+   "id": "axillaryN",
+   "group": "Nerves",
+   "name": "Axillary nerve",
+   "at": [
+    [
+     "axillary",
+     0.55
+    ]
+   ],
+   "site": "Axillary nerve at the surgical neck of the humerus",
+   "cause": "Fracture of the surgical neck or an anterior dislocation of the shoulder.",
+   "sees": "A flattened shoulder as deltoid wastes.",
+   "moves": "Abduction of the arm from 15° to 90°; weaker lateral rotation.",
+   "reflex": "No reflex change.",
+   "signs": "Numbness over the regimental badge area on the lower deltoid."
+  },
+  {
+   "id": "mcN",
+   "group": "Nerves",
+   "name": "Musculocutaneous nerve",
+   "at": [
+    [
+     "musculocut",
+     0.25
+    ]
+   ],
+   "site": "Musculocutaneous nerve in the arm",
+   "cause": "Rare on its own: stab wounds or surgery near the coracoid process.",
+   "sees": "Wasting of the front of the arm.",
+   "moves": "Elbow flexion and supination are weak; brachioradialis and part of brachialis still bend the elbow.",
+   "reflex": "Biceps jerk lost.",
+   "signs": "Numbness on the lateral side of the forearm."
+  },
+  {
+   "id": "radialgroove",
+   "group": "Nerves",
+   "name": "Radial nerve in the spiral groove",
+   "at": [
+    [
+     "radial",
+     0.42
+    ]
+   ],
+   "spare": [
+    "prox"
+   ],
+   "site": "Radial nerve in the spiral groove",
+   "cause": "Fracture of the shaft of the humerus, or pressure on the arm over a chair back (‘Saturday night palsy’).",
+   "sees": "Wrist drop: the wrist and fingers hang flexed and cannot be straightened.",
+   "moves": "Extension of the wrist, fingers and thumb, and supination with the elbow straight. Triceps is mostly spared, because its branches leave above the groove.",
+   "reflex": "Supinator (brachioradialis) jerk lost; triceps jerk usually kept.",
+   "signs": "Numbness over the back of the forearm and the lateral back of the hand; the most constant patch is over the first web space."
+  },
+  {
+   "id": "medianelbow",
+   "group": "Nerves",
+   "name": "Median nerve at the elbow",
+   "at": [
+    [
+     "median",
+     0.92
+    ]
+   ],
+   "site": "Median nerve at or just above the elbow",
+   "cause": "Supracondylar fracture of the humerus, or a penetrating wound at the elbow.",
+   "sees": "‘Hand of benediction’ when the patient tries to make a fist: the index and middle fingers stay straight. The thumb lies flat beside the fingers (ape-like hand).",
+   "moves": "Pronation, flexion of the index and middle fingers and the thumb, and opposition of the thumb. Wrist flexion is weak and pulls toward the little finger.",
+   "reflex": "No major tendon reflex lost.",
+   "signs": "Numbness over the lateral palm and the lateral three and a half fingers. The pen test (raising the thumb off the palm) is weak."
+  },
+  {
+   "id": "medianwrist",
+   "group": "Nerves",
+   "name": "Median nerve at the wrist",
+   "at": [
+    [
+     "median",
+     0.99
+    ]
+   ],
+   "spare": [
+    "elbow"
+   ],
+   "site": "Median nerve in the carpal tunnel, below the end of this model",
+   "cause": "Carpal tunnel syndrome, or a cut wrist.",
+   "sees": "Wasting of the thenar eminence; the thumb cannot be opposed.",
+   "moves": "Abduction and opposition of the thumb.",
+   "reflex": "No reflex change.",
+   "signs": "Tingling and numbness of the lateral three and a half fingers, with the palm spared because its branch leaves above the wrist. Phalen’s and Tinel’s tests may be positive."
+  },
+  {
+   "id": "ulnarelbow",
+   "group": "Nerves",
+   "name": "Ulnar nerve at the elbow",
+   "at": [
+    [
+     "ulnar",
+     0.85
+    ]
+   ],
+   "site": "Ulnar nerve behind the medial epicondyle",
+   "cause": "Fracture of the medial epicondyle, or compression in the cubital tunnel.",
+   "sees": "Clawing of the ring and little fingers, with wasting of the hypothenar eminence and between the metacarpals. The claw is milder than after a wrist injury, because the long flexors of those fingers are paralysed too (the ‘ulnar paradox’).",
+   "moves": "Spreading and closing the fingers, adducting the thumb, bending the ring and little fingers at their end joints, and flexing the wrist toward the little finger.",
+   "reflex": "No major tendon reflex lost.",
+   "signs": "Froment’s sign (the thumb bends at its end joint when gripping paper) and the card test are positive. Numbness of the medial one and a half fingers on both surfaces."
+  },
+  {
+   "id": "ulnarwrist",
+   "group": "Nerves",
+   "name": "Ulnar nerve at the wrist",
+   "at": [
+    [
+     "ulnar",
+     0.99
+    ]
+   ],
+   "spare": [
+    "elbow"
+   ],
+   "site": "Ulnar nerve at the wrist, below the end of this model",
+   "cause": "Cuts at the wrist, or compression in Guyon’s canal.",
+   "sees": "Marked clawing of the ring and little fingers.",
+   "moves": "Spreading and closing the fingers and adducting the thumb; flexor carpi ulnaris and the long finger flexors still work.",
+   "reflex": "No reflex change.",
+   "signs": "Froment’s sign positive. Numbness on the palmar side of the medial one and a half fingers; the back of the hand is spared because the dorsal branch leaves above the wrist."
+  },
+  {
+   "id": "thoracoN",
+   "group": "Nerves",
+   "name": "Thoracodorsal nerve",
+   "at": [
+    [
+     "thoraco",
+     0.6
+    ]
+   ],
+   "site": "Thoracodorsal nerve on the posterior wall of the axilla",
+   "cause": "Axillary lymph node clearance.",
+   "sees": "Wasting of the posterior axillary fold.",
+   "moves": "Adduction, extension and medial rotation of the arm, as in climbing or using crutches.",
+   "reflex": "No reflex change.",
+   "signs": "No sensory loss."
+  }
+ ]
+}

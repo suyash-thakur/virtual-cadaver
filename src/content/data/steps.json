@@ -1,0 +1,354 @@
+{
+ "version": 1,
+ "steps": [
+  {
+   "key": "landmarks",
+   "title": "Feel the surface landmarks",
+   "view": "specimen",
+   "text": "Before cutting, find the landmarks on the skin: the suprasternal notch, the sternal angle (level of the second costal cartilage), the clavicle along its length, the acromion, the coracoid process deep in the infraclavicular fossa, the deltopectoral groove and the two axillary folds.",
+   "find": [
+    "lmNotch",
+    "lmAngle",
+    "lmAcromion",
+    "lmInfraclav",
+    "lmGroove",
+    "lmAntFold",
+    "lmPostFold"
+   ]
+  },
+  {
+   "key": "incisions",
+   "title": "Make the skin incisions",
+   "view": "specimen",
+   "act": "Make the incisions",
+   "set": {
+    "inc": 1
+   },
+   "text": "Cut through the skin only. First, a midline cut from the suprasternal notch to the xiphoid process. Second, along the clavicle to the acromion. Third, from the xiphoid process round the chest to the posterior axillary line. Fourth, from the acromion down the front of the arm to its middle.",
+   "find": [
+    "incisions"
+   ]
+  },
+  {
+   "key": "skin",
+   "title": "Reflect the skin flaps",
+   "view": "specimen",
+   "act": "Reflect the skin",
+   "set": {
+    "skin": [
+     0.62,
+     0.58
+    ]
+   },
+   "hand": "Drag across the specimen to lift the skin flaps away from the midline.",
+   "text": "Lift the skin from the midline and turn the flaps laterally, keeping the knife against the underside of the skin so the fat stays behind. You are now in the superficial fascia: find the cephalic vein in the deltopectoral groove, the basilic vein on the inner arm, the supraclavicular nerves crossing the clavicle, the external jugular vein and platysma in the neck.",
+   "find": [
+    "fat",
+    "cephalicV",
+    "basilicV",
+    "supraclav",
+    "ejv",
+    "platysma"
+   ]
+  },
+  {
+   "key": "fat",
+   "title": "Clean away the superficial fascia",
+   "view": "specimen",
+   "act": "Remove the fat",
+   "set": {
+    "fat": [
+     0.62,
+     0.58
+    ]
+   },
+   "hide": [
+    "platysma"
+   ],
+   "hand": "Drag across the specimen to clear the fat, piece by piece.",
+   "text": "Remove the fat piece by piece, preserving the superficial veins and the supraclavicular nerves, and reflect platysma upward. The thin glistening layer underneath is the deep fascia: the pectoral fascia on the chest and the investing layer of deep cervical fascia, which roofs the posterior triangle.",
+   "find": [
+    "deepFascia",
+    "cephalicV",
+    "basilicV",
+    "supraclav",
+    "ejv"
+   ]
+  },
+  {
+   "key": "fascia",
+   "title": "Remove the deep fascia",
+   "view": "specimen",
+   "act": "Remove the deep fascia",
+   "set": {
+    "fascia": [
+     0.62,
+     0.58
+    ]
+   },
+   "hand": "Drag across the specimen to strip the deep fascia.",
+   "text": "Strip the deep fascia to expose the muscles. In front are pectoralis major and deltoid, with the deltopectoral groove between them. In the neck, the posterior triangle is bounded by sternocleidomastoid in front, trapezius behind and the middle third of the clavicle below.",
+   "find": [
+    "pecMajor",
+    "deltoid",
+    "scm",
+    "trapezius",
+    "clavicle",
+    "omohyoid",
+    "latissimus",
+    "cephalicV"
+   ]
+  },
+  {
+   "key": "triangle",
+   "title": "Open the posterior triangle",
+   "view": "neck",
+   "act": "Clear the triangle",
+   "hide": [
+    "supraclav",
+    "ejv"
+   ],
+   "hand": "Drag across the triangle to cut and remove the supraclavicular nerves and the external jugular vein.",
+   "text": "Cut and remove the supraclavicular nerves and the external jugular vein to clear the view. The spinal accessory nerve crosses the upper part of the triangle to trapezius. The inferior belly of omohyoid crosses the lower part. Below it, the trunks emerge between scalenus anterior and scalenus medius, with the phrenic nerve on the front of scalenus anterior and the subclavian artery just below the lower trunk.",
+   "find": [
+    "accessory",
+    "omohyoid",
+    "antScalene",
+    "midScalene",
+    "phrenic",
+    "upperTrunk",
+    "middleTrunk",
+    "lowerTrunk",
+    "subclavianA",
+    "suprascap"
+   ]
+  },
+  {
+   "key": "pecmajor",
+   "title": "Detach and reflect pectoralis major",
+   "view": "pectoral",
+   "act": "Reflect pectoralis major",
+   "set": {
+    "fold": {
+     "pecMajor": 1
+    }
+   },
+   "hand": "Drag across the chest to detach pectoralis major and turn it toward the arm.",
+   "text": "Cut the clavicular and sternocostal origins of pectoralis major close to the bone and turn the muscle laterally toward its insertion. Look on its deep surface for the pectoral nerves and vessels entering it. Underneath lie pectoralis minor and the clavipectoral fascia.",
+   "find": [
+    "clavipectoral",
+    "pecMinor",
+    "subclavius",
+    "cephalicV",
+    "thoracoacromial",
+    "latPec",
+    "medPec"
+   ]
+  },
+  {
+   "key": "pecminor",
+   "title": "Reflect pectoralis minor",
+   "view": "axilla",
+   "act": "Reflect pectoralis minor",
+   "set": {
+    "fold": {
+     "pecMinor": 1
+    }
+   },
+   "hide": [
+    "clavipectoral"
+   ],
+   "hand": "Drag to remove the clavipectoral fascia and turn pectoralis minor up to the coracoid process.",
+   "text": "Note the four structures piercing the clavipectoral fascia, then remove it. Cut pectoralis minor from the ribs and turn it up toward the coracoid process. Behind it the axilla is packed with fat. Serratus anterior forms the medial wall, with the long thoracic nerve on it.",
+   "find": [
+    "axFat",
+    "serratus",
+    "longThoracic",
+    "latPec",
+    "medPec",
+    "superiorThoracic"
+   ]
+  },
+  {
+   "key": "axfat",
+   "title": "Clear the axillary fat and lymph nodes",
+   "view": "axilla",
+   "act": "Clear the fat",
+   "hide": [
+    "axFat"
+   ],
+   "hand": "Drag across the axilla to pick away the fat.",
+   "text": "Pick the fat away with forceps and note the lymph node groups: pectoral nodes along the lateral thoracic vessels, subscapular nodes on the posterior wall, lateral nodes along the axillary vein, central nodes in the fat and apical nodes at the apex. The intercostobrachial nerve crosses the axilla from the chest wall to the arm.",
+   "find": [
+    "nodes",
+    "lateralThoracic",
+    "subscapularA",
+    "icb",
+    "axSheath",
+    "axillaryV",
+    "longThoracic",
+    "thoraco"
+   ]
+  },
+  {
+   "key": "sheath",
+   "title": "Open the axillary sheath",
+   "view": "axilla",
+   "act": "Open the sheath",
+   "hide": [
+    "axSheath",
+    "nodes"
+   ],
+   "emph": [
+    "musculocut",
+    "latRoot",
+    "median",
+    "medRoot",
+    "ulnar"
+   ],
+   "hand": "Drag along the artery to slit the axillary sheath.",
+   "text": "Remove the lymph nodes and slit the sheath along the artery. The cords surround the second part of the axillary artery: lateral, medial and posterior to it. In front of the artery find the ‘M’ formed by the musculocutaneous nerve, the lateral root, the median nerve, the medial root and the ulnar nerve. The glowing nerves form it.",
+   "find": [
+    "latCord",
+    "medCord",
+    "postCord",
+    "musculocut",
+    "latRoot",
+    "median",
+    "medRoot",
+    "ulnar",
+    "axillaryA"
+   ]
+  },
+  {
+   "key": "clavicle",
+   "title": "Lift away the clavicle",
+   "view": "divisions",
+   "act": "Remove the clavicle",
+   "hide": [
+    "clavicle",
+    "subclavius"
+   ],
+   "hand": "Drag to lift the clavicle away.",
+   "text": "In most dissection halls the clavicle stays in place and the divisions are seen by pulling it forward; some departments saw through its middle. Removing it here shows the six divisions behind it, one anterior and one posterior from each trunk.",
+   "find": [
+    "divAU",
+    "divAM",
+    "divAL",
+    "divPU",
+    "divPM",
+    "divPL",
+    "nSubclavius"
+   ]
+  },
+  {
+   "key": "vessels",
+   "title": "Remove the axillary vessels",
+   "view": "postcord",
+   "act": "Remove the vessels",
+   "hide": [
+    "subclavianA",
+    "axillaryA",
+    "brachialA",
+    "axillaryV",
+    "subclavianV",
+    "thoracoacromial",
+    "cephalicV",
+    "ejv",
+    "basilicV",
+    "superiorThoracic",
+    "lateralThoracic",
+    "subscapularA",
+    "antCircHumeral",
+    "postCircHumeral",
+    "profunda"
+   ],
+   "hand": "Drag to clear the axillary vessels.",
+   "text": "With the artery and veins out of the way, the posterior cord and its five branches come into view: upper subscapular, thoracodorsal, lower subscapular, axillary and radial nerves. Subscapularis forms the posterior wall behind them, with teres major and latissimus dorsi below.",
+   "find": [
+    "postCord",
+    "upperSub",
+    "thoraco",
+    "lowerSub",
+    "axillary",
+    "radial",
+    "subscap",
+    "teresMajor",
+    "latissimus"
+   ]
+  },
+  {
+   "key": "back",
+   "title": "Turn to the back of the arm",
+   "view": "back",
+   "act": "Reflect deltoid",
+   "set": {
+    "skin": [
+     0.62,
+     1.02
+    ],
+    "fat": [
+     0.62,
+     1.02
+    ],
+    "fascia": [
+     0.62,
+     1.02
+    ],
+    "fold": {
+     "deltoid": 1
+    }
+   },
+   "show": [
+    "postCircHumeral",
+    "profunda"
+   ],
+   "dim": [
+    "triceps"
+   ],
+   "hand": "Drag down the arm to reflect the skin and turn deltoid down.",
+   "text": "Turn the specimen over. Reflect the skin and fascia from the back of the arm, detach deltoid from its origin and turn it down. The axillary nerve and the posterior circumflex humeral artery pass through the quadrangular space below teres minor and wind round the surgical neck. Separate the heads of triceps to follow the radial nerve and the profunda brachii artery in the spiral groove. The ulnar nerve passes behind the medial epicondyle.",
+   "find": [
+    "axillary",
+    "postCircHumeral",
+    "teresMinor",
+    "infraspinatus",
+    "radial",
+    "profunda",
+    "ulnar",
+    "deltoid",
+    "triceps"
+   ]
+  }
+ ],
+ "incisionNames": [
+  "midline, from the suprasternal notch to the xiphoid process",
+  "along the clavicle to the acromion",
+  "from the xiphoid process round the chest to the posterior axillary line",
+  "from the acromion down the front of the arm, then round it at mid-arm"
+ ],
+ "vesselIds": [
+  "subclavianA",
+  "axillaryA",
+  "brachialA",
+  "axillaryV",
+  "subclavianV",
+  "thoracoacromial",
+  "cephalicV",
+  "ejv",
+  "basilicV",
+  "superiorThoracic",
+  "lateralThoracic",
+  "subscapularA",
+  "antCircHumeral",
+  "postCircHumeral",
+  "profunda"
+ ],
+ "mNerveIds": [
+  "musculocut",
+  "latRoot",
+  "median",
+  "medRoot",
+  "ulnar"
+ ]
+}

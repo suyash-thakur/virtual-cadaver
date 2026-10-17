@@ -1,0 +1,46 @@
+{
+ "version": 1,
+ "families": {
+  "rt": {
+   "c": "#E0B232",
+   "name": "Roots and trunks"
+  },
+  "rtc": {
+   "c": "#D5862A",
+   "name": "Branches of roots and trunks"
+  },
+  "lat": {
+   "c": "#36A866",
+   "name": "Lateral cord family"
+  },
+  "med": {
+   "c": "#49A6F2",
+   "name": "Medial cord family"
+  },
+  "post": {
+   "c": "#8D60D3",
+   "name": "Posterior cord family"
+  },
+  "median": {
+   "c": "#14A394",
+   "name": "Median nerve"
+  }
+ },
+ "classicNerve": "#E9C24B",
+ "cadaverNerve": "#ECE3CC",
+ "roots": [
+  "C5",
+  "C6",
+  "C7",
+  "C8",
+  "T1"
+ ],
+ "bone": "#E6DCC6",
+ "boneCadaver": "#D9CBAE",
+ "muscleCadaver": "#8B5444",
+ "artery": "#C3322C",
+ "arteryCadaver": "#A22D27",
+ "vein": "#2F3F86",
+ "veinCadaver": "#2C3566",
+ "fascia": "#E6E1D5"
+}

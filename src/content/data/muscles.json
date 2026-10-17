@@ -1,0 +1,470 @@
+{
+ "version": 1,
+ "muscles": [
+  {
+   "n": "Rhomboids",
+   "nv": [
+    "dorsalScap"
+   ],
+   "r": [
+    "C5"
+   ],
+   "a": "Retract the scapula"
+  },
+  {
+   "n": "Serratus anterior",
+   "nv": [
+    "longThoracic"
+   ],
+   "r": [
+    "C5",
+    "C6",
+    "C7"
+   ],
+   "a": "Protracts the scapula and holds it to the chest wall",
+   "m": "serratus"
+  },
+  {
+   "n": "Supraspinatus",
+   "nv": [
+    "suprascap"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Starts abduction (first 15°)",
+   "m": "supraspinatus"
+  },
+  {
+   "n": "Infraspinatus",
+   "nv": [
+    "suprascap"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Lateral rotation of the arm",
+   "m": "infraspinatus"
+  },
+  {
+   "n": "Subclavius",
+   "nv": [
+    "nSubclavius"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Steadies the clavicle",
+   "m": "subclavius"
+  },
+  {
+   "n": "Pectoralis major (clavicular head)",
+   "nv": [
+    "latPec"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Flexes and adducts the arm",
+   "m": "pecMajor"
+  },
+  {
+   "n": "Pectoralis major (sternocostal head)",
+   "nv": [
+    "latPec",
+    "medPec"
+   ],
+   "r": [
+    "C7",
+    "C8",
+    "T1"
+   ],
+   "a": "Adducts and medially rotates the arm",
+   "m": "pecMajor"
+  },
+  {
+   "n": "Pectoralis minor",
+   "nv": [
+    "medPec"
+   ],
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Draws the scapula forward and down",
+   "m": "pecMinor"
+  },
+  {
+   "n": "Subscapularis",
+   "nv": [
+    "upperSub",
+    "lowerSub"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Medial rotation of the arm",
+   "m": "subscap"
+  },
+  {
+   "n": "Teres major",
+   "nv": [
+    "lowerSub"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Adducts and medially rotates the arm",
+   "m": "teresMajor"
+  },
+  {
+   "n": "Latissimus dorsi",
+   "nv": [
+    "thoraco"
+   ],
+   "r": [
+    "C6",
+    "C7",
+    "C8"
+   ],
+   "a": "Extends, adducts and medially rotates the arm",
+   "m": "latissimus"
+  },
+  {
+   "n": "Deltoid",
+   "nv": [
+    "axillary"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Abducts the arm from 15° to 90°",
+   "m": "deltoid"
+  },
+  {
+   "n": "Teres minor",
+   "nv": [
+    "axillary"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Lateral rotation of the arm",
+   "m": "teresMinor"
+  },
+  {
+   "n": "Coracobrachialis",
+   "nv": [
+    "musculocut"
+   ],
+   "r": [
+    "C6",
+    "C7"
+   ],
+   "a": "Flexes and adducts the arm",
+   "m": "coraco"
+  },
+  {
+   "n": "Biceps brachii",
+   "nv": [
+    "musculocut"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Flexes the elbow and supinates the forearm",
+   "m": "biceps",
+   "reflex": "Biceps jerk (C5, C6)"
+  },
+  {
+   "n": "Brachialis",
+   "nv": [
+    "musculocut"
+   ],
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Main flexor of the elbow",
+   "m": "brachialis"
+  },
+  {
+   "n": "Triceps brachii",
+   "nv": [
+    "radial"
+   ],
+   "lv": "prox",
+   "r": [
+    "C6",
+    "C7",
+    "C8"
+   ],
+   "a": "Extends the elbow",
+   "m": "triceps",
+   "reflex": "Triceps jerk (C7)"
+  },
+  {
+   "n": "Brachioradialis",
+   "nv": [
+    "radial"
+   ],
+   "lv": "arm",
+   "r": [
+    "C5",
+    "C6"
+   ],
+   "a": "Flexes the elbow in the mid-prone position",
+   "reflex": "Supinator jerk (C5, C6)"
+  },
+  {
+   "n": "Extensor carpi radialis longus",
+   "nv": [
+    "radial"
+   ],
+   "lv": "arm",
+   "r": [
+    "C6",
+    "C7"
+   ],
+   "a": "Extends the wrist"
+  },
+  {
+   "n": "Supinator",
+   "nv": [
+    "radial"
+   ],
+   "lv": "forearm",
+   "r": [
+    "C6"
+   ],
+   "a": "Supinates the forearm"
+  },
+  {
+   "n": "Extensors of the wrist, fingers and thumb",
+   "nv": [
+    "radial"
+   ],
+   "lv": "forearm",
+   "r": [
+    "C7",
+    "C8"
+   ],
+   "a": "Extend the wrist, fingers and thumb"
+  },
+  {
+   "n": "Pronator teres",
+   "nv": [
+    "median"
+   ],
+   "lv": "elbow",
+   "r": [
+    "C6",
+    "C7"
+   ],
+   "a": "Pronates the forearm"
+  },
+  {
+   "n": "Flexor carpi radialis",
+   "nv": [
+    "median"
+   ],
+   "lv": "elbow",
+   "r": [
+    "C6",
+    "C7"
+   ],
+   "a": "Flexes the wrist"
+  },
+  {
+   "n": "Flexor digitorum superficialis",
+   "nv": [
+    "median"
+   ],
+   "lv": "elbow",
+   "r": [
+    "C7",
+    "C8",
+    "T1"
+   ],
+   "a": "Flexes the fingers at the middle joints",
+   "reflex": "Finger flexor jerk (C8)"
+  },
+  {
+   "n": "Flexor pollicis longus and lateral half of flexor digitorum profundus",
+   "nv": [
+    "median"
+   ],
+   "lv": "elbow",
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Flex the thumb and the index and middle fingers at their end joints"
+  },
+  {
+   "n": "Thenar muscles",
+   "nv": [
+    "median"
+   ],
+   "lv": "hand",
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Abduct and oppose the thumb"
+  },
+  {
+   "n": "Lateral two lumbricals",
+   "nv": [
+    "median"
+   ],
+   "lv": "hand",
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Bend the knuckles and straighten the index and middle fingers"
+  },
+  {
+   "n": "Flexor carpi ulnaris",
+   "nv": [
+    "ulnar"
+   ],
+   "lv": "elbow",
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Flexes the wrist toward the little finger side"
+  },
+  {
+   "n": "Medial half of flexor digitorum profundus",
+   "nv": [
+    "ulnar"
+   ],
+   "lv": "elbow",
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Flexes the ring and little fingers at their end joints"
+  },
+  {
+   "n": "Hypothenar muscles",
+   "nv": [
+    "ulnar"
+   ],
+   "lv": "hand",
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Move the little finger"
+  },
+  {
+   "n": "Interossei",
+   "nv": [
+    "ulnar"
+   ],
+   "lv": "hand",
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Spread and close the fingers"
+  },
+  {
+   "n": "Medial two lumbricals",
+   "nv": [
+    "ulnar"
+   ],
+   "lv": "hand",
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Bend the knuckles and straighten the ring and little fingers"
+  },
+  {
+   "n": "Adductor pollicis",
+   "nv": [
+    "ulnar"
+   ],
+   "lv": "hand",
+   "r": [
+    "C8",
+    "T1"
+   ],
+   "a": "Adducts the thumb"
+  }
+ ],
+ "sensory": {
+  "axillary": [
+   [
+    "badge"
+   ]
+  ],
+  "musculocut": [
+   [
+    "latForearm"
+   ]
+  ],
+  "mcnArm": [
+   [
+    "medArm"
+   ]
+  ],
+  "mcnForearm": [
+   [
+    "medForearm"
+   ]
+  ],
+  "radial": [
+   [
+    "rPostArm",
+    "prox"
+   ],
+   [
+    "rPostForearm",
+    "arm"
+   ],
+   [
+    "rDorsum",
+    "forearm"
+   ]
+  ],
+  "median": [
+   [
+    "mPalm",
+    "elbow"
+   ],
+   [
+    "mDigits",
+    "hand"
+   ]
+  ],
+  "ulnar": [
+   [
+    "uPalm",
+    "elbow"
+   ],
+   [
+    "uDorsum",
+    "elbow"
+   ],
+   [
+    "uDigits",
+    "hand"
+   ]
+  ]
+ }
+}
