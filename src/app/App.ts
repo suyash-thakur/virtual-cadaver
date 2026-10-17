@@ -15,7 +15,7 @@ import { buildSession, grade, summarise, updateBox, type Attempt, type LeitnerBo
 import { chip, infoHTML, legendHTML, lesionHTML, photoHTML, spotterHTML, type HtmlCtx } from './html';
 
 export type Mode = 'dissect' | 'explore' | 'trace' | 'lesion' | 'spotter';
-export type Tool = 'turn' | 'scalpel' | 'forceps' | 'remove';
+export type Tool = 'turn' | 'scalpel';
 type SectionAxis = 'x' | 'y' | 'z';
 const SECTION_RANGE: Record<SectionAxis, [number, number]> = { x: [-40, 3], y: [-27, 20], z: [-13, 13] };
 type Continuous = Pick<DissectState, 'skin' | 'fat' | 'fascia' | 'inc' | 'fold'>;
@@ -47,7 +47,7 @@ export class App {
   removed = new Set<string>();
   private undoStack: { label: string; undo: () => void }[] = [];
   private stroke: { d: RT } | null = null;
-  private drag: { d: RT; y0: number; f0: number } | null = null;
+  private pendingRemove: { d: RT; x: number; y: number } | null = null;
   section: { axis: SectionAxis | null; t: number; flip: boolean } = { axis: null, t: 0.5, flip: false };
   progress: Progress = emptyProgress();
 
@@ -388,13 +388,14 @@ export class App {
       if (this.mode === 'explore' && this.tool !== 'turn') { this.toolDown(e.clientX, e.clientY); down = null; return; }
       if (this.hands.on) { this.hands.last = { x: e.clientX, y: e.clientY }; this.handsTrack(e.clientX, e.clientY, true); down = null; return; }
       down = pointers.size === 1 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null; });
-    canvas.addEventListener('pointermove', e => { if (this.stroke || this.drag) { this.toolMove(e.clientX, e.clientY); return; } if (this.hands.on && this.hands.last) this.handsTrack(e.clientX, e.clientY, false); });
+    canvas.addEventListener('pointermove', e => { if (this.stroke) { this.toolMove(e.clientX, e.clientY); return; } if (this.hands.on && this.hands.last) this.handsTrack(e.clientX, e.clientY, false); });
     canvas.addEventListener('pointerup', e => { pointers.delete(e.pointerId);
-      if (this.stroke || this.drag) { this.stroke = null; this.drag = null; return; }
+      if (this.stroke) { this.stroke = null; return; }
+      if (this.pendingRemove) { const p = this.pendingRemove; this.pendingRemove = null; if (Math.hypot(e.clientX - p.x, e.clientY - p.y) < 8) this.removeStructure(p.d); return; }
       if (this.hands.on) { this.hands.last = null; down = null; return; }
       if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 8 && performance.now() - down.t < 450) this.onPick(e.clientX, e.clientY);
       down = null; });
-    canvas.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); down = null; this.stroke = null; this.drag = null; });
+    canvas.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); down = null; this.stroke = null; this.pendingRemove = null; });
     document.querySelectorAll<HTMLButtonElement>('#toolbar [data-tool]').forEach(b => b.addEventListener('click', () => this.setTool(b.dataset.tool as Tool)));
     el('btnUndo').addEventListener('click', () => this.undo());
     el('btnResetDissection').addEventListener('click', () => this.resetDissection());
@@ -477,7 +478,6 @@ export class App {
       else if (e.key === '+' || e.key === '=') dolly(0.9); else if (e.key === '-') dolly(1.1);
       else if (this.mode === 'explore' && (e.key === 'z' || e.key === 'Z') && (e.metaKey || e.ctrlKey)) this.undo();
       else if (this.mode === 'explore' && e.key === '1') this.setTool('turn'); else if (this.mode === 'explore' && e.key === '2') this.setTool('scalpel');
-      else if (this.mode === 'explore' && e.key === '3') this.setTool('forceps'); else if (this.mode === 'explore' && e.key === '4') this.setTool('remove');
       else if (this.mode === 'dissect' && (e.key === 'n' || e.key === 'N')) { if (this.done) this.goStep(Math.min(this.step + 1, this.C.steps.length - 1), 'next'); else this.doAction(); }
       else if (this.mode === 'dissect' && (e.key === 'p' || e.key === 'P')) this.goStep(this.step - 1, 'jump');
       else return;
@@ -497,9 +497,11 @@ export class App {
 
   /* ---------- free dissection tools ---------- */
   setTool(t: Tool) {
-    this.tool = t; this.rig.controls.enabled = t === 'turn'; this.stroke = null; this.drag = null;
+    const prev = this.tool;
+    this.tool = t; this.rig.controls.enabled = t === 'turn'; this.stroke = null; this.pendingRemove = null;
     document.querySelectorAll<HTMLButtonElement>('#toolbar [data-tool]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === t)));
     this.canvas.dataset.tool = t;
+    if (t === 'scalpel' && prev !== 'scalpel') this.toast('Scalpel: drag over the skin to cut it away. Click a muscle, vessel or bone once to remove it. Undo is in the strip.', 4200);
   }
   private pushUndo(label: string, undo: () => void) { this.undoStack.push({ label, undo }); if (this.undoStack.length > 40) this.undoStack.shift(); el<HTMLButtonElement>('btnUndo').disabled = false; }
   undo() {
@@ -508,46 +510,36 @@ export class App {
   }
   resetDissection() {
     this.spec.resetMasks(); this.removed.clear(); this.undoStack = []; el<HTMLButtonElement>('btnUndo').disabled = true;
-    for (const d of this.order) { d.cutOrigin = false; if (d.fold && d.foldCur) { this.DP.fold[d.id] = 0; this.DT.fold[d.id] = 0; } }
+    for (const d of this.order) if (d.fold && d.lift) { this.DP.fold[d.id] = 0; this.DT.fold[d.id] = 0; }
     this.dissectDirty = true; this.updateTargets(); this.toast('Specimen restored.');
   }
-  private setFold(d: RT, f: number) { f = Math.max(0, Math.min(1, f)); this.DP.fold[d.id] = f; this.DT.fold[d.id] = f; this.dissectDirty = true; }
+  private removeStructure(d: RT) {
+    if (d.shellKey) { this.toast('Drag the scalpel over the skin to cut it away.'); return; }
+    this.removed.add(d.id); if (this.sel === d.id) this.sel = null;
+    this.pushUndo(`remove ${d.name.toLowerCase()}`, () => { this.removed.delete(d.id); });
+    this.updateTargets(); this.toast(`${d.name} removed.`);
+  }
+  /** Brush radius in world units, scaled so the cut stays about the same size on screen. */
+  private brushRadius() { return Math.max(1.2, this.gfx.camera.position.distanceTo(this.rig.controls.target) * 0.035); }
   private toolDown(x: number, y: number) {
     const hit = this.picker.pick(x, y);
     if (!hit) return;
     const d = hit.d;
-    if (this.tool === 'scalpel') {
-      if (d.shellKey) {
-        const snap = this.spec.maskSnapshot(d); if (!snap) return;
-        this.pushUndo(`cut ${d.name.toLowerCase()}`, () => this.spec.maskRestore(d, snap));
-        this.spec.paintMask(d, hit.point, 1.1); this.stroke = { d }; return;
-      }
-      if (d.fold) {
-        if (d.cutOrigin) { this.toast(`${d.name}: origin already cut. Use the forceps to reflect it.`); return; }
-        d.cutOrigin = true; this.pushUndo(`cut origin of ${d.name.toLowerCase()}`, () => { d.cutOrigin = false; });
-        this.toast(`${d.name}: origin cut. Switch to forceps and drag to reflect it.`); return;
-      }
-      this.toast('The scalpel cuts skin, fascia and the origins of reflectable muscles. Use Remove for other structures.'); return;
+    if (d.shellKey) {
+      const snap = this.spec.maskSnapshot(d); if (!snap) return;
+      this.pushUndo(`cut ${d.name.toLowerCase()}`, () => this.spec.maskRestore(d, snap));
+      this.spec.paintMask(d, hit.point, this.brushRadius()); this.stroke = { d }; return;
     }
-    if (this.tool === 'forceps') {
-      if (!d.fold) { this.toast(`${d.name} cannot be reflected. Use Remove to take it away.`); return; }
-      if (!d.cutOrigin) { this.toast(`Cut the origin of ${d.name.toLowerCase()} with the scalpel first.`); return; }
-      const f0 = this.DP.fold[d.id] ?? 0; this.pushUndo(`reflect ${d.name.toLowerCase()}`, () => this.setFold(d, f0));
-      this.drag = { d, y0: y, f0 }; return;
-    }
-    if (this.tool === 'remove') {
-      if (d.shellKey) { this.toast('Use the scalpel to cut the skin layers away.'); return; }
-      this.removed.add(d.id); if (this.sel === d.id) this.sel = null;
-      this.pushUndo(`remove ${d.name.toLowerCase()}`, () => { this.removed.delete(d.id); });
-      this.updateTargets(); this.toast(`${d.name} removed.`);
-    }
+    this.pendingRemove = { d, x, y };
   }
   private toolMove(x: number, y: number) {
-    if (this.stroke) { const hit = this.picker.pick(x, y); if (hit && hit.d.shellKey) { if (hit.d !== this.stroke.d) { const snap = this.spec.maskSnapshot(hit.d); if (snap) this.pushUndo(`cut ${hit.d.name.toLowerCase()}`, () => this.spec.maskRestore(hit.d, snap)); this.stroke = { d: hit.d }; } this.spec.paintMask(hit.d, hit.point, 1.1); } return; }
-    if (this.drag) { this.setFold(this.drag.d, this.drag.f0 + (this.drag.y0 - y) / 220); }
+    if (!this.stroke) return;
+    const hit = this.picker.pick(x, y); if (!hit || !hit.d.shellKey) return;
+    if (hit.d !== this.stroke.d) { const snap = this.spec.maskSnapshot(hit.d); if (snap) this.pushUndo(`cut ${hit.d.name.toLowerCase()}`, () => this.spec.maskRestore(hit.d, snap)); this.stroke = { d: hit.d }; }
+    this.spec.paintMask(hit.d, hit.point, this.brushRadius());
   }
   private toastTimer = 0;
-  toast(msg: string) { const t = el('toast'); t.textContent = msg; t.hidden = false; clearTimeout(this.toastTimer); this.toastTimer = window.setTimeout(() => { t.hidden = true; }, 2600); }
+  toast(msg: string, ms = 2600) { const t = el('toast'); t.textContent = msg; t.hidden = false; clearTimeout(this.toastTimer); this.toastTimer = window.setTimeout(() => { t.hidden = true; }, ms); }
 
   /* ---------- section plane ---------- */
   applySection() {

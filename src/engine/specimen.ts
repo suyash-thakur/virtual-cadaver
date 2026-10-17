@@ -37,11 +37,11 @@ export class Specimen {
   /** Colour for swatches and chips: nerves keep their family colour even in cadaver mode. */
   dotColor(d: RT): string { return d.layer === 'nerves' && this.palette === 'cadaver' ? this.C.palette.families[d.fam!].c : this.colorFor(d); }
 
-  private register(partial: Omit<RT, 'meshes' | 'hits' | 'cov' | 'cur' | 'target' | 'eBase' | 'lbl' | 'foldCur' | 'children' | 'parents'> & { parents?: string[] }): RT {
+  private register(partial: Omit<RT, 'meshes' | 'hits' | 'cov' | 'cur' | 'target' | 'eBase' | 'lbl' | 'foldCur' | 'lift' | 'children' | 'parents'> & { parents?: string[]; lift?: number }): RT {
     const b = document.createElement('button'); b.className = 'lbl'; b.type = 'button'; b.hidden = true;
     b.textContent = partial.label || partial.name; b.addEventListener('click', () => this.onLabel(partial.id));
     this.labelsEl.appendChild(b);
-    const d: RT = { ...partial, parents: partial.parents || [], children: [], meshes: [], hits: [], cov: [], cur: 1, target: 1, eBase: 0, lbl: b, foldCur: 0 };
+    const d: RT = { ...partial, parents: partial.parents || [], children: [], meshes: [], hits: [], cov: [], cur: 1, target: 1, eBase: 0, lbl: b, foldCur: 0, lift: 0 };
     this.R.add(d); return d;
   }
   private addMesh(d: RT, geo: BufferGeometry, pos?: Vector3): Mesh {
@@ -126,7 +126,9 @@ export class Specimen {
   }
 
   applyVis(d: RT) {
-    const o = d.cur * d.op, m = d.mat, tr = o < .995;
+    const lift = d.lift || 0, o = d.cur * d.op * (1 - lift), m = d.mat, tr = o < .995;
+    // A detached muscle drifts off its bed as it fades, so the removal reads as lifting it away.
+    if (d.liftDir) for (const x of d.meshes) x.position.copy(d.liftDir).multiplyScalar(lift * 2.5);
     m.opacity = o;
     if (m.transparent !== tr) { m.transparent = tr; m.needsUpdate = true; }
     if (d.kind !== 'Fascia' && d.id !== 'deepFascia') m.depthWrite = o > .5;
@@ -147,7 +149,10 @@ export class Specimen {
       if (incD) { const tubes = incD.meshes.filter(m => m.userData.inc), n = tubes.length;
         tubes.forEach((m, k) => { const p = Math.max(0, Math.min(1, inc * n - k)); const cnt = m.geometry.index!.count; m.geometry.setDrawRange(0, Math.floor(cnt * p / 6) * 6); }); }
     }
-    for (const id of Object.keys(fold)) { const d = this.R.S[id]; if (d && d.foldCur !== fold[id]) { d.foldCur = fold[id]; this.applyFold(d); } }
+    for (const id of Object.keys(fold)) { const d = this.R.S[id]; if (!d || d.lift === fold[id]) continue;
+      d.lift = fold[id];
+      if (!d.liftDir) { d.liftDir = d.anchor.clone().sub(CENTER).setY(0).normalize().add(new Vector3(0, 0.3, 0.6)).normalize(); }
+      this.applyVis(d); }
   }
 
   /** Meshes that can hide a label anchor: visible, mostly opaque, not nerves' hit tubes. */

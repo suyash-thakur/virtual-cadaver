@@ -22,8 +22,6 @@ function install(spec: Specimen, d: RT, geo: BufferGeometry) {
   const mat = d.mat as unknown as { map: unknown; bumpMap: unknown; needsUpdate: boolean };
   if (mat.map) { mat.map = null; mat.bumpMap = null; mat.needsUpdate = true; }
   d.real = true;
-  spec.rigFold(d);
-  if (d.foldCur) spec.applyFold(d);
 }
 
 /**

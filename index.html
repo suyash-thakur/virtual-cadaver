@@ -18,9 +18,7 @@
   <div class="viewer" id="photoViewer" hidden><img alt=""></div>
   <div class="toolbar" id="toolbar" hidden role="toolbar" aria-label="Dissection tools">
     <button data-tool="turn" aria-pressed="true" title="Turn the specimen (1)">Turn</button>
-    <button data-tool="scalpel" aria-pressed="false" title="Scalpel: scrub away skin, fat and fascia; cut a muscle origin (2)">Scalpel</button>
-    <button data-tool="forceps" aria-pressed="false" title="Forceps: drag to reflect a muscle whose origin is cut (3)">Forceps</button>
-    <button data-tool="remove" aria-pressed="false" title="Remove a structure (4)">Remove</button>
+    <button data-tool="scalpel" aria-pressed="false" title="Scalpel: drag to cut skin away, click a structure to remove it (2)">Scalpel</button>
     <span class="sep"></span>
     <button id="btnUndo" disabled title="Undo (Ctrl+Z)">Undo</button>
     <button id="btnResetDissection" title="Restore the specimen">Reset</button>
@@ -95,8 +93,8 @@
       <li>Drag with one finger to turn the specimen.</li>
       <li>Pinch to zoom; drag with two fingers to move it.</li>
       <li>Tap any structure or label to learn about it.</li>
-      <li>Keyboard: arrow keys turn, + and − zoom, N and P step through the dissection, 1 to 4 pick a tool in Explore.</li>
-      <li>In <b>Explore</b>, the tool strip lets you dissect freely: scrub skin away with the scalpel, cut a muscle origin, reflect it with the forceps, remove anything, and undo.</li>
+      <li>Keyboard: arrow keys turn, + and − zoom, N and P step through the dissection, 1 and 2 switch between Turn and Scalpel in Explore.</li>
+      <li>In <b>Explore</b>, pick the scalpel: drag over the skin to cut it away, click any muscle, vessel or bone once to remove it, and undo from the strip.</li>
     </ul>
     <p><b>Dissect</b> takes you through the specimen in the order of a dissection manual. <b>Explore</b> lets you switch layers on and off freely. <b>Trace</b> lights up the fibres carried by any root or branch. <b>Lesion</b> cuts a nerve and shows which muscles are paralysed and where feeling is lost. <b>Spotter</b> pins structures and quizzes you the way a practical exam does, returning to the ones you missed.</p>
     <h3 class="sec">Your progress</h3>

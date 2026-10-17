@@ -13,6 +13,9 @@ export interface RT {
   mat: Mat; meshes: Mesh[]; hits: Mesh[]; cov: Cov[];
   /** Current and target visibility, 0..1. */
   cur: number; target: number; eBase: number;
+  /** Dissection removal, 0..1: a detached muscle fades out and lifts away instead of folding. */
+  lift: number;
+  liftDir?: Vector3;
   anchor: Vector3; curve?: CatmullRomCurve3;
   lbl: HTMLButtonElement; lw?: number;
   fold?: number; foldCur: number; foldSign?: number; sg?: SheetGeo; dg?: DeltoidGeo;

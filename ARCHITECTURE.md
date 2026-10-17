@@ -42,11 +42,12 @@ give the trace and lesion modes their parameterised curves.
 
 ## Free dissection
 
-In Explore, the tool strip switches the pointer between turn, scalpel, forceps and remove.
-The scalpel paints a `mask` vertex attribute on the skin, fat and fascia shells (the shader
-discards masked fragments, picking ignores them) and marks the origin of a reflectable
-muscle as cut; the forceps then drive that muscle's fold; remove zeroes a structure's
-target visibility. Every action pushes a closure onto an undo stack. The section plane is a
+In Explore, the tool strip has two tools: turn and scalpel. Dragging the scalpel paints a
+`mask` vertex attribute on the skin, fat and fascia shells (the shader discards masked
+fragments, picking ignores them); clicking any other structure removes it. Removal in the
+guided dissection uses the same `lift` value as the old fold: the muscle fades out and
+drifts off its bed rather than hinging, which read as broken. Every action pushes a closure
+onto an undo stack. The section plane is a
 single global clipping plane that always removes the half nearest the camera.
 
 ## Progress

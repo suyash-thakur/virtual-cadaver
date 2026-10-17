@@ -191,7 +191,7 @@ kbd{font:inherit;font-size:12px;padding:1px 5px;border:1px solid var(--line);bor
 .toolbar .sep{height:1px;background:var(--line);margin:2px 4px}
 body.wide .toolbar{top:80px}
 @media (max-width:520px){ .toolbar{top:auto;bottom:calc(100% - 112px);flex-direction:row;left:8px} .toolbar button{min-width:0;padding:6px 8px} .toolbar .sep{width:1px;height:auto} }
-#c[data-tool="scalpel"]{cursor:crosshair} #c[data-tool="forceps"]{cursor:grab} #c[data-tool="remove"]{cursor:not-allowed}
+#c[data-tool="scalpel"]{cursor:crosshair}
 .toast{position:absolute;left:50%;bottom:calc(50% + 40px);transform:translateX(-50%);z-index:9;max-width:min(520px,calc(100% - 32px));padding:10px 14px;border-radius:12px;background:var(--primary);color:var(--primary-ink);font-size:14px;font-weight:700;box-shadow:var(--shadow)}
 .toast[hidden]{display:none}
 body.wide .toast{left:calc((100% - 372px)/2);bottom:24px}
