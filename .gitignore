@@ -3,3 +3,5 @@ dist
 .cache
 public/assets/*.glb
 tools/.bp3d-cache
+public/vh/
+tools/.vh-cache

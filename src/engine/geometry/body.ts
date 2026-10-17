@@ -152,7 +152,7 @@ export function peelAt(l: number, s: number, a: number): [number, number] {
 /** Marches from `st` along `dir` until the field drops below `iso`; returns the surface point or null. */
 export function proj(G: Field, st: number[], dir: number[], iso: number): number[] | null {
   let prev: number[] | null = null;
-  for (let t = 0; t < 30; t += .2) {
+  for (let t = 0; t < 60; t += .2) {
     const p = [st[0] + dir[0] * t, st[1] + dir[1] * t, st[2] + dir[2] * t];
     if (sampleF(G, p[0], p[1], p[2]) < iso) {
       if (!prev) return p; let lo = prev, hi = p;

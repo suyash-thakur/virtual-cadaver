@@ -30,6 +30,9 @@
    "subscap",
    "platysma"
   ],
+  "body": [
+   "skin"
+  ],
   "vessels": [
    "subclavianA",
    "subclavianV",

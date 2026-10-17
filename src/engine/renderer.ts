@@ -1,4 +1,5 @@
-import { DirectionalLight, HemisphereLight, PerspectiveCamera, Scene, SRGBColorSpace, WebGLRenderer, ACESFilmicToneMapping } from 'three';
+import { DirectionalLight, HemisphereLight, PerspectiveCamera, PMREMGenerator, Scene, SRGBColorSpace, WebGLRenderer, ACESFilmicToneMapping } from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 export interface Gfx { renderer: WebGLRenderer; scene: Scene; camera: PerspectiveCamera }
 
@@ -17,7 +18,9 @@ export function createGfx(canvas: HTMLCanvasElement): Gfx | null {
   const scene = new Scene();
   const camera = new PerspectiveCamera(36, 1, 0.5, 1200);
   // Physically based light units (three r155+): legacy intensities are scaled by pi.
-  scene.add(new HemisphereLight(0xf2f7f5, 0x34443f, 0.9 * Math.PI));
+  // Image-based lighting from a neutral room gives soft fill and believable speculars on wet fascia and vessels.
+  const pmrem = new PMREMGenerator(renderer); scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.4; pmrem.dispose();
+  scene.add(new HemisphereLight(0xf2f7f5, 0x34443f, 0.45 * Math.PI));
   const key = new DirectionalLight(0xfff1dc, 0.85 * Math.PI); key.position.set(-25, 35, 40); scene.add(key);
   const fill = new DirectionalLight(0xe8f0ff, 0.25 * Math.PI); fill.position.set(30, 5, 20); scene.add(fill);
   const rim = new DirectionalLight(0xcfe0ff, 0.4 * Math.PI); rim.position.set(15, -10, -35); scene.add(rim);

@@ -40,6 +40,29 @@ procedural meshes for glTF meshes when the file is present, so the app runs with
 without assets. Nerves stay as splines from content: BodyParts3D has no plexus, and splines
 give the trace and lesion modes their parameterised curves.
 
+## Body surface
+
+With `assets/body.glb` present, `engine/body.ts` builds the three shells from the real
+BodyParts3D skin: the skin itself, and inward offsets of 0.45 and 1.0 units for the
+superficial and deep fascia. Each shell gets its own index buffer (BVH builds reorder the
+index in place), peel order and trunk/arm weight from `peelAt`, a tone colour, the cut
+mask and planar UVs for the procedural pore, lobule and fibre textures in
+`engine/textures.ts`. Surface helpers (incisions, landmarks, superficial veins, platysma)
+are placed by raycasting the real skin (`SkinProjector`) instead of marching the field.
+The converter keeps only the outer wall of the integument (BodyParts3D models skin as a
+closed double-walled solid), clips below the lower chest, caps the cut loops, and skins
+the hanging right arm into the abducted pose. Without the asset, the implicit-surface
+blob in the worker is still used.
+
+## Visible Human section panel
+
+`tools/fetch-visible-human.py` downloads cryosections 1180 to 1640 (chin to lower chest)
+at 2 mm, writes axial JPEGs plus sagittal and coronal resamples, and a manifest with the
+registration: the humeral head is slice 1300 and one world unit is 10.45 mm. In Explore,
+`app/section.ts` maps the section plane position to a slice and the sheet shows it with a
+caption. The match is approximate (different body, arms by the sides) and the caption
+says so.
+
 ## Free dissection
 
 In Explore, the tool strip has two tools: turn and scalpel. Dragging the scalpel paints a
@@ -66,7 +89,8 @@ images for every step, content and engine split with tests.
 Open:
 
 1. Photogrammetry of departmental prosections as the photo-real layer (needs a specimen
-   and a camera rig; the content schema already takes a photo per step).
+   and a camera rig; the content schema already takes a photo per step). Until then the
+   real BodyParts3D skin with procedural textures and the Visible Human sections stand in.
 2. Accounts and a backend so progress syncs across devices and teachers do not collect
    files by hand.
 3. More regions through the same content schema (`region` in `structures.json`): each

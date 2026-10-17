@@ -7,8 +7,10 @@ plus free dissection: scalpel, forceps, remove, undo, and a section plane), **Tr
 by root value), **Lesion** (what a cut nerve paralyses and numbs) and **Spotter**
 (pin-and-identify practice with spaced repetition, the practical-exam format).
 
-Bones, deep muscles and vessels are real meshes from BodyParts3D; nerves are splines from
-the content. Student progress is kept locally and can be exported; `teacher.html` builds a
+The body surface, bones, deep muscles and vessels are real meshes from BodyParts3D (the
+skin is the outer wall of its integument model, posed and capped); nerves are splines from
+the content. With the section plane on, the panel shows the photographed Visible Human
+cryosection at that level. Student progress is kept locally and can be exported; `teacher.html` builds a
 class overview from exported files without any server.
 
 ## Run it
@@ -16,6 +18,7 @@ class overview from exported files without any server.
 ```sh
 npm install
 npm run assets     # once: downloads BodyParts3D (~200 MB cached) and writes public/assets/*.glb
+npm run vh         # once, optional: Visible Human cryosections for the section panel (~800 MB cached, 23 MB served; needs Pillow)
 npm run dev        # http://localhost:5173  (teacher view at /teacher.html)
 npm test           # content validation + logic tests
 npm run build      # type-check and production build into dist/
@@ -36,6 +39,7 @@ Browsers without WebGL get a readable fallback lesson instead of a blank page.
 | `src/app/` | UI controller, panel HTML, 2D fallback. |
 | `tools/extract-content.mjs` | One-off extractor that pulled the content out of the single-file prototype. |
 | `tools/fetch-bodyparts3d.mjs` | Downloads BodyParts3D meshes for the region and converts them to glTF (`public/assets/`). |
+| `tools/fetch-visible-human.py` | Downloads Visible Human Male cryosections and writes axial, sagittal and coronal JPEG slices (`public/vh/`). |
 
 ## Editing content
 

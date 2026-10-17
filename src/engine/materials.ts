@@ -1,4 +1,4 @@
-import { Color, DoubleSide, FrontSide, MeshPhysicalMaterial, MeshStandardMaterial } from 'three';
+import { Color, DoubleSide, FrontSide, MeshPhysicalMaterial, MeshStandardMaterial, type Texture } from 'three';
 import type { WebGLProgramParametersWithUniforms } from 'three';
 
 export type Mat = MeshPhysicalMaterial | MeshStandardMaterial;
@@ -13,8 +13,9 @@ export interface PeelUniforms { uCutT: { value: number }; uCutA: { value: number
  * Skin, fat and fascia shells. Each vertex carries a `peel` order and a `warm` weight
  * (trunk vs arm); fragments past the cut are discarded and the edge curls outward.
  */
-export function peelMaterial(color: string, rough: number, op: number, inner: string): { mat: MeshStandardMaterial; u: PeelUniforms } {
-  const m = new MeshStandardMaterial({ color, roughness: rough, metalness: 0, vertexColors: true, side: DoubleSide, transparent: op < 1, opacity: op });
+export interface ShellTex { map?: Texture; bumpMap?: Texture; bumpScale?: number; roughness?: number }
+export function peelMaterial(color: string, rough: number, op: number, inner: string, tex?: ShellTex): { mat: MeshStandardMaterial; u: PeelUniforms } {
+  const m = new MeshStandardMaterial({ color, roughness: tex?.roughness ?? rough, metalness: 0, vertexColors: true, side: DoubleSide, transparent: op < 1, opacity: op, map: tex?.map ?? null, bumpMap: tex?.bumpMap ?? null, bumpScale: tex?.bumpScale ?? 1 });
   const u: PeelUniforms = { uCutT: { value: 0 }, uCutA: { value: 0 }, uInner: { value: new Color(inner) } };
   m.onBeforeCompile = (sh: WebGLProgramParametersWithUniforms) => {
     Object.assign(sh.uniforms, u);

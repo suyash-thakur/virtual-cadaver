@@ -6,7 +6,8 @@ import { Picker, curveParamNear } from '../engine/picking';
 import type { RT } from '../engine/registry';
 import type { Gfx } from '../engine/renderer';
 import { Specimen, type PaletteMode } from '../engine/specimen';
-import { loadAssets, applyPendingAssets } from '../engine/assets';
+import { loadAssets, applyPendingAssets, realSkin } from '../engine/assets';
+import { loadVh, sliceFor, type VhManifest } from './section';
 import { PROGRESS_KEY, emptyProgress, parseProgress, recordLesion, recordSpotter, recordStep, stats, type Progress } from '../logic/progress';
 import { blendState, endState, initialState, isIncisionStep, stepState, type DissectState } from '../logic/dissect';
 import { computeLesion, customLesion, type LesionResult } from '../logic/lesion';
@@ -51,6 +52,7 @@ export class App {
   private pointerMove: { x: number; y: number } | null = null;
   section: { axis: SectionAxis | null; t: number; flip: boolean } = { axis: null, t: 0.5, flip: false };
   progress: Progress = emptyProgress();
+  private vh: VhManifest | null = null;
 
   private DP: Continuous = initialState(); private DT: Continuous = initialState();
   private dissectDirty = true;
@@ -104,7 +106,7 @@ export class App {
     requestAnimationFrame(t => this.frame(t));
     try { const ids = await loadAssets(this.spec); if (ids.length) console.info(`real meshes: ${ids.join(', ')}`); } catch (e) { console.warn('assets', e); }
     this.applyColors();
-    try { await this.spec.buildBody(); }
+    try { await this.spec.buildBody(realSkin || undefined); }
     catch (err) { console.error(err); el('loading').textContent = 'The skin layers could not be built on this device. The deeper layers still work.'; setTimeout(() => { el('loading').hidden = true; }, 4000); }
     if (this.spec.built) el('loading').hidden = true;
     this.spec.built = true;
@@ -112,6 +114,7 @@ export class App {
     this.renderProgress();
     this.refreshLabelColors(); this.updateTargets(); this.renderSheet(); this.applyDissect();
     this.goStep(0, 'jump');
+    loadVh().then(m => { this.vh = m; if (this.section.axis) this.renderSheet(); });
   }
 
   /* ---------- layout ---------- */
@@ -236,7 +239,7 @@ export class App {
       h = spotterHTML(ctx, { session: sp.session, i: sp.i, chosen: sp.chosen, summary: sp.summary, dueCount: pool.filter(s => sp.box[s.id] && sp.box[s.id].due <= now).length, poolSize: pool.length });
       if (this.sel && S[this.sel] && (!sp.session || sp.chosen != null || sp.summary)) h += `<hr>` + infoHTML(ctx, S[this.sel], { compact: true }) + `<div class="actions"><button class="btn" data-act="close">Hide details</button></div>`;
     } else if (this.sel && S[this.sel]) {
-      h = infoHTML(ctx, S[this.sel]);
+      h = infoHTML(ctx, S[this.sel]) + this.sectionHTML();
     } else if (this.mode === 'trace') {
       h = `<h2 class="sname">Trace the fibres</h2><p class="muted">Pick a root to light up every nerve its fibres reach, or tap any branch to follow it back to its roots.</p>
         <div class="chips">${this.C.rootIds.map(id => chip(ctx, id, 'big')).join('')}</div>
@@ -244,7 +247,7 @@ export class App {
     } else {
       h = `<h2 class="sname">Tap a structure to begin</h2><p class="muted">Turn layers on and off from the Layers button to build the specimen up or strip it down. Tap any nerve or label to see its root values, what it supplies and why it matters clinically.</p>
         <h3 class="sec">Good places to start</h3><div class="chips">${['upperTrunk', 'latCord', 'postCord', 'median', 'radial', 'ulnar'].map(id => chip(ctx, id)).join('')}</div>
-        <h3 class="sec">Colours</h3>${legendHTML(ctx, this.pal)}`;
+        <h3 class="sec">Colours</h3>${legendHTML(ctx, this.pal)}` + this.sectionHTML();
     }
     this.body.innerHTML = h;
   }
@@ -557,6 +560,7 @@ export class App {
   /* ---------- section plane ---------- */
   applySection() {
     const s = this.section;
+    this.renderSheet();
     if (!s.axis) { this.gfx.renderer.clippingPlanes = []; return; }
     const [lo, hi] = SECTION_RANGE[s.axis]; const at = lo + s.t * (hi - lo);
     const axis = new Vector3(s.axis === 'x' ? 1 : 0, s.axis === 'y' ? 1 : 0, s.axis === 'z' ? 1 : 0);
@@ -565,6 +569,17 @@ export class App {
     const n = axis.clone().multiplyScalar(-camSide * (s.flip ? -1 : 1));
     const p = axis.clone().multiplyScalar(at);
     this.gfx.renderer.clippingPlanes = [new Plane(n, -n.dot(p))];
+  }
+
+  /** Visible Human slice matching the current section plane, or a note when the data is not installed. */
+  private sectionHTML(): string {
+    const s = this.section; if (!s.axis || this.mode !== 'explore') return '';
+    const [lo, hi] = SECTION_RANGE[s.axis]; const at = lo + s.t * (hi - lo);
+    if (!this.vh) return `<hr><h3 class="sec">Real section at this level</h3><p class="muted small">Visible Human slices are not installed. Run <code>python3 tools/fetch-visible-human.py</code> once to add them.</p>`;
+    const sl = sliceFor(this.vh, s.axis, at);
+    return `<hr><h3 class="sec">Real section at this level</h3>
+      <figure class="photo vh"><button class="photo-btn" data-act="pview" data-src="${sl.src}" aria-label="Enlarge section"><img src="${sl.src}" alt="Visible Human cryosection, ${sl.level}"></button>
+      <figcaption>${sl.caption} <span class="muted">Photograph of a real cadaver section from the Visible Human Project (U.S. National Library of Medicine, public domain). A different body from the model, so the match is approximate.</span></figcaption></figure>`;
   }
 
   /* ---------- progress ---------- */

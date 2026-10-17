@@ -7,6 +7,8 @@ import { ensureBVH } from './bvh';
 interface Manifest { license: string; groups: Record<string, string[]> }
 
 const pending = new Map<string, BufferGeometry>();
+/** The real skin mesh, kept for `Specimen.buildBody`. */
+export let realSkin: BufferGeometry | null = null;
 
 function install(spec: Specimen, d: RT, geo: BufferGeometry) {
   for (const m of d.meshes) { spec.scene.remove(m); m.geometry.dispose(); }
@@ -47,6 +49,7 @@ export async function loadAssets(spec: Specimen, base = import.meta.env.BASE_URL
     gltf.scene.traverse(obj => {
       if (!(obj instanceof Mesh)) return;
       const id = obj.name; const geo = obj.geometry as BufferGeometry;
+      if (id === 'skin') { realSkin = geo; replaced.push('skin (body)'); return; }
       if (!spec.R.has(id)) { pending.set(id, geo); return; }
       install(spec, spec.R.get(id), geo); replaced.push(id);
     });

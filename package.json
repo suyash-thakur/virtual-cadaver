@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "extract": "node tools/extract-content.mjs",
-    "assets": "node tools/fetch-bodyparts3d.mjs"
+    "assets": "node tools/fetch-bodyparts3d.mjs",
+    "vh": "python3 tools/fetch-visible-human.py"
   },
   "dependencies": {
     "three": "^0.186.1",

@@ -1,10 +1,12 @@
 import { BoxGeometry, BufferAttribute, BufferGeometry, Color, CylinderGeometry, Float32BufferAttribute, Mesh, MeshBasicMaterial, Scene, TubeGeometry, Vector3 } from 'three';
 import type { Content, Structure, Other, Nerve, Layer } from '../content';
-import { V, v3, armL, DEG } from './coords';
+import { V, v3, armL, armDir, DEG } from './coords';
 import { curveOf, sphereGeo, fibreTex, roughen, sheetGeo, plateGeo, deltoidGeo, fatPadGeo } from './geometry/builders';
 import { CENTER } from './coords';
 import { ensureBVH } from './bvh';
-import { collectSplats, frontPt, armPt, proj, type Field } from './geometry/body';
+import { buildShells, decorateShell, SkinProjector } from './body';
+import { bodyTextures } from './textures';
+import { collectSplats, proj as fieldProj, type Field } from './geometry/body';
 import type { BodyRequest, BodyResponse } from './geometry/body.worker';
 import { makeMat, peelMaterial } from './materials';
 import { Registry, type RT } from './registry';
@@ -166,31 +168,60 @@ export class Specimen {
   }
 
   /** Builds the skin layers in a worker, then the structures that sit on them. Resolves when done. */
-  async buildBody(): Promise<void> {
-    const splats = collectSplats(this.order);
-    const worker = new Worker(new URL('./geometry/body.worker.ts', import.meta.url), { type: 'module' });
-    const req: BodyRequest = { splats, h: 0.45, shells: this.C.shells.map(s => ({ id: s.id, iso: s.iso, tone: s.tone })) };
-    const res = await new Promise<BodyResponse>((resolve, reject) => {
-      worker.onmessage = (e: MessageEvent<BodyResponse>) => resolve(e.data);
-      worker.onerror = (e) => reject(new Error(e.message));
-      worker.postMessage(req);
-    });
-    worker.terminate();
-    this.field = res.field;
-    const G = this.field;
+  /** True when the shells come from the real skin mesh rather than the field. */
+  realBody = false;
+  /** Surface query used to place helpers on the body; exposed for diagnostics. */
+  projector: { proj: (st: number[], dir: number[], iso: number) => number[] | null } | null = null;
+
+  async buildBody(realSkin?: BufferGeometry): Promise<void> {
+    const geos: Record<string, BufferGeometry> = {};
+    let projector: { proj: (st: number[], dir: number[], iso: number) => number[] | null };
+    if (realSkin) {
+      const shells = buildShells(realSkin);
+      geos.skin = shells.skin; geos.fat = shells.fat; geos.deepFascia = shells.deepFascia;
+      for (const sh of this.C.shells) decorateShell(geos[sh.id], sh.tone);
+      const sp = new SkinProjector(shells.skin);
+      projector = { proj: (st, dir, iso) => sp.proj(st, dir, iso) };
+      this.realBody = true;
+    } else {
+      const splats = collectSplats(this.order);
+      const worker = new Worker(new URL('./geometry/body.worker.ts', import.meta.url), { type: 'module' });
+      const req: BodyRequest = { splats, h: 0.45, shells: this.C.shells.map(s => ({ id: s.id, iso: s.iso, tone: s.tone })) };
+      const res = await new Promise<BodyResponse>((resolve, reject) => {
+        worker.onmessage = (e: MessageEvent<BodyResponse>) => resolve(e.data);
+        worker.onerror = (e) => reject(new Error(e.message));
+        worker.postMessage(req);
+      });
+      worker.terminate();
+      this.field = res.field;
+      const G = this.field;
+      projector = { proj: (st, dir, iso) => fieldProj(G, st, dir, iso) };
+      for (const sh of this.C.shells) {
+        const m = res.shells.find(x => x.id === sh.id)!;
+        const g = new BufferGeometry();
+        g.setAttribute('position', new BufferAttribute(m.pos, 3)); g.setAttribute('peel', new BufferAttribute(m.peel, 1));
+        g.setAttribute('warm', new BufferAttribute(m.warm, 1)); g.setAttribute('color', new BufferAttribute(m.col, 3));
+        g.setAttribute('mask', new BufferAttribute(new Float32Array(m.peel.length), 1));
+        g.setIndex(new BufferAttribute(m.idx, 1)); g.computeVertexNormals();
+        geos[sh.id] = g;
+      }
+    }
+    this.projector = projector;
+    const tex = this.realBody ? bodyTextures() : null;
     for (const sh of this.C.shells) {
-      const m = res.shells.find(x => x.id === sh.id)!;
-      const g = new BufferGeometry();
-      g.setAttribute('position', new BufferAttribute(m.pos, 3)); g.setAttribute('peel', new BufferAttribute(m.peel, 1));
-      g.setAttribute('warm', new BufferAttribute(m.warm, 1)); g.setAttribute('color', new BufferAttribute(m.col, 3));
-      g.setAttribute('mask', new BufferAttribute(new Float32Array(m.peel.length), 1));
-      g.setIndex(new BufferAttribute(m.idx, 1)); g.computeVertexNormals();
+      const g = geos[sh.id];
       const inf = this.C.surfaces[sh.id];
       const d = this.register({ id: sh.id, name: inf.name, kind: inf.kind, info: inf.info, layer: 'skin', noCover: true, surface: true, color: sh.color, cad: sh.cad, op: sh.op, shellKey: sh.key, mat: makeMat('#fff', 1, true), anchor: new Vector3() });
-      const pm = peelMaterial(this.colorFor(d), sh.rough, sh.op, sh.inner); d.mat = pm.mat; d.peel = pm.u; d.eBase = 0;
+      const pm = peelMaterial(this.colorFor(d), sh.rough, sh.op, sh.inner, tex ? tex[sh.id] : undefined); d.mat = pm.mat; d.peel = pm.u; d.eBase = 0;
       if (sh.op < 1) d.mat.depthWrite = false;
       const mesh = this.addMesh(d, g); mesh.userData.shell = true; mesh.renderOrder = sh.op < 1 ? 2 : 0;
     }
+    // Surface queries below go through the projector so the helpers sit on whichever body was built.
+    // Rays start well outside either body (the real chest front lies about 10 units anterior).
+    const frontPt = (_G: unknown, l: number, s: number, iso: number) => projector.proj([l, s, 34], [0, 0, -1], iso);
+    const armPt = (_G: unknown, t: number, th: number, iso: number) => { const ax = armL(t, 0, -1.2), dd = armDir(th); return projector.proj([ax[0] + dd[0] * 16, ax[1] + dd[1] * 16, ax[2] + dd[2] * 16], [-dd[0], -dd[1], -dd[2]], iso); };
+    const proj = (_G: unknown, st: number[], dir: number[], iso: number) => projector.proj(st, dir, iso);
+    const G = null;
     const toV = (q: number[] | null) => q ? V(q[0], q[1], q[2]) : null;
     const S = this.R.S;
     S.skin.anchor = toV(frontPt(G, 6, -5, 0)) || V(6, -5, 7);
@@ -238,7 +269,7 @@ export class Specimen {
       const cl: (Vector3 | null)[] = [], cp = [[0.4, 2.6], [5, 3.1], [8.5, 4.0], [12, 4.7], [14.6, 5.2], [16.8, 5.4]];
       for (let k = 0; k < cp.length - 1; k++) for (let f = 0; f < 1; f += .25) cl.push(fp(cp[k][0] + (cp[k + 1][0] - cp[k][0]) * f, cp[k][1] + (cp[k + 1][1] - cp[k][1]) * f, .04));
       lines.push(cl);
-      const inf: (Vector3 | null)[] = []; for (let th = 0; th <= 115; th += 4) { const r = th * DEG; inf.push(toV(proj(G, [Math.sin(r) * 25, -14, -0.6 + Math.cos(r) * 25], [-Math.sin(r), 0, -Math.cos(r)], .04))); } lines.push(inf);
+      const inf: (Vector3 | null)[] = []; for (let th = 0; th <= 115; th += 4) { const r = th * DEG; inf.push(toV(proj(G, [Math.sin(r) * 34, -14, -0.6 + Math.cos(r) * 34], [-Math.sin(r), 0, -Math.cos(r)], .04))); } lines.push(inf);
       const arm: (Vector3 | null)[] = []; for (let t = -2; t <= 16; t += .75) arm.push(ap(t, 90 * DEG, .04));
       for (let th = 86; th >= 10; th -= 6) arm.push(ap(16, th * DEG, .04)); lines.push(arm);
       d.lines = []; d.guides = [];
@@ -252,8 +283,8 @@ export class Specimen {
         if (!d.curve) d.curve = c; });
       d.anchor = d.curve!.getPoint(.4);
     }
-    const LM: Record<string, Vector3 | null> = { lmNotch: fp(0.3, 7.3, .05), lmAngle: fp(0.3, -0.4, .05), lmAcromion: toV(proj(G, [17.4, 14, -1.6], [0, -1, 0], .05)),
-      lmInfraclav: fp(13.4, 2.2, .05), lmGroove: ap(4, 76 * DEG, .05), lmAntFold: fp(14.4, -5.5, .05), lmPostFold: toV(proj(G, [13.6, -6.5, -16], [0, 0, 1], .05)) };
+    const LM: Record<string, Vector3 | null> = { lmNotch: fp(0.3, 7.3, .05), lmAngle: fp(0.3, -0.4, .05), lmAcromion: toV(proj(G, [17.4, 30, -1.6], [0, -1, 0], .05)),
+      lmInfraclav: fp(13.4, 2.2, .05), lmGroove: ap(4, 76 * DEG, .05), lmAntFold: fp(14.4, -5.5, .05), lmPostFold: toV(proj(G, [13.6, -6.5, -30], [0, 0, 1], .05)) };
     for (const id of Object.keys(LM)) { const p = LM[id]; if (!p) continue;
       const d = addSurface(id, { color: '#3B2A22', cad: '#3B2A22', op: 1, lm: true, anchor: p });
       d.mat.color.set(this.colorFor(d)); d.eBase = 0; const m = this.addMesh(d, sphereGeo, p); m.scale.setScalar(.32); }
