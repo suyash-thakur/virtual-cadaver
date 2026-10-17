@@ -58,5 +58,12 @@
  },
  "licenses": {
   "zanatomy": "Z-Anatomy, the libre 3D atlas of anatomy (Gauthier Kervyn and contributors), CC BY-SA 4.0, https://github.com/Z-Anatomy/Models-of-human-anatomy. Base models: BodyParts3D, (c) The Database Center for Life Science, CC BY-SA 2.1 Japan."
+ },
+ "sizes": {
+  "bones": 2418568,
+  "muscles": 3754044,
+  "body": 846432,
+  "vessels": 1264484,
+  "zanatomy": 892508
  }
 }

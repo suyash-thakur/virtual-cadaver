@@ -5,7 +5,7 @@
 //   npm run zanatomy            # after the Blender export
 //
 // Z-Anatomy is in metres with the BodyParts3D axes (x patient-left, y posterior, z superior).
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseObj, merge, scaleMesh, makeFrame, transform, normals, writeGlb, clipAndCap, CLIP_BELOW_HEAD_MM } from './lib/mesh.mjs';
@@ -42,6 +42,7 @@ writeGlb(resolve(OUT, 'zanatomy.glb'), meshes, LICENSE);
 const mf = resolve(OUT, 'manifest.json');
 const m = existsSync(mf) ? JSON.parse(readFileSync(mf, 'utf8')) : { license: '', groups: {} };
 m.groups.zanatomy = meshes.map(x => x.id);
+m.sizes = Object.assign({}, m.sizes, { zanatomy: statSync(resolve(OUT, 'zanatomy.glb')).size });
 m.licenses = Object.assign({}, m.licenses, { zanatomy: LICENSE });
 writeFileSync(mf, JSON.stringify(m, null, 1));
 writeFileSync(resolve(OUT, 'ATTRIBUTION.txt'), (m.license ? m.license + '\n' : '') + LICENSE + '\n');

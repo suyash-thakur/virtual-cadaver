@@ -11,7 +11,7 @@
 // vessels that cross from trunk to arm are skinned with a weight that fades toward the trunk
 // ('blend'). The broad shoulder muscles (pectoralis major, deltoid, latissimus dorsi) stay
 // procedural: their thin triangles tear under skinning and they need the reflection animation.
-import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -142,6 +142,7 @@ async function main() {
     }
     const file = resolve(OUT, `${gname}.glb`); writeGlb(file, meshes, LICENSE);
     manifest.groups[gname] = meshes.map(m => m.id);
+    manifest.sizes = manifest.sizes || {}; manifest.sizes[gname] = statSync(file).size;
     console.log('wrote', file);
   }
   writeFileSync(resolve(OUT, 'manifest.json'), JSON.stringify(manifest, null, 1));

@@ -4,7 +4,7 @@ import type { Specimen } from './specimen';
 import type { RT } from './registry';
 import { ensureBVH } from './bvh';
 
-interface Manifest { license: string; groups: Record<string, string[]> }
+interface Manifest { license: string; groups: Record<string, string[]>; sizes?: Record<string, number> }
 
 const pending = new Map<string, BufferGeometry>();
 /** The real skin mesh, kept for `Specimen.buildBody`. */
@@ -64,12 +64,15 @@ export async function loadAssets(spec: Specimen, onProgress?: (p: DownloadProgre
   const replaced: string[] = [];
   const groups = Object.keys(manifest.groups); const urls = groups.map(g => `${base}assets/${g}.glb`);
   const prog: DownloadProgress = { loaded: 0, total: 0, files: groups.length, done: 0 };
-  prog.total = await totalSize(urls); onProgress?.(prog);
+  // Streams deliver decompressed bytes, so the total must be the uncompressed size: from the manifest when
+  // the converters recorded it, otherwise from HEAD requests (exact only when the server does not compress).
+  prog.total = manifest.sizes ? groups.reduce((a, g) => a + (manifest.sizes![g] || 0), 0) : await totalSize(urls); onProgress?.(prog);
   // Download everything in parallel (the files are independent), parse in manifest order.
   const perFileTotal = new Map<string, number>();
   const buffers = await Promise.all(urls.map(u => fetchWithProgress(u, (delta, total) => {
     prog.loaded += delta;
     if (total && !perFileTotal.has(u)) { perFileTotal.set(u, total); if (!prog.total) prog.total = [...perFileTotal.values()].reduce((a, b) => a + b, 0); }
+    if (prog.loaded > prog.total) prog.total = prog.loaded;
     onProgress?.(prog);
   }).catch(e => { console.warn(`asset ${u} failed to download`, e); return null; })));
   for (let gi = 0; gi < groups.length; gi++) {
