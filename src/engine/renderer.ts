@@ -1,4 +1,4 @@
-import { DirectionalLight, HemisphereLight, PerspectiveCamera, PMREMGenerator, Scene, SRGBColorSpace, WebGLRenderer, ACESFilmicToneMapping, PCFSoftShadowMap } from 'three';
+import { DirectionalLight, HemisphereLight, PerspectiveCamera, PMREMGenerator, Scene, SRGBColorSpace, WebGLRenderer, ACESFilmicToneMapping, PCFShadowMap } from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 export interface Gfx { renderer: WebGLRenderer; scene: Scene; camera: PerspectiveCamera }
@@ -21,7 +21,7 @@ export function createGfx(canvas: HTMLCanvasElement): Gfx | null {
   // Image-based lighting from a neutral room gives soft fill and believable speculars on wet fascia and vessels.
   const pmrem = new PMREMGenerator(renderer); scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.4; pmrem.dispose();
   scene.add(new HemisphereLight(0xf2f7f5, 0x34443f, 0.45 * Math.PI));
-  renderer.shadowMap.enabled = true; renderer.shadowMap.type = PCFSoftShadowMap;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = PCFShadowMap;
   const key = new DirectionalLight(0xfff1dc, 0.85 * Math.PI); key.position.set(-25, 35, 40); scene.add(key);
   // Soft shadows give the layers depth; the shadow camera covers the specimen box.
   key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0008; key.shadow.normalBias = 0.05; key.shadow.radius = 3;

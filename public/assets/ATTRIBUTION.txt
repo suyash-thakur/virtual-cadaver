@@ -1,1 +1,2 @@
 BodyParts3D, (c) The Database Center for Life Science licensed under CC Attribution-Share Alike 2.1 Japan. http://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html
+Z-Anatomy, the libre 3D atlas of anatomy (Gauthier Kervyn and contributors), CC BY-SA 4.0, https://github.com/Z-Anatomy/Models-of-human-anatomy. Base models: BodyParts3D, (c) The Database Center for Life Science, CC BY-SA 2.1 Japan.

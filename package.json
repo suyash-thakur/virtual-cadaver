@@ -10,7 +10,8 @@
     "test": "vitest run",
     "extract": "node tools/extract-content.mjs",
     "assets": "node tools/fetch-bodyparts3d.mjs",
-    "vh": "python3 tools/fetch-visible-human.py"
+    "vh": "python3 tools/fetch-visible-human.py",
+    "zanatomy": "node tools/import-zanatomy.mjs"
   },
   "dependencies": {
     "three": "^0.186.1",

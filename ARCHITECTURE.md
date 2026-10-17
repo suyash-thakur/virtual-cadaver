@@ -40,6 +40,18 @@ procedural meshes for glTF meshes when the file is present, so the app runs with
 without assets. Nerves stay as splines from content: BodyParts3D has no plexus, and splines
 give the trace and lesion modes their parameterised curves.
 
+## Z-Anatomy
+
+Z-Anatomy is a CC BY-SA 4.0 Blender atlas derived from BodyParts3D, in metres with the same
+axes. `tools/zanatomy-export.py` runs inside Blender and writes one OBJ per selected object;
+`tools/import-zanatomy.mjs` fits the frame from Z-Anatomy's own humerus (so the two datasets
+overlay by the humeral head), poses arm-attached muscles with the same skinning, and
+registers a `zanatomy` group in the asset manifest that loads after the BodyParts3D groups
+and overrides the same ids. It supplies the three broad shoulder muscles that BodyParts3D
+lacked or that tore under posing, plus platysma, the clavipectoral fascia and the five
+axillary node groups. Its template contains no peripheral nerves and no upper-limb vessels
+(only label placeholders), so nerves stay as content splines.
+
 ## Body surface
 
 With `assets/body.glb` present, `engine/body.ts` builds the three shells from the real

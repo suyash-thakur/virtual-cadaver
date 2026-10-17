@@ -47,6 +47,17 @@
    "postCircHumeral",
    "cephalicV",
    "basilicV"
+  ],
+  "zanatomy": [
+   "pecMajor",
+   "deltoid",
+   "latissimus",
+   "platysma",
+   "clavipectoral",
+   "nodes"
   ]
+ },
+ "licenses": {
+  "zanatomy": "Z-Anatomy, the libre 3D atlas of anatomy (Gauthier Kervyn and contributors), CC BY-SA 4.0, https://github.com/Z-Anatomy/Models-of-human-anatomy. Base models: BodyParts3D, (c) The Database Center for Life Science, CC BY-SA 2.1 Japan."
  }
 }

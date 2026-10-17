@@ -19,6 +19,9 @@ class overview from exported files without any server.
 npm install
 npm run assets     # once: downloads BodyParts3D (~200 MB cached) and writes public/assets/*.glb
 npm run vh         # once, optional: Visible Human cryosections for the section panel (~800 MB cached, 23 MB served; needs Pillow)
+# Z-Anatomy (needs Blender): download Z-Anatomy.zip from github.com/Z-Anatomy/Models-of-human-anatomy into tools/.zanatomy-cache, unzip Startup.blend, then
+/Applications/Blender.app/Contents/MacOS/Blender -b tools/.zanatomy-cache/Z-Anatomy/Startup.blend --python tools/zanatomy-export.py -- tools/.zanatomy-cache/obj
+npm run zanatomy   # converts the export into public/assets/zanatomy.glb
 npm run dev        # http://localhost:5173  (teacher view at /teacher.html)
 npm test           # content validation + logic tests
 npm run build      # type-check and production build into dist/
@@ -40,6 +43,8 @@ Browsers without WebGL get a readable fallback lesson instead of a blank page.
 | `tools/extract-content.mjs` | One-off extractor that pulled the content out of the single-file prototype. |
 | `tools/fetch-bodyparts3d.mjs` | Downloads BodyParts3D meshes for the region and converts them to glTF (`public/assets/`). |
 | `tools/fetch-visible-human.py` | Downloads Visible Human Male cryosections and writes axial, sagittal and coronal JPEG slices (`public/vh/`). |
+| `tools/zanatomy-export.py`, `tools/import-zanatomy.mjs` | Export chosen Z-Anatomy objects from Blender and convert them into `public/assets/zanatomy.glb` (pectoralis major, deltoid, latissimus dorsi, platysma, clavipectoral fascia, axillary node groups). |
+| `tools/lib/mesh.mjs` | Shared OBJ parsing, frame fitting, arm-pose skinning and GLB writing for the converters. |
 
 ## Editing content
 
@@ -60,6 +65,8 @@ anterior) and the engine mirrors x when it builds them. See `src/engine/coords.t
 
 ## Status
 
-Real geometry covers all bones, 18 muscles and 13 vessels. Pectoralis major, deltoid and
-latissimus dorsi stay procedural (they carry the reflection animation and BodyParts3D has
-no usable latissimus), as do the skin layers and the nerves. See `ARCHITECTURE.md`.
+Real geometry covers the skin, all bones, 21 muscles (pectoralis major, deltoid and
+latissimus dorsi from Z-Anatomy, the rest from BodyParts3D), 13 vessels, platysma, the
+clavipectoral fascia and the axillary node groups. Nerves remain splines from the content:
+neither BodyParts3D nor Z-Anatomy models the brachial plexus. Because Z-Anatomy is
+CC BY-SA, the combined model assets are shared under CC BY-SA 4.0. See `ARCHITECTURE.md`.
