@@ -12,7 +12,38 @@
   ],
   "muscles": [
    "serratus",
-   "subclavius"
+   "subclavius",
+   "pecMinor",
+   "biceps",
+   "triceps",
+   "brachialis",
+   "coraco",
+   "trapezius",
+   "antScalene",
+   "midScalene",
+   "scm",
+   "omohyoid",
+   "teresMajor",
+   "teresMinor",
+   "supraspinatus",
+   "infraspinatus",
+   "subscap",
+   "platysma"
+  ],
+  "vessels": [
+   "subclavianA",
+   "subclavianV",
+   "axillaryA",
+   "axillaryV",
+   "brachialA",
+   "profunda",
+   "thoracoacromial",
+   "lateralThoracic",
+   "subscapularA",
+   "antCircHumeral",
+   "postCircHumeral",
+   "cephalicV",
+   "basilicV"
   ]
  }
 }

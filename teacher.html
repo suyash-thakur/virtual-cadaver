@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher view</title>
+<meta name="description" content="Class overview built from exported student progress files.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Spectral:wght@500;600&display=swap" rel="stylesheet">
+</head>
+<body class="teacher">
+<main class="twrap">
+  <h1>Teacher view</h1>
+  <p class="muted">Ask students to open Help in the dissection app and press <b>Export for your teacher</b>. Drop the files they send you here. Nothing leaves this browser.</p>
+  <label class="drop" id="drop">
+    <input type="file" id="files" accept="application/json" multiple hidden>
+    <span>Drop progress files here, or click to choose them</span>
+  </label>
+  <section id="summary" hidden>
+    <h2>Class</h2>
+    <div class="tiles" id="tiles"></div>
+    <h2>Students</h2>
+    <table id="table"><thead><tr><th>Student</th><th>Steps done</th><th>Spotter sessions</th><th>Accuracy</th><th>Most missed</th><th>Last active</th></tr></thead><tbody></tbody></table>
+    <h2>Structures the class misses most</h2>
+    <ol id="weak"></ol>
+  </section>
+  <p id="errors" class="err"></p>
+</main>
+<script type="module" src="/src/teacher.ts"></script>
+</body>
+</html>

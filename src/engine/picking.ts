@@ -7,6 +7,7 @@ export function hitIsCut(h: Intersection, R: Registry): boolean {
   if (!m.userData.shell || !h.face) return false;
   const g = m.geometry, pe = g.attributes.peel, wa = g.attributes.warm, d = R.get(m.userData.sid), u = d.peel!;
   const f = h.face, peel = (pe.getX(f.a) + pe.getX(f.b) + pe.getX(f.c)) / 3, w = (wa.getX(f.a) + wa.getX(f.b) + wa.getX(f.c)) / 3;
+  const mk = g.attributes.mask; if (mk && (mk.getX(f.a) + mk.getX(f.b) + mk.getX(f.c)) / 3 > 0.5) return true;
   return peel < u.uCutT.value * (1 - w) + u.uCutA.value * w;
 }
 

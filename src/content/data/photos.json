@@ -1,4 +1,83 @@
 {
  "version": 1,
- "photos": {}
+ "photos": {
+  "landmarks": {
+   "src": "photos/gray1210.png",
+   "kind": "illustration",
+   "caption": "Surface markings of the side of the neck: the clavicle below, sternocleidomastoid in front and trapezius behind bound the posterior triangle. The line of the upper margin of the brachial plexus is marked.",
+   "credit": "Gray's Anatomy, 1918 edition (Henry Vandyke Carter), public domain, via Wikimedia Commons."
+  },
+  "incisions": {
+   "src": "photos/gray1215.png",
+   "kind": "illustration",
+   "caption": "Surface anatomy of the side of the trunk with the arm raised: pectoralis major forms the anterior axillary fold and latissimus dorsi the posterior fold, with serratus anterior between them. The incisions run along the clavicle, down the midline and round the chest to the posterior fold.",
+   "credit": "Gray's Anatomy, 1918 edition, public domain, via Wikimedia Commons."
+  },
+  "skin": {
+   "src": "photos/gray574.png",
+   "kind": "illustration",
+   "caption": "Superficial veins of the upper limb after the skin is reflected: the cephalic vein on the lateral side and the basilic vein medially.",
+   "credit": "Gray's Anatomy, 1918 edition, public domain, via Wikimedia Commons."
+  },
+  "fat": {
+   "src": "photos/gray385.png",
+   "kind": "illustration",
+   "caption": "Muscles of the neck, lateral view, once the superficial fascia and platysma are gone: sternocleidomastoid and trapezius with the posterior triangle between them.",
+   "credit": "Gray's Anatomy, 1918 edition, public domain, via Wikimedia Commons."
+  },
+  "fascia": {
+   "src": "photos/gray410.png",
+   "kind": "illustration",
+   "caption": "Superficial muscles of the chest and front of the arm under the deep fascia: pectoralis major, deltoid and the deltopectoral groove between them.",
+   "credit": "Gray's Anatomy, 1918 edition, public domain, via Wikimedia Commons."
+  },
+  "triangle": {
+   "src": "photos/slide11f.jpg",
+   "kind": "photo",
+   "caption": "Right side of the neck in a prosection: the trunks of the brachial plexus (11) emerge between scalenus anterior (9) and scalenus medius (12), with the subclavian artery (10) below and sternocleidomastoid (16) reflected.",
+   "credit": "Photo by Anatomist90, Wikimedia Commons, CC BY-SA 3.0."
+  },
+  "pecmajor": {
+   "src": "photos/gray411.png",
+   "kind": "illustration",
+   "caption": "Deep muscles of the chest once pectoralis major is reflected: pectoralis minor, subclavius and serratus anterior, with the clavipectoral fascia between subclavius and pectoralis minor.",
+   "credit": "Gray's Anatomy, 1918 edition, public domain, via Wikimedia Commons."
+  },
+  "pecminor": {
+   "src": "photos/brachial_plexus_4.jpg",
+   "kind": "photo",
+   "caption": "Pectoralis major and minor turned laterally to open the axilla. The median, ulnar and radial nerves run down the arm, with latissimus dorsi forming the posterior wall.",
+   "credit": "Photo by Anatomist90, Wikimedia Commons, CC BY-SA 3.0."
+  },
+  "axfat": {
+   "src": "photos/dissection_of_axilla.jpg",
+   "kind": "photo",
+   "caption": "The axilla with the fat picked away: the cords and their branches lie in the fat around the axillary vessels, and the forceps hold a branch clear.",
+   "credit": "Photo by Anatomist90, Wikimedia Commons, CC BY-SA 3.0."
+  },
+  "sheath": {
+   "src": "photos/brachial_plexus_1.jpg",
+   "kind": "photo",
+   "caption": "The sheath opened in the upper arm: the musculocutaneous nerve entering coracobrachialis, with the median, ulnar and radial nerves below it.",
+   "credit": "Photo by Anatomist90, Wikimedia Commons, CC BY-SA 3.0."
+  },
+  "clavicle": {
+   "src": "photos/plexus_brachialis.jpg",
+   "kind": "photo",
+   "caption": "Roots C5 to T1, the superior, middle and inferior trunks and the lateral, medial and posterior cords labelled on a cadaver, with the subclavian artery and vein below.",
+   "credit": "Photo by Anatomist90 (AnatomyUMFTM), Wikimedia Commons, CC BY-SA 3.0."
+  },
+  "vessels": {
+   "src": "photos/gray818.png",
+   "kind": "illustration",
+   "caption": "The suprascapular, axillary and radial nerves with the vessels removed, the radial nerve passing into the spiral groove.",
+   "credit": "Gray's Anatomy, 1918 edition, public domain, via Wikimedia Commons."
+  },
+  "back": {
+   "src": "photos/gray810.png",
+   "kind": "illustration",
+   "caption": "Suprascapular and axillary nerves of the right side seen from behind: the axillary nerve leaves the quadrangular space below teres minor and winds round the surgical neck to deltoid.",
+   "credit": "Gray's Anatomy, 1918 edition, public domain, via Wikimedia Commons."
+  }
+ }
 }

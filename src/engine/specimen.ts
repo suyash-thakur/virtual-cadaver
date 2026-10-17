@@ -2,6 +2,7 @@ import { BoxGeometry, BufferAttribute, BufferGeometry, Color, CylinderGeometry, 
 import type { Content, Structure, Other, Nerve, Layer } from '../content';
 import { V, v3, armL, DEG } from './coords';
 import { curveOf, sphereGeo, fibreTex, roughen, sheetGeo, plateGeo, deltoidGeo, fatPadGeo } from './geometry/builders';
+import { CENTER } from './coords';
 import { collectSplats, frontPt, armPt, proj, type Field } from './geometry/body';
 import type { BodyRequest, BodyResponse } from './geometry/body.worker';
 import { makeMat, peelMaterial } from './materials';
@@ -112,6 +113,14 @@ export class Specimen {
       for (let k = 0; k < dg.rad.length; k++) { const ax = tmpB.crossVectors(D, dg.rad[k]).normalize();
         tmpA.set(dg.base[k * 3], dg.base[k * 3 + 1], dg.base[k * 3 + 2]).sub(dg.ins).applyAxisAngle(ax, f * (d.fold || 0) * d.foldSign).add(dg.ins);
         posA.setXYZ(k, tmpA.x, tmpA.y, tmpA.z); }
+    } else if (d.rig) {
+      const r = d.rig, ang = f * (d.fold || 0);
+      for (let k = 0; k < r.base.length; k += 3) {
+        tmpA.set(r.base[k], r.base[k + 1], r.base[k + 2]).sub(r.pivot);
+        const along = tmpA.dot(r.dir), w = Math.min(1, Math.max(0, along / r.span)); const ww = w * w * (3 - 2 * w);
+        tmpA.applyAxisAngle(r.axis, ang * ww).add(r.pivot);
+        posA.setXYZ(k / 3, tmpA.x, tmpA.y, tmpA.z);
+      }
     } else return;
     posA.needsUpdate = true; mesh.geometry.computeVertexNormals(); mesh.geometry.computeBoundingSphere();
   }
@@ -166,6 +175,7 @@ export class Specimen {
       const g = new BufferGeometry();
       g.setAttribute('position', new BufferAttribute(m.pos, 3)); g.setAttribute('peel', new BufferAttribute(m.peel, 1));
       g.setAttribute('warm', new BufferAttribute(m.warm, 1)); g.setAttribute('color', new BufferAttribute(m.col, 3));
+      g.setAttribute('mask', new BufferAttribute(new Float32Array(m.peel.length), 1));
       g.setIndex(new BufferAttribute(m.idx, 1)); g.computeVertexNormals();
       const inf = this.C.surfaces[sh.id];
       const d = this.register({ id: sh.id, name: inf.name, kind: inf.kind, info: inf.info, layer: 'skin', noCover: true, surface: true, color: sh.color, cad: sh.cad, op: sh.op, shellKey: sh.key, mat: makeMat('#fff', 1, true), anchor: new Vector3() });
@@ -240,6 +250,48 @@ export class Specimen {
       d.mat.color.set(this.colorFor(d)); d.eBase = 0; const m = this.addMesh(d, sphereGeo, p); m.scale.setScalar(.32); }
     this.built = true;
   }
+
+  /** Insertion point of a reflected muscle, from its content definition. */
+  insertionOf(id: string): Vector3 | null {
+    const o = this.C.byId[id]; if (!o || o.layer === 'nerves') return null;
+    if (o.sheet) { const c = new Vector3(); o.sheet.i.forEach(p => c.add(v3(p))); return c.multiplyScalar(1 / o.sheet.i.length); }
+    if (o.custom === 'deltoid') return deltoidGeo().ins;
+    return null;
+  }
+
+  /** Builds the fold rig for a real mesh so forceps and the dissection steps can reflect it. */
+  rigFold(d: RT) {
+    if (!d.fold || !d.real || !d.meshes.length) return;
+    const pivot = this.insertionOf(d.id); if (!pivot) return;
+    const pos = d.meshes[0].geometry.attributes.position; const base = Float32Array.from(pos.array as Float32Array);
+    const c = new Vector3(); for (let i = 0; i < pos.count; i++) c.add(tmpA.set(pos.getX(i), pos.getY(i), pos.getZ(i))); c.multiplyScalar(1 / pos.count);
+    const dir = c.clone().sub(pivot).normalize();
+    const outward = c.clone().sub(new Vector3(CENTER.x, c.y, CENTER.z - 1)).normalize();
+    const axis = new Vector3().crossVectors(dir, outward).normalize();
+    let span = 0; for (let i = 0; i < pos.count; i++) span = Math.max(span, tmpA.set(pos.getX(i), pos.getY(i), pos.getZ(i)).sub(pivot).dot(dir));
+    // Choose the rotation sense that moves the far end outward (away from the body).
+    const probe = tmpA.copy(dir).multiplyScalar(span).applyAxisAngle(axis, 0.3).sub(dir.clone().multiplyScalar(span));
+    if (probe.dot(outward) < 0) axis.negate();
+    d.rig = { base, pivot, axis, dir, span: Math.max(1, span * 0.6) };
+    d.foldSign = 1;
+  }
+
+  /** Scalpel on a shell: marks vertices within `r` of `point` as removed. Returns true if anything changed. */
+  paintMask(d: RT, point: Vector3, r: number): boolean {
+    const g = d.meshes[0]?.geometry; const mask = g?.attributes.mask; if (!mask) return false;
+    const pos = g.attributes.position, r2 = r * r; let changed = false;
+    const arr = mask.array as Float32Array;
+    for (let i = 0; i < pos.count; i++) {
+      if (arr[i] > 0.5) continue;
+      const dx = pos.getX(i) - point.x, dy = pos.getY(i) - point.y, dz = pos.getZ(i) - point.z;
+      if (dx * dx + dy * dy + dz * dz < r2) { arr[i] = 1; changed = true; }
+    }
+    if (changed) mask.needsUpdate = true;
+    return changed;
+  }
+  maskSnapshot(d: RT): Float32Array | null { const m = d.meshes[0]?.geometry.attributes.mask; return m ? Float32Array.from(m.array as Float32Array) : null; }
+  maskRestore(d: RT, data: Float32Array) { const m = d.meshes[0]?.geometry.attributes.mask; if (!m) return; (m.array as Float32Array).set(data); m.needsUpdate = true; }
+  resetMasks() { for (const d of this.order) { const m = d.meshes[0]?.geometry.attributes.mask; if (m) { (m.array as Float32Array).fill(0); m.needsUpdate = true; } } }
 
   /** Pool of structures a spotter session can pin: real anatomy, not helpers. */
   spotterPool(layers: Record<Layer, boolean>): Structure[] {

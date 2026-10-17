@@ -1,4 +1,4 @@
-import { Mesh, MeshStandardMaterial, SphereGeometry, Spherical, Vector3 } from 'three';
+import { Mesh, MeshStandardMaterial, Plane, SphereGeometry, Spherical, Vector3 } from 'three';
 import type { Content, Layer, Lesion, Step } from '../content';
 import { CameraRig } from '../engine/camera';
 import { Labels } from '../engine/labels';
@@ -6,7 +6,8 @@ import { Picker, curveParamNear } from '../engine/picking';
 import type { RT } from '../engine/registry';
 import type { Gfx } from '../engine/renderer';
 import { Specimen, type PaletteMode } from '../engine/specimen';
-import { loadAssets } from '../engine/assets';
+import { loadAssets, applyPendingAssets } from '../engine/assets';
+import { PROGRESS_KEY, emptyProgress, parseProgress, recordLesion, recordSpotter, recordStep, stats, type Progress } from '../logic/progress';
 import { blendState, endState, initialState, isIncisionStep, stepState, type DissectState } from '../logic/dissect';
 import { computeLesion, customLesion, type LesionResult } from '../logic/lesion';
 import { computeTrace, type NerveGraph } from '../logic/trace';
@@ -14,6 +15,9 @@ import { buildSession, grade, summarise, updateBox, type Attempt, type LeitnerBo
 import { chip, infoHTML, legendHTML, lesionHTML, photoHTML, spotterHTML, type HtmlCtx } from './html';
 
 export type Mode = 'dissect' | 'explore' | 'trace' | 'lesion' | 'spotter';
+export type Tool = 'turn' | 'scalpel' | 'forceps' | 'remove';
+type SectionAxis = 'x' | 'y' | 'z';
+const SECTION_RANGE: Record<SectionAxis, [number, number]> = { x: [-40, 3], y: [-27, 20], z: [-13, 13] };
 type Continuous = Pick<DissectState, 'skin' | 'fat' | 'fascia' | 'inc' | 'fold'>;
 
 const BOX_KEY = 'vc.spotter.box.v1';
@@ -38,6 +42,15 @@ export class App {
   lesion: { active: Lesion | null; result: LesionResult | null } = { active: null, result: null };
   spotter: { session: Question[] | null; i: number; chosen: number | null; attempts: Attempt[]; summary: Summary | null; box: LeitnerBox; ghost: Set<string> } = { session: null, i: 0, chosen: null, attempts: [], summary: null, box: {}, ghost: new Set() };
 
+  /* free dissection */
+  tool: Tool = 'turn';
+  removed = new Set<string>();
+  private undoStack: { label: string; undo: () => void }[] = [];
+  private stroke: { d: RT } | null = null;
+  private drag: { d: RT; y0: number; f0: number } | null = null;
+  section: { axis: SectionAxis | null; t: number; flip: boolean } = { axis: null, t: 0.5, flip: false };
+  progress: Progress = emptyProgress();
+
   private DP: Continuous = initialState(); private DT: Continuous = initialState();
   private dissectDirty = true;
   private G: NerveGraph = {};
@@ -59,6 +72,7 @@ export class App {
     this.labels = new Labels(this.spec.R, gfx.camera, document.getElementById('leaders') as unknown as SVGSVGElement, this.picker);
     this.pin = document.createElement('div'); this.pin.className = 'pin'; this.pin.hidden = true; app.appendChild(this.pin);
     try { this.spotter.box = JSON.parse(localStorage.getItem(BOX_KEY) || '{}'); } catch { this.spotter.box = {}; }
+    try { const raw = localStorage.getItem(PROGRESS_KEY); if (raw) this.progress = parseProgress(raw); } catch { this.progress = emptyProgress(); }
     this.bindUI();
   }
 
@@ -81,6 +95,8 @@ export class App {
     catch (err) { console.error(err); el('loading').textContent = 'The skin layers could not be built on this device. The deeper layers still work.'; setTimeout(() => { el('loading').hidden = true; }, 4000); }
     if (this.spec.built) el('loading').hidden = true;
     this.spec.built = true;
+    try { const ids = applyPendingAssets(this.spec); if (ids.length) console.info(`real surface meshes: ${ids.join(', ')}`); } catch (e) { console.warn('pending assets', e); }
+    this.renderProgress();
     this.refreshLabelColors(); this.updateTargets(); this.renderSheet(); this.applyDissect();
     this.goStep(0, 'jump');
   }
@@ -138,6 +154,7 @@ export class App {
         else t = on && d.layer !== 'skin' ? .18 : 0;
       }
       if (this.mode === 'spotter') { if (d.surface) t = 0; else if (this.spotter.ghost.has(d.id)) t = Math.min(t, .12); }
+      if (!vis && this.removed.has(d.id)) t = 0;
       d.target = t;
     }
     this.emph = new Set(vis ? vis.emph : []);
@@ -251,7 +268,9 @@ export class App {
     const items = st.find.filter(id => this.S[id] && !end.hide.includes(id) && this.S[id].meshes.length).map(id => this.S[id]);
     this.rig.frameStep(st.view, items, dur);
   }
-  doAction() { this.done = true; this.setDT(this.stepVis()); this.updateTargets(); this.renderSheet(); }
+  doAction() { this.done = true; this.setDT(this.stepVis()); this.updateTargets(); this.renderSheet(); this.noteStep(this.C.steps[this.step].key); }
+  private noteStep(key: string) { this.progress = recordStep(this.progress, key); this.saveProgress(); }
+  private saveProgress() { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(this.progress)); } catch { /* private mode */ } this.renderProgress(); }
   replay() {
     this.done = false; this.setDT(this.stepVis()); this.snapDP(); this.dissectDirty = true; this.updateTargets();
     setTimeout(() => { this.done = true; this.setDT(this.stepVis()); this.updateTargets(); this.renderSheet(); }, 350);
@@ -259,6 +278,7 @@ export class App {
   setMode(m: Mode) {
     if (this.hands.on) this.handsStop(false);
     const prev = this.mode; this.mode = m; this.traceSet = null; this.updateGuides();
+    el('toolbar').hidden = m !== 'explore'; if (m !== 'explore') this.setTool('turn');
     document.querySelectorAll<HTMLButtonElement>('.modes button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.mode === m)));
     this.applyColors(); this.updateLayersNote(); this.syncMarkers();
     if (m !== 'spotter') { this.spotter.session = null; this.spotter.summary = null; this.spotter.ghost = new Set(); this.pin.hidden = true; }
@@ -315,6 +335,7 @@ export class App {
     if (!L) { this.lesion = { active: null, result: null }; this.syncMarkers(); this.applyColors(); this.updateTargets(); this.renderSheet(); return; }
     const r = computeLesion(L, { G: this.G, nerves: this.C.nerves, muscles: this.C.muscles, sensory: this.C.sensory });
     this.lesion = { active: L, result: r }; this.sel = null;
+    if (!L.custom) { this.progress = recordLesion(this.progress, L.id); this.saveProgress(); }
     this.syncMarkers(); this.applyColors(); this.updateTargets(); this.renderSheet(); this.body.scrollTop = 0; this.setSheet('open');
     requestAnimationFrame(() => { this.layout(); this.rig.focusOnSet(r.atIds.concat(Object.keys(r.status).filter(id => this.S[id].key)).map(id => this.S[id])); });
   }
@@ -348,7 +369,7 @@ export class App {
   spotterNext() {
     const sp = this.spotter; if (!sp.session) return;
     if (sp.i + 1 < sp.session.length) { sp.i++; sp.chosen = null; this.sel = null; sp.ghost = new Set(); this.updateTargets(); this.renderSheet(); this.spotterFrame(); }
-    else { sp.summary = summarise(sp.attempts); this.pin.hidden = true; this.updateTargets(); this.renderSheet(); }
+    else { sp.summary = summarise(sp.attempts); this.pin.hidden = true; this.progress = recordSpotter(this.progress, sp.summary); this.saveProgress(); this.updateTargets(); this.renderSheet(); }
   }
   /** Structures between the camera and the pinned anchor are ghosted so the pin is never on a hidden structure. */
   private spotterGhost(q: Question) {
@@ -364,14 +385,39 @@ export class App {
   private bindUI() {
     const canvas = this.canvas; const pointers = new Set<number>(); let down: { x: number; y: number; t: number } | null = null;
     canvas.addEventListener('pointerdown', e => { pointers.add(e.pointerId);
+      if (this.mode === 'explore' && this.tool !== 'turn') { this.toolDown(e.clientX, e.clientY); down = null; return; }
       if (this.hands.on) { this.hands.last = { x: e.clientX, y: e.clientY }; this.handsTrack(e.clientX, e.clientY, true); down = null; return; }
       down = pointers.size === 1 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null; });
-    canvas.addEventListener('pointermove', e => { if (this.hands.on && this.hands.last) this.handsTrack(e.clientX, e.clientY, false); });
+    canvas.addEventListener('pointermove', e => { if (this.stroke || this.drag) { this.toolMove(e.clientX, e.clientY); return; } if (this.hands.on && this.hands.last) this.handsTrack(e.clientX, e.clientY, false); });
     canvas.addEventListener('pointerup', e => { pointers.delete(e.pointerId);
+      if (this.stroke || this.drag) { this.stroke = null; this.drag = null; return; }
       if (this.hands.on) { this.hands.last = null; down = null; return; }
       if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 8 && performance.now() - down.t < 450) this.onPick(e.clientX, e.clientY);
       down = null; });
-    canvas.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); down = null; });
+    canvas.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); down = null; this.stroke = null; this.drag = null; });
+    document.querySelectorAll<HTMLButtonElement>('#toolbar [data-tool]').forEach(b => b.addEventListener('click', () => this.setTool(b.dataset.tool as Tool)));
+    el('btnUndo').addEventListener('click', () => this.undo());
+    el('btnResetDissection').addEventListener('click', () => this.resetDissection());
+    document.querySelectorAll<HTMLButtonElement>('#segSection button').forEach(b => b.addEventListener('click', () => {
+      const ax = b.dataset.axis; this.section.axis = ax === 'off' ? null : (ax as SectionAxis);
+      document.querySelectorAll<HTMLButtonElement>('#segSection button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      this.applySection();
+    }));
+    el<HTMLInputElement>('sectionPos').addEventListener('input', e => { this.section.t = Number((e.target as HTMLInputElement).value) / 100; this.applySection(); });
+    el('sectionFlip').addEventListener('click', () => { this.section.flip = !this.section.flip; this.applySection(); });
+    el('progressBox').addEventListener('click', e => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-act]'); if (!b) return;
+      if (b.dataset.act === 'pexport') this.exportProgress();
+      else if (b.dataset.act === 'pimport') el<HTMLInputElement>('progressFile').click();
+      else if (b.dataset.act === 'pclear') { this.progress = emptyProgress(this.progress.student.name); this.saveProgress(); }
+    });
+    el('progressBox').addEventListener('change', e => {
+      const t = e.target as HTMLInputElement; if (t.id === 'pname') { this.progress = { ...this.progress, student: { ...this.progress.student, name: t.value.slice(0, 60) } }; this.saveProgress(); }
+    });
+    el<HTMLInputElement>('progressFile').addEventListener('change', async () => {
+      const f = el<HTMLInputElement>('progressFile').files?.[0]; el<HTMLInputElement>('progressFile').value = ''; if (!f) return;
+      try { this.progress = parseProgress(await f.text()); this.saveProgress(); this.toast('Progress imported.'); } catch { this.toast('That file is not a progress export.'); }
+    });
 
     this.sheet.addEventListener('click', e => {
       const b = (e.target as HTMLElement).closest<HTMLElement>('[data-sel],[data-act],[data-les]'); if (!b) return;
@@ -382,7 +428,7 @@ export class App {
       else if (a === 'focus' && this.sel) { if (this.mode === 'trace' && this.traceSet) this.rig.focusOnSet([...this.traceSet].map(x => this.S[x])); else this.rig.focusOnSet([this.S[this.sel]]); }
       else if (a === 'trace') this.setMode('trace');
       else if (a === 'prev') this.goStep(this.step - 1, 'jump');
-      else if (a === 'next') this.goStep(this.step === this.C.steps.length - 1 ? 0 : this.step + 1, this.step === this.C.steps.length - 1 ? 'jump' : 'next');
+      else if (a === 'next') { const st = this.C.steps[this.step]; if (!st.act) this.noteStep(st.key); this.goStep(this.step === this.C.steps.length - 1 ? 0 : this.step + 1, this.step === this.C.steps.length - 1 ? 'jump' : 'next'); }
       else if (a === 'do') { if (this.hands.on) this.handsStop(); this.doAction(); }
       else if (a === 'hands') this.handsStart();
       else if (a === 'stop') this.handsStop();
@@ -429,6 +475,9 @@ export class App {
       if (e.key === 'ArrowLeft') orbit(-0.08, 0); else if (e.key === 'ArrowRight') orbit(0.08, 0);
       else if (e.key === 'ArrowUp') orbit(0, -0.06); else if (e.key === 'ArrowDown') orbit(0, 0.06);
       else if (e.key === '+' || e.key === '=') dolly(0.9); else if (e.key === '-') dolly(1.1);
+      else if (this.mode === 'explore' && (e.key === 'z' || e.key === 'Z') && (e.metaKey || e.ctrlKey)) this.undo();
+      else if (this.mode === 'explore' && e.key === '1') this.setTool('turn'); else if (this.mode === 'explore' && e.key === '2') this.setTool('scalpel');
+      else if (this.mode === 'explore' && e.key === '3') this.setTool('forceps'); else if (this.mode === 'explore' && e.key === '4') this.setTool('remove');
       else if (this.mode === 'dissect' && (e.key === 'n' || e.key === 'N')) { if (this.done) this.goStep(Math.min(this.step + 1, this.C.steps.length - 1), 'next'); else this.doAction(); }
       else if (this.mode === 'dissect' && (e.key === 'p' || e.key === 'P')) this.goStep(this.step - 1, 'jump');
       else return;
@@ -444,6 +493,90 @@ export class App {
     if (this.mode === 'spotter' && this.currentQuestion() && this.spotter.chosen == null) return;
     if (this.mode === 'lesion' && hit.d.layer === 'nerves') { this.setLesion(customLesion(hit.d.id, hit.d.name, curveParamNear(hit.d, hit.point))); return; }
     this.select(hit.d.id, { centre: hit.point });
+  }
+
+  /* ---------- free dissection tools ---------- */
+  setTool(t: Tool) {
+    this.tool = t; this.rig.controls.enabled = t === 'turn'; this.stroke = null; this.drag = null;
+    document.querySelectorAll<HTMLButtonElement>('#toolbar [data-tool]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === t)));
+    this.canvas.dataset.tool = t;
+  }
+  private pushUndo(label: string, undo: () => void) { this.undoStack.push({ label, undo }); if (this.undoStack.length > 40) this.undoStack.shift(); el<HTMLButtonElement>('btnUndo').disabled = false; }
+  undo() {
+    const u = this.undoStack.pop(); if (!u) return; u.undo(); this.updateTargets(); this.labels.dirty = true;
+    el<HTMLButtonElement>('btnUndo').disabled = this.undoStack.length === 0; this.toast(`Undid: ${u.label}`);
+  }
+  resetDissection() {
+    this.spec.resetMasks(); this.removed.clear(); this.undoStack = []; el<HTMLButtonElement>('btnUndo').disabled = true;
+    for (const d of this.order) { d.cutOrigin = false; if (d.fold && d.foldCur) { this.DP.fold[d.id] = 0; this.DT.fold[d.id] = 0; } }
+    this.dissectDirty = true; this.updateTargets(); this.toast('Specimen restored.');
+  }
+  private setFold(d: RT, f: number) { f = Math.max(0, Math.min(1, f)); this.DP.fold[d.id] = f; this.DT.fold[d.id] = f; this.dissectDirty = true; }
+  private toolDown(x: number, y: number) {
+    const hit = this.picker.pick(x, y);
+    if (!hit) return;
+    const d = hit.d;
+    if (this.tool === 'scalpel') {
+      if (d.shellKey) {
+        const snap = this.spec.maskSnapshot(d); if (!snap) return;
+        this.pushUndo(`cut ${d.name.toLowerCase()}`, () => this.spec.maskRestore(d, snap));
+        this.spec.paintMask(d, hit.point, 1.1); this.stroke = { d }; return;
+      }
+      if (d.fold) {
+        if (d.cutOrigin) { this.toast(`${d.name}: origin already cut. Use the forceps to reflect it.`); return; }
+        d.cutOrigin = true; this.pushUndo(`cut origin of ${d.name.toLowerCase()}`, () => { d.cutOrigin = false; });
+        this.toast(`${d.name}: origin cut. Switch to forceps and drag to reflect it.`); return;
+      }
+      this.toast('The scalpel cuts skin, fascia and the origins of reflectable muscles. Use Remove for other structures.'); return;
+    }
+    if (this.tool === 'forceps') {
+      if (!d.fold) { this.toast(`${d.name} cannot be reflected. Use Remove to take it away.`); return; }
+      if (!d.cutOrigin) { this.toast(`Cut the origin of ${d.name.toLowerCase()} with the scalpel first.`); return; }
+      const f0 = this.DP.fold[d.id] ?? 0; this.pushUndo(`reflect ${d.name.toLowerCase()}`, () => this.setFold(d, f0));
+      this.drag = { d, y0: y, f0 }; return;
+    }
+    if (this.tool === 'remove') {
+      if (d.shellKey) { this.toast('Use the scalpel to cut the skin layers away.'); return; }
+      this.removed.add(d.id); if (this.sel === d.id) this.sel = null;
+      this.pushUndo(`remove ${d.name.toLowerCase()}`, () => { this.removed.delete(d.id); });
+      this.updateTargets(); this.toast(`${d.name} removed.`);
+    }
+  }
+  private toolMove(x: number, y: number) {
+    if (this.stroke) { const hit = this.picker.pick(x, y); if (hit && hit.d.shellKey) { if (hit.d !== this.stroke.d) { const snap = this.spec.maskSnapshot(hit.d); if (snap) this.pushUndo(`cut ${hit.d.name.toLowerCase()}`, () => this.spec.maskRestore(hit.d, snap)); this.stroke = { d: hit.d }; } this.spec.paintMask(hit.d, hit.point, 1.1); } return; }
+    if (this.drag) { this.setFold(this.drag.d, this.drag.f0 + (this.drag.y0 - y) / 220); }
+  }
+  private toastTimer = 0;
+  toast(msg: string) { const t = el('toast'); t.textContent = msg; t.hidden = false; clearTimeout(this.toastTimer); this.toastTimer = window.setTimeout(() => { t.hidden = true; }, 2600); }
+
+  /* ---------- section plane ---------- */
+  applySection() {
+    const s = this.section;
+    if (!s.axis) { this.gfx.renderer.clippingPlanes = []; return; }
+    const [lo, hi] = SECTION_RANGE[s.axis]; const at = lo + s.t * (hi - lo);
+    const axis = new Vector3(s.axis === 'x' ? 1 : 0, s.axis === 'y' ? 1 : 0, s.axis === 'z' ? 1 : 0);
+    const camSide = Math.sign(this.gfx.camera.position.dot(axis) - at) || 1;
+    // Keep the half away from the camera (so the cut face is what you see); Flip keeps the near half instead.
+    const n = axis.clone().multiplyScalar(-camSide * (s.flip ? -1 : 1));
+    const p = axis.clone().multiplyScalar(at);
+    this.gfx.renderer.clippingPlanes = [new Plane(n, -n.dot(p))];
+  }
+
+  /* ---------- progress ---------- */
+  renderProgress() {
+    const box = document.getElementById('progressBox'); if (!box) return;
+    const s = stats(this.progress, this.C.steps.length), name = this.progress.student.name;
+    const weak = s.weakest.map(w => `${this.S[w.id]?.name || w.id} (${w.misses})`).join(', ');
+    box.innerHTML = `<label class="sec" for="pname">Your name</label><input id="pname" class="pinput" maxlength="60" value="${name.replace(/"/g, '&quot;')}" placeholder="So your teacher knows whose file this is">
+      <p>Dissection steps completed: <b>${s.stepsDone} of ${s.totalSteps}</b>. Spotter sessions: <b>${s.spotterSessions}</b>${s.spotterAccuracy != null ? `, accuracy <b>${s.spotterAccuracy}%</b>` : ''}.</p>
+      ${weak ? `<p class="muted small">Most missed: ${weak}</p>` : ''}
+      <div class="actions"><button class="btn" data-act="pexport">Export for your teacher</button><button class="btn" data-act="pimport">Import</button><button class="btn" data-act="pclear">Clear</button></div>`;
+  }
+  exportProgress() {
+    const blob = new Blob([JSON.stringify(this.progress, null, 1)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `progress-${(this.progress.student.name || this.progress.student.id).replace(/[^\w-]+/g, '_')}.json`; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }
 
   /* ---------- frame loop ---------- */

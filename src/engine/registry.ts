@@ -20,6 +20,10 @@ export interface RT {
   lines?: Vector3[][]; guides?: Mesh[]; isNerveLike?: boolean;
   /** True when the mesh came from a real asset rather than the procedural builder. */
   real?: boolean;
+  /** Fold rig for real meshes: rotate about `pivot` around `axis`, weighted by distance along `dir`. */
+  rig?: { base: Float32Array; pivot: Vector3; axis: Vector3; dir: Vector3; span: number };
+  /** Free dissection: the origin has been cut with the scalpel, so forceps can reflect it. */
+  cutOrigin?: boolean;
   /** True for the surface helpers (skin layers, superficial veins, landmarks) that are not in structures.json. */
   surface?: boolean;
 }

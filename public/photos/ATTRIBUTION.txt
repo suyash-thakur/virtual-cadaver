@@ -1,0 +1,9 @@
+Specimen images shown beside the dissection steps.
+
+gray*.png: plates from Henry Gray, Anatomy of the Human Body, 20th edition (1918),
+illustrated by Henry Vandyke Carter. Public domain. Via Wikimedia Commons.
+
+slide11f.jpg, brachial_plexus_1.jpg, brachial_plexus_3.jpg, brachial_plexus_4.jpg,
+dissection_of_axilla.jpg, plexus_brachialis.jpg: photographs by Anatomist90
+(AnatomyUMFTM), Wikimedia Commons, licensed CC BY-SA 3.0
+(https://creativecommons.org/licenses/by-sa/3.0/). Resized for the web; otherwise unchanged.

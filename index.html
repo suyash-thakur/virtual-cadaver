@@ -16,6 +16,17 @@
   <div id="labels"></div>
   <div id="knife" hidden></div>
   <div class="viewer" id="photoViewer" hidden><img alt=""></div>
+  <div class="toolbar" id="toolbar" hidden role="toolbar" aria-label="Dissection tools">
+    <button data-tool="turn" aria-pressed="true" title="Turn the specimen (1)">Turn</button>
+    <button data-tool="scalpel" aria-pressed="false" title="Scalpel: scrub away skin, fat and fascia; cut a muscle origin (2)">Scalpel</button>
+    <button data-tool="forceps" aria-pressed="false" title="Forceps: drag to reflect a muscle whose origin is cut (3)">Forceps</button>
+    <button data-tool="remove" aria-pressed="false" title="Remove a structure (4)">Remove</button>
+    <span class="sep"></span>
+    <button id="btnUndo" disabled title="Undo (Ctrl+Z)">Undo</button>
+    <button id="btnResetDissection" title="Restore the specimen">Reset</button>
+  </div>
+  <div class="toast" id="toast" hidden role="status"></div>
+  <input type="file" id="progressFile" accept="application/json" hidden>
 
   <header class="bar">
     <div class="title">
@@ -67,6 +78,14 @@
       <button data-color="cord" aria-pressed="true">By cord</button>
       <button data-color="classic" aria-pressed="false">Atlas yellow</button>
     </div>
+    <h3 class="sec">Section plane</h3>
+    <div class="seg" id="segSection">
+      <button data-axis="off" aria-pressed="true">Off</button>
+      <button data-axis="x" aria-pressed="false">Sagittal</button>
+      <button data-axis="y" aria-pressed="false">Axial</button>
+      <button data-axis="z" aria-pressed="false">Coronal</button>
+    </div>
+    <div class="row"><input type="range" id="sectionPos" min="0" max="100" value="50" aria-label="Section position"><button class="btn small" id="sectionFlip">Flip</button></div>
     <p class="muted" id="layersNote"></p>
   </div>
 
@@ -76,9 +95,13 @@
       <li>Drag with one finger to turn the specimen.</li>
       <li>Pinch to zoom; drag with two fingers to move it.</li>
       <li>Tap any structure or label to learn about it.</li>
-      <li>Keyboard: arrow keys turn, + and − zoom, N and P step through the dissection.</li>
+      <li>Keyboard: arrow keys turn, + and − zoom, N and P step through the dissection, 1 to 4 pick a tool in Explore.</li>
+      <li>In <b>Explore</b>, the tool strip lets you dissect freely: scrub skin away with the scalpel, cut a muscle origin, reflect it with the forceps, remove anything, and undo.</li>
     </ul>
     <p><b>Dissect</b> takes you through the specimen in the order of a dissection manual. <b>Explore</b> lets you switch layers on and off freely. <b>Trace</b> lights up the fibres carried by any root or branch. <b>Lesion</b> cuts a nerve and shows which muscles are paralysed and where feeling is lost. <b>Spotter</b> pins structures and quizzes you the way a practical exam does, returning to the ones you missed.</p>
+    <h3 class="sec">Your progress</h3>
+    <div id="progressBox"></div>
+    <p class="muted small"><a href="teacher.html" target="_blank" rel="noopener">Teacher view</a> reads exported progress files from a class.</p>
     <p class="muted small">This is a teaching model. Relations follow standard descriptions, but shapes and sizes are schematic. Check details against your dissection manual and your teachers.</p>
   </div>
 

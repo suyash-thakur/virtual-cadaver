@@ -207,7 +207,7 @@
     "ulnar"
    ],
    "hand": "Drag along the artery to slit the axillary sheath.",
-   "text": "Remove the lymph nodes and slit the sheath along the artery. The cords surround the second part of the axillary artery: lateral, medial and posterior to it. In front of the artery find the ‘M’ formed by the musculocutaneous nerve, the lateral root, the median nerve, the medial root and the ulnar nerve. The glowing nerves form it.",
+   "text": "Remove the lymph nodes and slit the sheath along the artery. The cords surround the second part of the axillary artery: lateral, medial and posterior to it. In front of the artery find the \u2018M\u2019 formed by the musculocutaneous nerve, the lateral root, the median nerve, the medial root and the ulnar nerve. The glowing nerves form it.",
    "find": [
     "latCord",
     "medCord",
@@ -284,15 +284,15 @@
    "act": "Reflect deltoid",
    "set": {
     "skin": [
-     0.62,
+     1.02,
      1.02
     ],
     "fat": [
-     0.62,
+     1.02,
      1.02
     ],
     "fascia": [
-     0.62,
+     1.02,
      1.02
     ],
     "fold": {
@@ -306,8 +306,8 @@
    "dim": [
     "triceps"
    ],
-   "hand": "Drag down the arm to reflect the skin and turn deltoid down.",
-   "text": "Turn the specimen over. Reflect the skin and fascia from the back of the arm, detach deltoid from its origin and turn it down. The axillary nerve and the posterior circumflex humeral artery pass through the quadrangular space below teres minor and wind round the surgical neck. Separate the heads of triceps to follow the radial nerve and the profunda brachii artery in the spiral groove. The ulnar nerve passes behind the medial epicondyle.",
+   "hand": "Drag down the back of the arm to strip the skin and turn deltoid down.",
+   "text": "Turn the specimen over. Strip the remaining skin and fascia from the back of the shoulder and arm, detach deltoid from its origin and turn it down. The axillary nerve and the posterior circumflex humeral artery pass through the quadrangular space below teres minor and wind round the surgical neck. Separate the heads of triceps to follow the radial nerve and the profunda brachii artery in the spiral groove. The ulnar nerve passes behind the medial epicondyle.",
    "find": [
     "axillary",
     "postCircHumeral",

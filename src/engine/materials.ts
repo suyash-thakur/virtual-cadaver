@@ -18,14 +18,14 @@ export function peelMaterial(color: string, rough: number, op: number, inner: st
   const u: PeelUniforms = { uCutT: { value: 0 }, uCutA: { value: 0 }, uInner: { value: new Color(inner) } };
   m.onBeforeCompile = (sh: WebGLProgramParametersWithUniforms) => {
     Object.assign(sh.uniforms, u);
-    sh.vertexShader = 'attribute float peel;\nattribute float warm;\nuniform float uCutT;\nuniform float uCutA;\nvarying float vPeel;\nvarying float vCut;\n' +
+    sh.vertexShader = 'attribute float peel;\nattribute float warm;\nattribute float mask;\nuniform float uCutT;\nuniform float uCutA;\nvarying float vPeel;\nvarying float vCut;\nvarying float vMask;\n' +
       sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
-        vPeel = peel; vCut = mix(uCutT, uCutA, warm);
+        vPeel = peel; vCut = mix(uCutT, uCutA, warm); vMask = mask;
         float dd = peel - vCut;
         if (vCut > 0.001 && dd > 0.0) { transformed += normalize(objectNormal) * 0.45 * (1.0 - smoothstep(0.0, 0.12, dd)); }`);
-    sh.fragmentShader = 'uniform vec3 uInner;\nvarying float vPeel;\nvarying float vCut;\n' +
+    sh.fragmentShader = 'uniform vec3 uInner;\nvarying float vPeel;\nvarying float vCut;\nvarying float vMask;\n' +
       sh.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
-        if (vPeel < vCut) discard;`).replace('#include <color_fragment>', `#include <color_fragment>
+        if (vPeel < vCut || vMask > 0.5) discard;`).replace('#include <color_fragment>', `#include <color_fragment>
         if (!gl_FrontFacing) diffuseColor.rgb *= uInner;`);
   };
   m.customProgramCacheKey = () => 'peel';

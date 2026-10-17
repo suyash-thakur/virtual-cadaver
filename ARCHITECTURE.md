@@ -40,15 +40,35 @@ procedural meshes for glTF meshes when the file is present, so the app runs with
 without assets. Nerves stay as splines from content: BodyParts3D has no plexus, and splines
 give the trace and lesion modes their parameterised curves.
 
-## Roadmap, in order
+## Free dissection
 
-1. Real meshes for bones and vessels from BodyParts3D (pipeline in `tools/`).
-2. Muscles from BodyParts3D where present; keep the fold animation by binding the
-   reflected muscles to the procedural sheet while real geometry is static.
-3. Photogrammetry of departmental prosections, one capture per dissection step, as the
-   photo-real layer; the current shells become the fallback.
-4. Real cutting: per-structure state (intact, incised, reflected, removed) with mesh
-   splitting along the scalpel path, undo, and a sectional view.
-5. Accounts, progress persistence and teacher dashboards; the Spotter Leitner box is
-   already serialisable JSON and moves from localStorage to the backend unchanged.
-6. More regions through the same content schema (`region` in `structures.json`).
+In Explore, the tool strip switches the pointer between turn, scalpel, forceps and remove.
+The scalpel paints a `mask` vertex attribute on the skin, fat and fascia shells (the shader
+discards masked fragments, picking ignores them) and marks the origin of a reflectable
+muscle as cut; the forceps then drive that muscle's fold; remove zeroes a structure's
+target visibility. Every action pushes a closure onto an undo stack. The section plane is a
+single global clipping plane that always removes the half nearest the camera.
+
+## Progress
+
+`logic/progress.ts` is the student record (steps completed, spotter sessions with missed
+ids, lesions viewed). It lives in localStorage, exports as JSON from the Help panel, and
+`teacher.html` aggregates exported files with `classSummary`. A backend would store the
+same JSON per account.
+
+## Done and still open
+
+Done: real meshes (bones, deep muscles, vessels), free cutting with undo, section plane,
+spotter assessment with spaced repetition, progress export and teacher view, reference
+images for every step, content and engine split with tests.
+
+Open:
+
+1. Photogrammetry of departmental prosections as the photo-real layer (needs a specimen
+   and a camera rig; the content schema already takes a photo per step).
+2. Accounts and a backend so progress syncs across devices and teachers do not collect
+   files by hand.
+3. More regions through the same content schema (`region` in `structures.json`): each
+   needs an anatomist to author structures, steps, lesions and spotter metadata.
+4. Mesh splitting for deep structures (today the scalpel cuts the skin layers freely but
+   deep structures are reflected or removed whole).
