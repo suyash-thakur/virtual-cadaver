@@ -29,6 +29,14 @@ npm run build      # type-check and production build into dist/
 
 Without `npm run assets` the app still runs, drawing every structure procedurally.
 
+## Publish
+
+The site is static. `npm run deploy` builds it for GitHub Pages and pushes `dist/` to the
+`gh-pages` branch of the `origin` remote; the live URL is printed at the end. Generated
+assets (`public/assets`, `public/vh`) are not in git, so run the asset scripts once on the
+machine that deploys. Any static host works instead: build with `BASE_PATH=/` and upload
+`dist/`.
+
 Browsers without WebGL get a readable fallback lesson instead of a blank page.
 
 ## Layout
