@@ -17,5 +17,5 @@ export function ensureBVH(geo: BufferGeometry, minTriangles = 400): void {
   const tris = geo.index ? geo.index.count / 3 : geo.attributes.position.count / 3;
   if (tris < minTriangles) return;
   if (geo.drawRange.count !== Infinity) return;
-  g.computeBoundsTree!({ maxLeafTris: 8 });
+  g.computeBoundsTree!({ targetLeafSize: 8 } as never);
 }

@@ -15,7 +15,7 @@ function install(spec: Specimen, d: RT, geo: BufferGeometry) {
   for (const h of d.hits) { spec.scene.remove(h); h.geometry.dispose(); }
   d.meshes = []; d.hits = [];
   geo.computeBoundingSphere(); ensureBVH(geo);
-  const mesh = new Mesh(geo, d.mat); mesh.userData.sid = d.id; spec.scene.add(mesh); d.meshes.push(mesh);
+  const mesh = new Mesh(geo, d.mat); mesh.castShadow = true; mesh.receiveShadow = true; mesh.userData.sid = d.id; spec.scene.add(mesh); d.meshes.push(mesh);
   // The body field keeps the smooth procedural coverage; only structures that had none are sampled.
   if (!d.cov.length) {
     const p = geo.attributes.position; const step = Math.max(1, Math.floor(p.count / 400));

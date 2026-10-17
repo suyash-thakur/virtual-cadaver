@@ -2,12 +2,16 @@ import { Raycaster, Vector2, Vector3, type Intersection, type Mesh, type Perspec
 import type { Registry, RT } from './registry';
 
 /** True if the hit lands on a part of a skin shell that has already been peeled away. */
+/** Set by the app once the cut masks exist. */
+export let cutTest: ((sid: string, point: Vector3, normal: Vector3) => boolean) | null = null;
+export function setCutTest(f: typeof cutTest) { cutTest = f; }
+
 export function hitIsCut(h: Intersection, R: Registry): boolean {
   const m = h.object as Mesh;
   if (!m.userData.shell || !h.face) return false;
   const g = m.geometry, pe = g.attributes.peel, wa = g.attributes.warm, d = R.get(m.userData.sid), u = d.peel!;
   const f = h.face, peel = (pe.getX(f.a) + pe.getX(f.b) + pe.getX(f.c)) / 3, w = (wa.getX(f.a) + wa.getX(f.b) + wa.getX(f.c)) / 3;
-  const mk = g.attributes.mask; if (mk && (mk.getX(f.a) + mk.getX(f.b) + mk.getX(f.c)) / 3 > 0.5) return true;
+  if (cutTest && h.face && cutTest(d.id, h.point, h.face.normal)) return true;
   return peel < u.uCutT.value * (1 - w) + u.uCutA.value * w;
 }
 
@@ -17,23 +21,31 @@ export class Picker {
   constructor(private camera: PerspectiveCamera, private canvas: HTMLCanvasElement, private R: Registry) {}
 
   /** Returns the structure under a client-space point, preferring nerves (they have fat hit tubes). */
-  pick(cx: number, cy: number): { d: RT; point: Vector3 } | null {
+  /** `surface`: nearest visible surface only, no preference for nerves hidden just under the skin (used by the tools). */
+  pick(cx: number, cy: number, surface = false): { d: RT; point: Vector3; normal: Vector3 } | null {
     const r = this.canvas.getBoundingClientRect();
     this.ndc.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
     this.ray.setFromCamera(this.ndc, this.camera);
     const nh: Mesh[] = [], sh: Mesh[] = [];
     for (const d of this.R.order) {
-      if (d.layer === 'nerves') { if (d.cur > .2) nh.push(...d.hits); continue; }
+      if (d.layer === 'nerves') { if (d.cur > .2) { if (surface) sh.push(...d.meshes.filter(m => m.visible)); else nh.push(...d.hits); } continue; }
       if (d.cur * d.op > .25) sh.push(...d.meshes.filter(m => m.visible));
     }
-    const a = this.ray.intersectObjects(nh, false)[0];
-    const b = this.ray.intersectObjects(sh, false).find(h => !hitIsCut(h, this.R));
+    const a = surface ? undefined : this.ray.intersectObjects(nh, false)[0];
+    const all = this.ray.intersectObjects(sh, false).filter(h => !hitIsCut(h, this.R));
+    let b = all[0];
+    // Tools work on the body surface: a muscle poking just through the skin should not steal the stroke.
+    if (surface && b && !this.R.get((b.object as Mesh).userData.sid).shellKey) {
+      const shell = all.find(h => this.R.get((h.object as Mesh).userData.sid).shellKey && h.distance < b!.distance + 1.6);
+      if (shell) b = shell;
+    }
     let hit: Intersection | undefined;
     if (a && (!b || a.distance < b.distance + 1.6)) hit = a; else if (b) hit = b;
     if (!hit) return null;
     const d = this.R.get((hit.object as Mesh).userData.sid);
     const point = d.layer === 'nerves' && d.curve ? nearestOnCurve(d, hit.point) : hit.point;
-    return { d, point };
+    const normal = hit.face ? hit.face.normal.clone() : new Vector3(0, 0, 1);
+    return { d, point, normal };
   }
 
   occludingIds(anchor: Vector3, own: RT, occluders: Mesh[]): string[] { return occludingIdsOf(this.ray, this.camera, anchor, own, occluders, this.R); }

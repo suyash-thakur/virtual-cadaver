@@ -25,10 +25,10 @@ function offsetGeometry(src: BufferGeometry, offset: number): BufferGeometry {
   return g;
 }
 
-/** Adds peel order, trunk/arm weight, tone colour, cut mask and planar UVs to a shell. */
+/** Adds peel order, trunk/arm weight, tone colour and planar UVs to a shell. */
 export function decorateShell(g: BufferGeometry, tone: [number, number, number]): void {
   const p = g.attributes.position, n = p.count;
-  const peel = new Float32Array(n), warm = new Float32Array(n), col = new Float32Array(n * 3), mask = new Float32Array(n), uv = new Float32Array(n * 2);
+  const peel = new Float32Array(n), warm = new Float32Array(n), col = new Float32Array(n * 3), uv = new Float32Array(n * 2);
   for (let v = 0; v < n; v++) {
     const x = p.getX(v), y = p.getY(v), z = p.getZ(v);
     const l = -x, s = y, a = z; // authoring space
@@ -40,7 +40,6 @@ export function decorateShell(g: BufferGeometry, tone: [number, number, number])
   g.setAttribute('peel', new BufferAttribute(peel, 1));
   g.setAttribute('warm', new BufferAttribute(warm, 1));
   g.setAttribute('color', new BufferAttribute(col, 3));
-  g.setAttribute('mask', new BufferAttribute(mask, 1));
   g.setAttribute('uv', new Float32BufferAttribute(uv, 2));
 }
 
@@ -61,7 +60,9 @@ function orientOutward(g: BufferGeometry): void {
 
 export function buildShells(skin: BufferGeometry): BodyShells {
   orientOutward(skin);
-  return { skin, fat: offsetGeometry(skin, SHELL_OFFSET.fat), deepFascia: offsetGeometry(skin, SHELL_OFFSET.deepFascia) };
+  // The 99%-reduced skin sits slightly inside the true surface; lift it so muscles do not poke through.
+  const outer = offsetGeometry(skin, 0.4); outer.computeBoundingSphere();
+  return { skin: outer, fat: offsetGeometry(skin, SHELL_OFFSET.fat), deepFascia: offsetGeometry(skin, SHELL_OFFSET.deepFascia) };
 }
 
 /**

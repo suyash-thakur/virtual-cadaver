@@ -1,8 +1,8 @@
-import { Mesh, MeshStandardMaterial, Plane, SphereGeometry, Spherical, Vector3 } from 'three';
+import { Mesh, MeshBasicMaterial, MeshStandardMaterial, Plane, RingGeometry, SphereGeometry, Spherical, Vector3 } from 'three';
 import type { Content, Layer, Lesion, Step } from '../content';
 import { CameraRig } from '../engine/camera';
 import { Labels } from '../engine/labels';
-import { Picker, curveParamNear } from '../engine/picking';
+import { Picker, curveParamNear, setCutTest } from '../engine/picking';
 import type { RT } from '../engine/registry';
 import type { Gfx } from '../engine/renderer';
 import { Specimen, type PaletteMode } from '../engine/specimen';
@@ -16,7 +16,7 @@ import { buildSession, grade, summarise, updateBox, type Attempt, type LeitnerBo
 import { chip, infoHTML, legendHTML, lesionHTML, photoHTML, spotterHTML, type HtmlCtx } from './html';
 
 export type Mode = 'dissect' | 'explore' | 'trace' | 'lesion' | 'spotter';
-export type Tool = 'turn' | 'scalpel';
+export type Tool = 'turn' | 'scalpel' | 'lift';
 type SectionAxis = 'x' | 'y' | 'z';
 const SECTION_RANGE: Record<SectionAxis, [number, number]> = { x: [-40, 3], y: [-27, 20], z: [-13, 13] };
 type Continuous = Pick<DissectState, 'skin' | 'fat' | 'fascia' | 'inc' | 'fold'>;
@@ -47,7 +47,10 @@ export class App {
   tool: Tool = 'turn';
   removed = new Set<string>();
   private undoStack: { label: string; undo: () => void }[] = [];
-  private stroke: { d: RT } | null = null;
+  private stroke: { d: RT; last: Vector3; channel: 'cut' | 'line'; r: number } | null = null;
+  private cursorRing: Mesh | null = null;
+  private hoverId: string | null = null;
+  private hoverMove: { x: number; y: number } | null = null;
   private pendingRemove: { d: RT; x: number; y: number } | null = null;
   private pointerMove: { x: number; y: number } | null = null;
   section: { axis: SectionAxis | null; t: number; flip: boolean } = { axis: null, t: 0.5, flip: false };
@@ -111,6 +114,7 @@ export class App {
     if (this.spec.built) el('loading').hidden = true;
     this.spec.built = true;
     try { const ids = applyPendingAssets(this.spec); if (ids.length) console.info(`real surface meshes: ${ids.join(', ')}`); } catch (e) { console.warn('pending assets', e); }
+    try { this.spec.buildMasks(this.gfx.renderer); setCutTest((sid, p, n) => this.spec.isCut(sid, p, n)); } catch (e) { console.warn('cut masks', e); }
     this.renderProgress();
     this.refreshLabelColors(); this.updateTargets(); this.renderSheet(); this.applyDissect();
     this.goStep(0, 'jump');
@@ -299,6 +303,7 @@ export class App {
     this.applyColors(); this.updateLayersNote(); this.syncMarkers();
     if (m !== 'spotter') { this.spotter.session = null; this.spotter.summary = null; this.spotter.ghost = new Set(); this.pin.hidden = true; }
     if (prev === 'dissect' && m !== 'dissect') { this.sel = null; this.setDT(null); this.snapDP(); this.dissectDirty = true; this.rig.framePreset('home'); }
+    if (m === 'dissect' && prev !== 'dissect') { this.spec.resetMasks(); this.removed.clear(); this.undoStack = []; el<HTMLButtonElement>('btnUndo').disabled = true; }
     if (m === 'lesion') { this.sel = null; this.order.forEach(d => { if (d.layer === 'skin') { d.cur = 0; this.spec.applyVis(d); } }); this.updateTargets(); this.renderSheet(); this.setSheet('open'); return; }
     if (m === 'dissect') { this.sel = null; this.goStep(this.step, 'jump'); return; }
     if (m === 'spotter') { this.sel = null; this.updateTargets(); this.renderSheet(); this.setSheet('open'); return; }
@@ -311,7 +316,7 @@ export class App {
   /* ---------- hands-on ---------- */
   private handsFrom() { return this.step > 0 ? endState(this.C.steps, this.step - 1) : initialState(); }
   private updateGuides() { const inc = this.S.incisions; if (inc && inc.guides) inc.guides.forEach(g => { g.visible = this.mode === 'dissect' && this.hands.on && isIncisionStep(this.C.steps[this.step]); }); }
-  handsStart() { this.hands = { on: true, q: 0, last: null }; this.rig.controls.enabled = false; this.rig.cancelFly(); this.sel = null; this.setHandsQ(0); this.updateGuides(); this.renderSheet(); }
+  handsStart() { this.covered = null; this.handsLast = null; this.hands = { on: true, q: 0, last: null }; this.rig.controls.enabled = false; this.rig.cancelFly(); this.sel = null; this.setHandsQ(0); this.updateGuides(); this.renderSheet(); }
   handsStop(render = true) { this.hands.on = false; this.hands.last = null; this.rig.controls.enabled = true; this.updateGuides(); this.knife.hidden = true; if (render) this.renderSheet(); }
   private setHandsQ(q: number) {
     q = Math.max(0, Math.min(1, q)); this.hands.q = q;
@@ -324,22 +329,32 @@ export class App {
   private handsHint(): string {
     const st = this.C.steps[this.step];
     if (!isIncisionStep(st)) return st.hand || 'Drag across the specimen.';
-    const inc = this.S.incisions, n = inc && inc.lines ? inc.lines.length : 4, k = Math.min(n - 1, Math.floor(this.hands.q * n + 1e-6));
-    return `Cut ${k + 1} of ${n}: ${this.C.incisionNames[k] || ''}. Start at the glowing ring and drag along the white line.`;
+    const pct = Math.round(this.hands.q * 100);
+    return `Draw the four incisions along the white guide lines: ${this.C.incisionNames.join('; ')}. ${pct}% cut. Turn the specimen with the Stop button if a line runs out of view.`;
   }
   private nextCutPoint() {
     const inc = this.S.incisions; if (!inc || !inc.lines) return null;
-    const n = inc.lines.length, p = this.hands.q * n, k = Math.floor(p + 1e-6); if (k >= n) return null;
-    const pts = inc.lines[k], N = pts.length; return { k, n, idx: Math.round((p - k) * (N - 1)), pts, N };
+    const n = inc.lines.length; let base = 0;
+    for (let k = 0; k < n; k++) { const pts = inc.lines[k], N = pts.length; for (let i = 0; i < N; i++) if (!this.covered || !this.covered.has(base + i)) return { k, n, idx: i, pts, N }; base += N; }
+    return null;
   }
   private tmpV = new Vector3();
+  /** Guide points of the incision lines already covered by the student's strokes. */
+  private covered: Set<number> | null = null;
+  private handsLast: Vector3 | null = null;
   private handsTrack(x: number, y: number, isDown: boolean) {
     if (isIncisionStep(this.C.steps[this.step])) {
-      const c = this.nextCutPoint(); if (!c) return;
-      const r = this.canvas.getBoundingClientRect(); let best = -1;
-      for (let j = c.idx; j <= Math.min(c.N - 1, c.idx + 8); j++) { this.tmpV.copy(c.pts[j]).project(this.gfx.camera);
-        const sx = r.left + (this.tmpV.x + 1) / 2 * r.width, sy = r.top + (1 - this.tmpV.y) / 2 * r.height; if (Math.hypot(sx - x, sy - y) < 32) best = j; }
-      if (best > c.idx) this.setHandsQ((c.k + (best === c.N - 1 ? 1 : best / (c.N - 1))) / c.n);
+      // Draw freely on the skin; the step completes when every guide point has been cut near enough.
+      const inc = this.S.incisions; if (!inc || !inc.lines) return;
+      const hit = this.picker.pick(x, y, true); if (!hit || hit.d.shellKey !== 'skin') { this.handsLast = null; return; }
+      const mk = this.spec.masks.skin; if (mk) mk.stroke(this.handsLast && !isDown ? [this.handsLast, hit.point] : [hit.point], App.INCISION_R, 'line', false);
+      const samples: Vector3[] = [hit.point]; if (this.handsLast && !isDown) { const n = Math.ceil(this.handsLast.distanceTo(hit.point) / 0.4); for (let s = 1; s < n; s++) samples.push(this.handsLast.clone().lerp(hit.point, s / n)); }
+      this.handsLast = hit.point.clone();
+      if (!this.covered) this.covered = new Set();
+      const total = inc.lines.reduce((a, l) => a + l.length, 0); let base = 0;
+      for (const line of inc.lines) { for (let i = 0; i < line.length; i++) { const g = base + i; if (this.covered.has(g)) continue; for (const s of samples) if (s.distanceToSquared(line[i]) < 1.5 * 1.5) { this.covered.add(g); break; } } base += line.length; }
+      // Parts of the guide lines face away from the camera; cutting most of them completes the step.
+      this.setHandsQ(Math.min(1, this.covered.size / (total * 0.8)));
     } else {
       const l = this.hands.last; if (!l) return; const d = Math.hypot(x - l.x, y - l.y); this.hands.last = { x, y };
       if (!isDown) this.setHandsQ(this.hands.q + d / (Math.min(this.rig.view.W, this.rig.view.H) * 1.1));
@@ -404,9 +419,11 @@ export class App {
       if (this.mode === 'explore' && this.tool !== 'turn') { this.toolDown(e.clientX, e.clientY); down = null; return; }
       if (this.hands.on) { this.hands.last = { x: e.clientX, y: e.clientY }; this.handsTrack(e.clientX, e.clientY, true); down = null; return; }
       down = pointers.size === 1 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null; });
-    canvas.addEventListener('pointermove', e => { if (this.stroke) { this.pointerMove = { x: e.clientX, y: e.clientY }; return; } if (this.hands.on && this.hands.last) this.handsTrack(e.clientX, e.clientY, false); });
+    canvas.addEventListener('pointermove', e => { this.hoverMove = { x: e.clientX, y: e.clientY }; if (this.stroke) { this.pointerMove = { x: e.clientX, y: e.clientY }; return; } if (this.hands.on && this.hands.last) this.handsTrack(e.clientX, e.clientY, false); });
+    canvas.addEventListener('pointerleave', () => { this.hoverMove = null; this.setHover(null); if (this.cursorRing) this.cursorRing.visible = false; });
+    canvas.addEventListener('dblclick', e => { const hit = this.picker.pick(e.clientX, e.clientY); if (!hit) return; const off = this.gfx.camera.position.clone().sub(this.rig.controls.target).multiplyScalar(0.55); this.rig.flyTo(hit.point, hit.point.clone().add(off), 500); });
     canvas.addEventListener('pointerup', e => { pointers.delete(e.pointerId);
-      if (this.stroke) { if (this.pointerMove) { this.toolMove(this.pointerMove.x, this.pointerMove.y); this.pointerMove = null; } this.stroke = null; return; }
+      if (this.stroke) { if (this.pointerMove) { this.toolMove(this.pointerMove.x, this.pointerMove.y); this.pointerMove = null; } this.spec.masks[this.stroke.d.id]?.endStroke(); this.stroke = null; return; }
       if (this.pendingRemove) { const p = this.pendingRemove; this.pendingRemove = null; if (Math.hypot(e.clientX - p.x, e.clientY - p.y) < 8) this.removeStructure(p.d); return; }
       if (this.hands.on) { this.hands.last = null; down = null; return; }
       if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 8 && performance.now() - down.t < 450) this.onPick(e.clientX, e.clientY);
@@ -493,7 +510,7 @@ export class App {
       else if (e.key === 'ArrowUp') orbit(0, -0.06); else if (e.key === 'ArrowDown') orbit(0, 0.06);
       else if (e.key === '+' || e.key === '=') dolly(0.9); else if (e.key === '-') dolly(1.1);
       else if (this.mode === 'explore' && (e.key === 'z' || e.key === 'Z') && (e.metaKey || e.ctrlKey)) this.undo();
-      else if (this.mode === 'explore' && e.key === '1') this.setTool('turn'); else if (this.mode === 'explore' && e.key === '2') this.setTool('scalpel');
+      else if (this.mode === 'explore' && e.key === '1') this.setTool('turn'); else if (this.mode === 'explore' && e.key === '2') this.setTool('scalpel'); else if (this.mode === 'explore' && e.key === '3') this.setTool('lift');
       else if (this.mode === 'dissect' && (e.key === 'n' || e.key === 'N')) { if (this.done) this.goStep(Math.min(this.step + 1, this.C.steps.length - 1), 'next'); else this.doAction(); }
       else if (this.mode === 'dissect' && (e.key === 'p' || e.key === 'P')) this.goStep(this.step - 1, 'jump');
       else return;
@@ -517,7 +534,11 @@ export class App {
     this.tool = t; this.rig.controls.enabled = t === 'turn'; this.stroke = null; this.pendingRemove = null;
     document.querySelectorAll<HTMLButtonElement>('#toolbar [data-tool]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === t)));
     this.canvas.dataset.tool = t;
-    if (t === 'scalpel' && prev !== 'scalpel') this.toast('Scalpel: drag over the skin to cut it away. Click a muscle, vessel or bone once to remove it. Undo is in the strip.', 4200);
+    if (t !== prev) {
+      if (t === 'scalpel') this.toast('Scalpel: draw your incisions on the skin. Close the outline, then switch to Lift to turn the flap back.', 4600);
+      if (t === 'lift') this.toast('Lift: click inside an outlined flap to lift it off. Drag over fat or fascia to pick it away. Click a muscle, vessel or bone to remove it.', 5200);
+    }
+    if (this.cursorRing) this.cursorRing.visible = false;
   }
   private pushUndo(label: string, undo: () => void) { this.undoStack.push({ label, undo }); if (this.undoStack.length > 40) this.undoStack.shift(); el<HTMLButtonElement>('btnUndo').disabled = false; }
   undo() {
@@ -530,30 +551,55 @@ export class App {
     this.dissectDirty = true; this.updateTargets(); this.toast('Specimen restored.');
   }
   private removeStructure(d: RT) {
-    if (d.shellKey) { this.toast('Drag the scalpel over the skin to cut it away.'); return; }
+    if (d.shellKey) { this.toast('Outline a flap with the scalpel, then lift inside it.'); return; }
     this.removed.add(d.id); if (this.sel === d.id) this.sel = null;
     this.pushUndo(`remove ${d.name.toLowerCase()}`, () => { this.removed.delete(d.id); });
     this.updateTargets(); this.toast(`${d.name} removed.`);
   }
-  /** Brush radius in world units, scaled so the cut stays about the same size on screen. */
-  private brushRadius() { return Math.max(1.2, this.gfx.camera.position.distanceTo(this.rig.controls.target) * 0.035); }
+  /** Brush radius for picking tissue away, scaled so it stays about the same size on screen. */
+  private brushRadius() { return Math.max(1.0, this.gfx.camera.position.distanceTo(this.rig.controls.target) * 0.03); }
+  private static INCISION_R = 0.13;
   private toolDown(x: number, y: number) {
-    const hit = this.picker.pick(x, y);
+    const hit = this.picker.pick(x, y, true);
     if (!hit) return;
-    const d = hit.d;
-    if (d.shellKey) {
-      const snap = this.spec.maskSnapshot(d); if (!snap) return;
-      this.pushUndo(`cut ${d.name.toLowerCase()}`, () => this.spec.maskRestore(d, snap));
-      this.spec.paintMask(d, hit.point, this.brushRadius()); this.stroke = { d }; return;
+    const d = hit.d, mk = d.shellKey ? this.spec.masks[d.id] : null;
+    if (this.tool === 'scalpel') {
+      if (!mk) { this.toast(d.shellKey ? 'The skin layers are still being prepared.' : 'The scalpel cuts the skin layers. Use Lift to remove deeper structures.'); return; }
+      this.pushUndo(`incision on ${d.name.toLowerCase()}`, () => mk.undo());
+      mk.stroke([hit.point], App.INCISION_R, 'line'); this.stroke = { d, last: hit.point.clone(), channel: 'line', r: App.INCISION_R }; return;
     }
-    this.pendingRemove = { d, x, y };
+    // lift
+    if (!mk) { this.pendingRemove = { d, x, y }; return; }
+    if (d.shellKey === 'skin') {
+      const n = mk.fill(hit.point, hit.normal);
+      if (n === -1) { this.toast('This flap is not outlined. Draw a closed incision with the scalpel first, then lift inside it.', 4200); return; }
+      if (n === 0) { this.toast('Nothing to lift here.'); return; }
+      this.pushUndo('lift skin flap', () => mk.undo()); this.toast('Skin flap lifted.'); return;
+    }
+    this.pushUndo(`pick away ${d.name.toLowerCase()}`, () => mk.undo());
+    const r = this.brushRadius(); mk.stroke([hit.point], r, 'cut'); this.stroke = { d, last: hit.point.clone(), channel: 'cut', r };
   }
   private toolMove(x: number, y: number) {
     if (!this.stroke) return;
-    const hit = this.picker.pick(x, y); if (!hit || !hit.d.shellKey) return;
-    if (hit.d !== this.stroke.d) { const snap = this.spec.maskSnapshot(hit.d); if (snap) this.pushUndo(`cut ${hit.d.name.toLowerCase()}`, () => this.spec.maskRestore(hit.d, snap)); this.stroke = { d: hit.d }; }
-    this.spec.paintMask(hit.d, hit.point, this.brushRadius());
+    const hit = this.picker.pick(x, y, true); if (!hit || hit.d !== this.stroke.d) return;
+    const mk = this.spec.masks[hit.d.id]; if (!mk) return;
+    mk.stroke([this.stroke.last, hit.point], this.stroke.r, this.stroke.channel); this.stroke.last = hit.point.clone();
   }
+  /** Hover: a ring on the surface for the cutting tools, a soft glow on the structure under the pointer. */
+  private updateHover() {
+    if (this.mode !== 'explore') { if (this.cursorRing) this.cursorRing.visible = false; return; }
+    const hm = this.hoverMove; if (!hm) return; // nothing moved: keep the ring where it was
+    this.hoverMove = null;
+    const hit = this.picker.pick(hm.x, hm.y, this.tool !== 'turn');
+    if (this.tool === 'turn') { this.setHover(hit ? hit.d.id : null); if (this.cursorRing) this.cursorRing.visible = false; return; }
+    this.setHover(null);
+    if (!this.cursorRing) { const ring = new Mesh(new RingGeometry(0.78, 1, 48), new MeshBasicMaterial({ color: 0xf0c53e, depthTest: false, side: 2 })); const edge = new Mesh(new RingGeometry(0.7, 1.08, 48), new MeshBasicMaterial({ color: 0x14201d, transparent: true, opacity: 0.75, depthTest: false, side: 2 })); edge.renderOrder = 8; ring.add(edge); ring.renderOrder = 9; this.cursorRing = ring; this.gfx.scene.add(ring); }
+    const ring = this.cursorRing;
+    if (!hit) { ring.visible = false; return; }
+    const r = this.tool === 'scalpel' || (hit.d.shellKey === 'skin') ? 0.9 : this.brushRadius();
+    ring.visible = true; ring.scale.setScalar(r); ring.position.copy(hit.point).addScaledVector(hit.normal, 0.08); ring.lookAt(hit.point.clone().add(hit.normal));
+  }
+  private setHover(id: string | null) { if (id !== this.hoverId) { this.hoverId = id; this.canvas.style.cursor = id && this.tool === 'turn' ? 'pointer' : ''; } }
   private toastTimer = 0;
   toast(msg: string, ms = 2600) { const t = el('toast'); t.textContent = msg; t.hidden = false; clearTimeout(this.toastTimer); this.toastTimer = window.setTimeout(() => { t.hidden = true; }, ms); }
 
@@ -616,12 +662,12 @@ export class App {
     this.markers.forEach(m => { if (m.visible) m.scale.setScalar(1 + (this.reduceMotion ? 0 : .18 * Math.sin(now / 200))); });
     for (const d of this.order) {
       let e = d.eBase || 0;
-      if (this.sel === d.id) e = pulse; else if (this.emph.has(d.id)) e = pulse * .85; else if (this.traceSet && this.traceSet.has(d.id)) e = .16;
+      if (this.sel === d.id) e = pulse; else if (this.emph.has(d.id)) e = pulse * .85; else if (this.traceSet && this.traceSet.has(d.id)) e = .16; else if (this.hoverId === d.id) e = Math.max(e, .14);
       d.mat.emissive.copy(d.mat.color).multiplyScalar(e);
     }
     const v = this.rig.view;
     if (this.hands.on && isIncisionStep(this.C.steps[this.step])) { const c = this.nextCutPoint();
-      if (c) { const j = Math.min(c.N - 1, c.idx === 0 ? 0 : c.idx + 1); this.tmpV.copy(c.pts[j]).project(this.gfx.camera); this.knife.hidden = false;
+      if (c) { const j = c.idx; this.tmpV.copy(c.pts[j]).project(this.gfx.camera); this.knife.hidden = false;
         this.knife.style.transform = `translate(${((this.tmpV.x + 1) / 2 * v.W).toFixed(1)}px,${((1 - this.tmpV.y) / 2 * v.H).toFixed(1)}px)`; } else this.knife.hidden = true;
     } else if (!this.knife.hidden) this.knife.hidden = true;
     const q = this.currentQuestion();
@@ -630,6 +676,7 @@ export class App {
     else if (!this.pin.hidden) this.pin.hidden = true;
     if (q && this.labels.dirty) this.spotterGhost(q);
     if (this.pointerMove) { const pm = this.pointerMove; this.pointerMove = null; this.toolMove(pm.x, pm.y); }
+    this.updateHover(); this.spec.flushMasks();
     if (this.labels.dirty) this.labels.update(this.labelIds(), this.labelPriority, this.sel, v, () => this.spec.occluders(), now);
     this.gfx.renderer.render(this.gfx.scene, this.gfx.camera);
     requestAnimationFrame(t => this.frame(t));

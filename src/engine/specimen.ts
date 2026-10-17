@@ -6,6 +6,8 @@ import { CENTER } from './coords';
 import { ensureBVH } from './bvh';
 import { buildShells, decorateShell, SkinProjector } from './body';
 import { bodyTextures } from './textures';
+import { CutMask, MaskSpace } from './cutmask';
+import type { WebGLRenderer } from 'three';
 import { collectSplats, proj as fieldProj, type Field } from './geometry/body';
 import type { BodyRequest, BodyResponse } from './geometry/body.worker';
 import { makeMat, peelMaterial } from './materials';
@@ -50,6 +52,7 @@ export class Specimen {
   private addMesh(d: RT, geo: BufferGeometry, pos?: Vector3): Mesh {
     ensureBVH(geo);
     const m = new Mesh(geo, d.mat); if (pos) m.position.copy(pos);
+    m.castShadow = true; m.receiveShadow = true;
     m.userData.sid = d.id; this.scene.add(m); d.meshes.push(m); return m;
   }
 
@@ -201,7 +204,6 @@ export class Specimen {
         const g = new BufferGeometry();
         g.setAttribute('position', new BufferAttribute(m.pos, 3)); g.setAttribute('peel', new BufferAttribute(m.peel, 1));
         g.setAttribute('warm', new BufferAttribute(m.warm, 1)); g.setAttribute('color', new BufferAttribute(m.col, 3));
-        g.setAttribute('mask', new BufferAttribute(new Float32Array(m.peel.length), 1));
         g.setIndex(new BufferAttribute(m.idx, 1)); g.computeVertexNormals();
         geos[sh.id] = g;
       }
@@ -316,22 +318,23 @@ export class Specimen {
     d.foldSign = 1;
   }
 
-  /** Scalpel on a shell: marks vertices within `r` of `point` as removed. Returns true if anything changed. */
-  paintMask(d: RT, point: Vector3, r: number): boolean {
-    const g = d.meshes[0]?.geometry; const mask = g?.attributes.mask; if (!mask) return false;
-    const pos = g.attributes.position, r2 = r * r; let changed = false;
-    const arr = mask.array as Float32Array;
-    for (let i = 0; i < pos.count; i++) {
-      if (arr[i] > 0.5) continue;
-      const dx = pos.getX(i) - point.x, dy = pos.getY(i) - point.y, dz = pos.getZ(i) - point.z;
-      if (dx * dx + dy * dy + dz * dz < r2) { arr[i] = 1; changed = true; }
+  /** Cut masks for free dissection, one per shell, sharing the body's depth maps. */
+  masks: Record<string, CutMask> = {};
+  maskSpace: MaskSpace | null = null;
+  /** Builds the mask space from the skin shell (needs the renderer for the depth maps). */
+  buildMasks(renderer: WebGLRenderer) {
+    const skin = this.R.S.skin?.meshes[0]; if (!skin) return;
+    const space = new MaskSpace(skin.geometry); space.buildDepth(renderer, skin); this.maskSpace = space;
+    for (const sh of this.C.shells) {
+      const d = this.R.S[sh.id]; if (!d || !d.peel) continue;
+      const mk = new CutMask(space); this.masks[sh.id] = mk;
+      d.peel.uMask.value = mk.tex; d.peel.uMaskOn.value = 1; d.peel.uMaskMin.value.copy(space.min); d.peel.uMaskSize.value.copy(space.size);
     }
-    if (changed) mask.needsUpdate = true;
-    return changed;
   }
-  maskSnapshot(d: RT): Float32Array | null { const m = d.meshes[0]?.geometry.attributes.mask; return m ? Float32Array.from(m.array as Float32Array) : null; }
-  maskRestore(d: RT, data: Float32Array) { const m = d.meshes[0]?.geometry.attributes.mask; if (!m) return; (m.array as Float32Array).set(data); m.needsUpdate = true; }
-  resetMasks() { for (const d of this.order) { const m = d.meshes[0]?.geometry.attributes.mask; if (m) { (m.array as Float32Array).fill(0); m.needsUpdate = true; } } }
+  /** Picking helper: true when the shell surface at this point has been cut away. */
+  isCut(sid: string, point: Vector3, normal: Vector3): boolean { const mk = this.masks[sid]; return mk ? mk.isRemoved(point, normal) : false; }
+  flushMasks() { for (const k of Object.keys(this.masks)) this.masks[k].flush(); }
+  resetMasks() { for (const k of Object.keys(this.masks)) this.masks[k].clear(); }
 
   /** Pool of structures a spotter session can pin: real anatomy, not helpers. */
   spotterPool(layers: Record<Layer, boolean>): Structure[] {

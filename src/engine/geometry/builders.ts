@@ -66,7 +66,7 @@ export interface DeltoidGeo { g: BufferGeometry; base: Float32Array; rad: Vector
 export function deltoidGeo(): DeltoidGeo {
   const nu = 22, nv = 18, pos: number[] = [], uv: number[] = [], idx: number[] = [], rad: Vector3[] = [];
   for (let b = 0; b <= nv; b++) {
-    const v = b / nv, t = -2.6 + 15.6 * v, r = 4.7 - 3.2 * Math.pow(v, 1.3);
+    const v = b / nv, t = -2.6 + 15.6 * v, r = (4.7 - 3.2 * Math.pow(v, 1.3)) * 0.88;
     const thf = (72 - 47 * Math.pow(v, 1.2)) * DEG, thb = (-105 + 80 * Math.pow(v, 1.2)) * DEG, ax = armL(t, 0, -1.2);
     for (let a = 0; a <= nu; a++) {
       const u = a / nu, th = thb + (thf - thb) * u, d = armDir(th);

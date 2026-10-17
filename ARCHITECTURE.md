@@ -65,12 +65,19 @@ says so.
 
 ## Free dissection
 
-In Explore, the tool strip has two tools: turn and scalpel. Dragging the scalpel paints a
-`mask` vertex attribute on the skin, fat and fascia shells (the shader discards masked
-fragments, picking ignores them); clicking any other structure removes it. Removal in the
-guided dissection uses the same `lift` value as the old fold: the muscle fades out and
-drifts off its bed rather than hinging, which read as broken. Every action pushes a closure
-onto an undo stack. The section plane is a
+Cutting is texture-space (`engine/cutmask.ts`). Each shell carries a mask atlas with three
+world-space planar projections (X, Y, Z faces); a fragment picks the face by its dominant
+normal and discards itself when the texel is marked removed. Texels also store the depth
+along the projection axis so the front and back of the body never share a cut, and a
+per-face depth map of the body (rendered once at startup) bounds flood fills to the
+surface. The scalpel stamps incision lines (G channel, drawn as a dark groove); Lift
+flood-fills the region of skin bounded by incision lines and marks it removed (R channel),
+refusing when the region is unbounded; Lift also brushes fat and fascia away and removes
+deeper structures with a click. Operations are logged per shell and undo replays the log.
+The guided step 2 uses the same painting: the student draws the incisions freely and the
+step completes when most guide points lie within 1.5 units of a stroke. Tool picks prefer
+the skin shell when a muscle pokes just through it. Removal of a detached muscle in the
+guided dissection fades it out and drifts it off its bed (`lift`), not a hinge. The section plane is a
 single global clipping plane that always removes the half nearest the camera.
 
 ## Progress

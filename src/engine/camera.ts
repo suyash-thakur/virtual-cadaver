@@ -19,7 +19,7 @@ export class CameraRig {
   constructor(public camera: PerspectiveCamera, canvas: HTMLCanvasElement, private views: Record<string, View>, private reduceMotion: boolean) {
     const c = new OrbitControls(camera, canvas);
     c.enableDamping = true; c.dampingFactor = 0.09; c.rotateSpeed = 0.8; c.zoomSpeed = 0.9; c.panSpeed = 0.8;
-    c.minDistance = 5; c.maxDistance = 420;
+    c.minDistance = 5; c.maxDistance = 420; c.zoomToCursor = true;
     c.touches = { ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN };
     c.addEventListener('start', () => { this.fly = null; });
     c.addEventListener('change', () => this.onChange());
