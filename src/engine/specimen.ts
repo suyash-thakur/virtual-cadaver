@@ -141,7 +141,7 @@ export class Specimen {
     if (m.transparent !== tr) { m.transparent = tr; m.needsUpdate = true; }
     if (d.kind !== 'Fascia' && d.id !== 'deepFascia') m.depthWrite = o > .5;
     const vis = o > .015;
-    d.meshes.forEach(x => { x.visible = vis; });
+    d.meshes.forEach(x => { if (!x.userData.inc) x.visible = vis; });
   }
 
   applyColors(override: (d: RT) => string | null) {
@@ -278,7 +278,7 @@ export class Specimen {
       const guideMat = new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .8 });
       lines.forEach(pts => { const q = pts.filter((x): x is Vector3 => !!x); if (q.length < 2) return; const c = curveOf(q);
         const seg = Math.max(20, Math.round(c.getLength() * 3));
-        const m = this.addMesh(d, new TubeGeometry(c, seg, .09, 6, false)); m.userData.inc = true;
+        const m = this.addMesh(d, new TubeGeometry(c, seg, .09, 6, false)); m.userData.inc = true; m.visible = false; // the cut mask draws the incisions
         (m.geometry as unknown as { disposeBoundsTree?: () => void }).disposeBoundsTree?.(); // drawn progressively, so no BVH
         const gm = new Mesh(new TubeGeometry(c, seg, .055, 5, false), guideMat); gm.visible = false; gm.renderOrder = 3; this.scene.add(gm); d.guides!.push(gm);
         d.lines!.push(c.getSpacedPoints(70));

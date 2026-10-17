@@ -182,6 +182,17 @@ export class CutMask {
     return this.data[k] > 127 && Math.abs(this.data[k + 2] / 255 - pr.d) < DEPTH_TOL;
   }
 
+  /** True when an incision line has been drawn at p on any face (depth-checked). */
+  hasLineAt(p: Vector3): boolean {
+    for (const face of [0, 1, 2] as FaceId[]) {
+      const pr = this.space.project(face, p);
+      const i = Math.min(FACE - 1, Math.max(0, Math.floor(pr.u * FACE))), j = Math.min(FACE - 1, Math.max(0, Math.floor(pr.v * FACE)));
+      const k = this.idx(face, i, j);
+      if (this.data[k + 1] > 127 && Math.abs(this.data[k + 2] / 255 - pr.d) < DEPTH_TOL) return true;
+    }
+    return false;
+  }
+
   /** Undoes the last operation by replaying the log. */
   undo(): boolean {
     const empty = () => { const t = this.ops[this.ops.length - 1]; return !!t && t.kind === 'stamp' && t.pts.length === 0; };

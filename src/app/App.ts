@@ -145,7 +145,34 @@ export class App {
     Object.keys(DT.fold).forEach(k => { const n = this.approach(DP.fold[k] ?? 0, DT.fold[k], .55, dt); if (n !== DP.fold[k]) { DP.fold[k] = n; ch = true; } });
     if (ch || this.dissectDirty) { this.dissectDirty = false; this.applyDissect(); }
   }
-  private applyDissect() { this.spec.applyDissect(this.DP.skin, this.DP.fat, this.DP.fascia, this.DP.inc, this.DP.fold); this.labels.dirty = true; }
+  private applyDissect() { this.spec.applyDissect(this.DP.skin, this.DP.fat, this.DP.fascia, this.DP.inc, this.DP.fold); this.syncIncisionMask(); this.labels.dirty = true; }
+  /** Guide points of the incision lines in order, with their line index. */
+  private guidePoints(): { p: Vector3; line: number }[] {
+    const inc = this.S.incisions; if (!inc || !inc.lines) return [];
+    const out: { p: Vector3; line: number }[] = []; inc.lines.forEach((l, li) => l.forEach(p => out.push({ p, line: li }))); return out;
+  }
+  /**
+   * The cut mask is the only renderer of incisions. The step's progress (DP.inc, 0..1 along the
+   * guide lines) paints the guide lines into the mask and going backwards clears it. While the
+   * student is drawing, or has stopped midway, their own strokes are the incisions.
+   */
+  private incPaintedSet = new Set<number>();
+  private syncIncisionMask() {
+    const mk = this.spec.masks.skin; if (!mk) return;
+    const incStep = this.C.steps.findIndex(isIncisionStep);
+    if (this.step === incStep && (this.hands.on || !this.done)) return;
+    const pts = this.guidePoints(); if (!pts.length) return;
+    const want = Math.round(Math.min(1, Math.max(0, this.DP.inc)) * pts.length);
+    const cut = (i: number) => this.incPaintedSet.has(i) || !!(this.covered && this.covered.has(i));
+    const have = this.incPaintedSet.size + (this.covered ? this.covered.size : 0);
+    if (want < have) { mk.clear(); this.incPaintedSet.clear(); this.covered = null; }
+    for (let i = 0; i < want; i++) {
+      if (cut(i)) continue;
+      const prev = i > 0 && pts[i - 1].line === pts[i].line ? pts[i - 1].p : null; // always a segment, so no isolated dots
+      mk.stroke(prev ? [prev, pts[i].p] : [pts[i].p], App.INCISION_R, 'line', false);
+      this.incPaintedSet.add(i);
+    }
+  }
 
   /* ---------- visibility ---------- */
   updateTargets() {
@@ -316,7 +343,14 @@ export class App {
   /* ---------- hands-on ---------- */
   private handsFrom() { return this.step > 0 ? endState(this.C.steps, this.step - 1) : initialState(); }
   private updateGuides() { const inc = this.S.incisions; if (inc && inc.guides) inc.guides.forEach(g => { g.visible = this.mode === 'dissect' && this.hands.on && isIncisionStep(this.C.steps[this.step]); }); }
-  handsStart() { this.covered = null; this.handsLast = null; this.hands = { on: true, q: 0, last: null }; this.rig.controls.enabled = false; this.rig.cancelFly(); this.sel = null; this.setHandsQ(0); this.updateGuides(); this.renderSheet(); }
+  handsStart() {
+    this.handsLast = null;
+    // Resume from whatever is already cut into the skin, by hand or by the step itself.
+    const mk = this.spec.masks.skin; const inc = isIncisionStep(this.C.steps[this.step]); this.covered = new Set();
+    if (mk && inc) { this.guidePoints().forEach((g, i) => { if (mk.hasLineAt(g.p)) this.covered!.add(i); }); this.incPaintedSet.clear(); }
+    const q0 = inc && this.covered.size ? Math.min(0.99, this.covered.size / (this.guidePoints().length * 0.8)) : 0;
+    this.hands = { on: true, q: 0, last: null }; this.rig.controls.enabled = false; this.rig.cancelFly(); this.sel = null; this.setHandsQ(q0); this.updateGuides(); this.renderSheet();
+  }
   handsStop(render = true) { this.hands.on = false; this.hands.last = null; this.rig.controls.enabled = true; this.updateGuides(); this.knife.hidden = true; if (render) this.renderSheet(); }
   private setHandsQ(q: number) {
     q = Math.max(0, Math.min(1, q)); this.hands.q = q;

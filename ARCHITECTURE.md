@@ -86,8 +86,11 @@ surface. The scalpel stamps incision lines (G channel, drawn as a dark groove); 
 flood-fills the region of skin bounded by incision lines and marks it removed (R channel),
 refusing when the region is unbounded; Lift also brushes fat and fascia away and removes
 deeper structures with a click. Operations are logged per shell and undo replays the log.
-The guided step 2 uses the same painting: the student draws the incisions freely and the
-step completes when most guide points lie within 1.5 units of a stroke. Tool picks prefer
+The guided step 2 uses the same painting and the mask is the only incision renderer (the
+old red tubes are kept invisible as guide geometry): the student draws freely and the step
+completes when most guide points lie within 1.5 units of a stroke; Show me, Replay and
+jumping between steps paint or clear the guide lines in the mask from the step progress,
+skipping points the student already cut; resuming by hand recomputes coverage from the mask. Tool picks prefer
 the skin shell when a muscle pokes just through it. Removal of a detached muscle in the
 guided dissection fades it out and drifts it off its bed (`lift`), not a hinge. The section plane is a
 single global clipping plane that always removes the half nearest the camera.
