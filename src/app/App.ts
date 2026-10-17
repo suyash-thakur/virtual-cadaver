@@ -114,6 +114,7 @@ export class App {
     if (this.spec.built) el('loading').hidden = true;
     this.spec.built = true;
     try { const ids = applyPendingAssets(this.spec); if (ids.length) console.info(`real surface meshes: ${ids.join(', ')}`); } catch (e) { console.warn('pending assets', e); }
+    try { const ids = this.spec.conformToSkin(); if (ids.length) console.info(`conformed to skin: ${ids.join(', ')}`); } catch (e) { console.warn('conform', e); }
     try { this.spec.buildMasks(this.gfx.renderer); setCutTest((sid, p, n) => this.spec.isCut(sid, p, n)); } catch (e) { console.warn('cut masks', e); }
     this.renderProgress();
     this.refreshLabelColors(); this.updateTargets(); this.renderSheet(); this.applyDissect();

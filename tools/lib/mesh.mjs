@@ -62,6 +62,23 @@ export function makeFrame(humerus) {
   return { toWorld, headMm: head, headWorld: HEAD_WORLD, armQuat: quatFromTo([0, -1, 0], ARM_DIR_WORLD) };
 }
 
+/**
+ * One pose field for everything that moves with the abducted arm. A point counts as arm when
+ * it is close to the arm axis (the bone and the muscles around it) or lateral of the humeral
+ * head column (the arm's skin, the axillary folds); the weight fades out above the head
+ * (acromion, clavicle). Skin, bones, muscles and vessels use the same field, so what is
+ * inside the skin at rest stays inside after posing.
+ */
+export function poseWeight(p, head) {
+  const dz = p[2] - head[2];
+  const radial = Math.hypot(p[0] - head[0], p[1] - head[1]);
+  const lateral = Math.abs(p[0]) - Math.abs(head[0]);
+  return sstep(35, -15, dz) * Math.max(sstep(135, 75, radial), sstep(-45, 15, lateral));
+}
+
+/** Rest-frame z below which everything is cut away (just below the elbow), relative to the head. */
+export const CLIP_BELOW_HEAD_MM = 313;
+
 /** Skin weight: the hanging arm's skin (lateral to the trunk) rotates, the trunk and shoulder cap do not. */
 export function skinWeight(p, head) {
   const dz = p[2] - head[2];
@@ -80,7 +97,8 @@ export function transform(mesh, frame, pose) {
   for (let i = 0; i < mesh.pos.length; i += 3) {
     const mm = [mesh.pos[i], mesh.pos[i + 1], mesh.pos[i + 2]];
     let p = frame.toWorld(mm);
-    const w = pose === 'arm' ? 1 : (pose === 'blend' ? armWeight(mm, frame.headMm) : (pose === 'skin' ? skinWeight(mm, frame.headMm) : 0));
+    // Arm-only structures stay rigid; structures and skin that cross from trunk to arm are skinned.
+    const w = pose ? poseWeight(mm, frame.headMm) : 0;
     if (w > 0) { const h = frame.headWorld; const q = w >= 1 ? frame.armQuat : slerpId(frame.armQuat, w); const r = rotate(q, [p[0] - h[0], p[1] - h[1], p[2] - h[2]]); p = [r[0] + h[0], r[1] + h[1], r[2] + h[2]]; }
     out[i] = p[0]; out[i + 1] = p[1]; out[i + 2] = p[2];
   }
@@ -105,8 +123,8 @@ export function outerShell(mesh) {
 }
 
 /** Removes triangles below zMin (source frame), then caps each large open boundary loop with a fan. */
-export function clipAndCap(mesh, zMin, cap) {
-  mesh = outerShell(mesh);
+export function clipAndCap(mesh, zMin, cap, keepOuterOnly = false) {
+  if (keepOuterOnly) mesh = outerShell(mesh);
   const { pos, idx } = mesh; const keep = [];
   for (let t = 0; t < idx.length; t += 3) { const a = idx[t], b = idx[t + 1], c = idx[t + 2]; if (pos[a * 3 + 2] >= zMin && pos[b * 3 + 2] >= zMin && pos[c * 3 + 2] >= zMin) keep.push(a, b, c); }
   const map = new Map(); const npos = []; const nidx = [];
@@ -125,7 +143,7 @@ export function clipAndCap(mesh, zMin, cap) {
     const ci = npos.length / 3; npos.push(cx / loop.length, cy / loop.length, cz / loop.length);
     for (let k = 0; k < loop.length; k++) { const a = loop[k], b = loop[(k + 1) % loop.length]; nidx.push(ci, b, a); }
   }
-  console.log(`  clipped at z>=${zMin}: ${npos.length / 3} vertices, ${loops} cap loops`);
+  if (cap) console.log(`  clipped at z>=${zMin}: ${npos.length / 3} vertices, ${loops} cap loops`);
   return out;
 }
 

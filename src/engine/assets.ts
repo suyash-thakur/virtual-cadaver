@@ -57,6 +57,9 @@ export async function loadAssets(spec: Specimen, base = import.meta.env.BASE_URL
   return replaced;
 }
 
+/** Positions of assets not yet installed, so the skin can be fitted around them too. */
+export function pendingPositions(): Float32Array[] { return [...pending.values()].map(g => g.attributes.position.array as Float32Array); }
+
 /** Installs meshes for structures that were registered after `loadAssets` ran. */
 export function applyPendingAssets(spec: Specimen): string[] {
   const done: string[] = [];

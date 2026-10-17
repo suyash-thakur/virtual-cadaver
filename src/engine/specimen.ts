@@ -1,4 +1,4 @@
-import { BoxGeometry, BufferAttribute, BufferGeometry, Color, CylinderGeometry, Float32BufferAttribute, Mesh, MeshBasicMaterial, Scene, TubeGeometry, Vector3 } from 'three';
+import { BoxGeometry, BufferAttribute, BufferGeometry, Color, CylinderGeometry, Float32BufferAttribute, Mesh, MeshBasicMaterial, Raycaster, Scene, TubeGeometry, Vector3 } from 'three';
 import type { Content, Structure, Other, Nerve, Layer } from '../content';
 import { V, v3, armL, armDir, DEG } from './coords';
 import { curveOf, sphereGeo, fibreTex, roughen, sheetGeo, plateGeo, deltoidGeo, fatPadGeo } from './geometry/builders';
@@ -6,6 +6,7 @@ import { CENTER } from './coords';
 import { ensureBVH } from './bvh';
 import { buildShells, decorateShell, SkinProjector } from './body';
 import { bodyTextures } from './textures';
+import { pendingPositions } from './assets';
 import { CutMask, MaskSpace } from './cutmask';
 import type { WebGLRenderer } from 'three';
 import { collectSplats, proj as fieldProj, type Field } from './geometry/body';
@@ -60,18 +61,74 @@ export class Specimen {
     const d = this.register({ id: n.id, name: n.name, label: n.label, kind: n.kind, layer: 'nerves', info: n.info, key: n.key, fam: n.fam, roots: n.roots, parents: n.parents, op: 1, color: '', mat: makeMat('#fff', 1, false), anchor: new Vector3() });
     d.mat.color.set(this.colorFor(d)); d.mat.roughness = .42; d.eBase = .07;
     d.mat.map = this.texNerve; d.mat.bumpMap = this.texNerve; d.mat.bumpScale = .25; (d.mat as any).clearcoat = .25; (d.mat as any).clearcoatRoughness = .5;
-    n.paths.forEach((pts, pi) => {
-      const r = n.r * (pi ? 0.8 : 1), c = curveOf(pts.map(v3));
-      const seg = Math.max(14, Math.round(c.getLength() * 3.4));
-      this.addMesh(d, roughen(new TubeGeometry(c, seg, r, 10, false), r * .14, 1.6));
-      [pts[0], pts[pts.length - 1]].forEach(p => { const s = this.addMesh(d, sphereGeo, v3(p)); s.scale.setScalar(r); });
-      const hitGeo = new TubeGeometry(c, Math.max(8, Math.round(seg / 2)), Math.max(n.r * 2.6, .75), 6, false); ensureBVH(hitGeo, 100);
-      const hm = new Mesh(hitGeo, hitMat);
-      hm.userData.sid = d.id; this.scene.add(hm); d.hits.push(hm);
-      d.cov.push({ curve: c, r });
-      if (pi === 0) d.curve = c;
+    d.tubeDefs = n.paths.map((pts, pi) => { const r = n.r * (pi ? 0.8 : 1); return { pts: pts.map(v3), r, caps: true, hit: true, nerve: true, rough: r * .14, freq: 1.6 }; });
+    d.tubeOnly = true; d.anchorU = n.lu == null ? .5 : n.lu;
+    this.buildTubeMeshes(d);
+  }
+
+  /** Builds (or rebuilds) a structure's meshes from its tube definitions. */
+  private buildTubeMeshes(d: RT) {
+    d.tubeDefs!.forEach((t, pi) => {
+      const c = curveOf(t.pts);
+      const seg = Math.max(14, Math.round(c.getLength() * (t.nerve ? 3.4 : 3)));
+      this.addMesh(d, roughen(new TubeGeometry(c, seg, t.r, t.open ? 20 : (t.nerve ? 10 : 12), false), t.rough, t.freq));
+      if (t.caps) [t.pts[0], t.pts[t.pts.length - 1]].forEach(p => { const s = this.addMesh(d, sphereGeo, p); s.scale.setScalar(t.r); });
+      if (t.hit) { const hitGeo = new TubeGeometry(c, Math.max(8, Math.round(seg / 2)), Math.max(t.r * 2.6, .75), 6, false); ensureBVH(hitGeo, 100);
+        const hm = new Mesh(hitGeo, hitMat); hm.userData.sid = d.id; this.scene.add(hm); d.hits.push(hm); }
+      d.cov.push({ curve: c, r: t.r });
+      if (pi === 0 || !d.curve) d.curve = c;
     });
-    d.anchor = d.curve!.getPoint(n.lu == null ? .5 : n.lu);
+    if (d.anchorU != null && d.curve) d.anchor = d.curve.getPoint(d.anchorU);
+  }
+
+  /**
+   * Content splines were authored against the old procedural body. Any tube control point
+   * that lies outside the real skin is moved just under the nearest skin surface and the
+   * tubes are rebuilt. Returns the ids that moved.
+   */
+  conformToSkin(): string[] {
+    const skinMesh = this.R.S.skin?.meshes[0]; if (!skinMesh) return [];
+    const bvh = (skinMesh.geometry as unknown as { boundsTree?: { closestPointToPoint: (p: Vector3, t: { point: Vector3; distance: number; faceIndex: number }) => unknown } }).boundsTree; if (!bvh) return [];
+    const target = { point: new Vector3(), distance: 0, faceIndex: 0 };
+    const pos = skinMesh.geometry.attributes.position, idx = skinMesh.geometry.index!;
+    const a = new Vector3(), b = new Vector3(), c = new Vector3(), n = new Vector3(), tmp = new Vector3();
+    const faceNormal = (faceIndex: number) => { const f = faceIndex * 3; a.fromBufferAttribute(pos, idx.getX(f)); b.fromBufferAttribute(pos, idx.getX(f + 1)); c.fromBufferAttribute(pos, idx.getX(f + 2)); return n.crossVectors(b.sub(a), c.sub(a)).normalize(); };
+    // Inside test by ray parity along three axes, majority vote: a single ray can slip through the
+    // small holes of the reduced skin mesh (eyes, open clip loops); a nearest-normal test fails in
+    // concave regions such as the axilla.
+    const ray = new Raycaster(); const dirs = [new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1)];
+    const inside = (p: Vector3) => { let votes = 0; for (const dir of dirs) { ray.set(p, dir); ray.far = 500; if (ray.intersectObject(skinMesh, false).length & 1) votes++; } return votes >= 2; };
+    // A tube also pokes out when its centreline runs inside but shallower than its radius.
+    const covered = (p: Vector3, r: number) => inside(p) && (bvh.closestPointToPoint(p, target), target.distance >= r + 0.45);
+    void tmp;
+    const moved: string[] = [];
+    for (const d of this.order) {
+      if (!d.tubeDefs || d.real || !d.tubeOnly || d.id === 'incisions') continue;
+      let changed = false;
+      const tuck = (p: Vector3, r: number) => { bvh.closestPointToPoint(p, target); faceNormal(target.faceIndex); p.copy(target.point).addScaledVector(n, -(r + 0.7)); };
+      for (const t of d.tubeDefs) {
+        for (const p of t.pts) if (!covered(p, t.r)) { tuck(p, t.r); changed = true; }
+        // The curve between control points can still bow out through concave skin (neck, axilla):
+        // sample it and insert tucked points where it does, a few rounds.
+        for (let round = 0; round < 3 && t.pts.length < 60; round++) {
+          const curve = curveOf(t.pts); const samples = 48; let inserted = 0;
+          for (let s = 1; s < samples; s++) {
+            const u = s / samples; const q = curve.getPoint(u); if (covered(q, t.r)) continue;
+            // insert after the last control point whose curve parameter precedes u
+            const k = Math.min(t.pts.length - 2, Math.floor(u * (t.pts.length - 1)));
+            tuck(q, t.r); t.pts.splice(k + 1, 0, q); inserted++; changed = true;
+            if (t.pts.length >= 60) break;
+          }
+          if (!inserted) break;
+        }
+      }
+      if (!changed) continue;
+      for (const m of d.meshes) { this.scene.remove(m); m.geometry.dispose(); }
+      for (const h of d.hits) { this.scene.remove(h); h.geometry.dispose(); }
+      d.meshes = []; d.hits = []; d.cov = []; d.curve = undefined;
+      this.buildTubeMeshes(d); moved.push(d.id);
+    }
+    return moved;
   }
 
   private buildOther(o: Other) {
@@ -85,12 +142,11 @@ export class Specimen {
     if (o.layer === 'vessels') { m.clearcoat = .55; m.clearcoatRoughness = .35; }
     if (o.kind === 'Fascia') { m.clearcoat = .9; m.clearcoatRoughness = .25; m.roughness = .3; m.depthWrite = false; }
     if (o.custom === 'fatpad') { m.roughness = .55; m.clearcoat = .4; m.clearcoatRoughness = .4; }
-    (o.tubes || []).forEach(t => {
-      const c = curveOf(t.pts.map(v3));
-      this.addMesh(d, roughen(new TubeGeometry(c, Math.max(14, Math.round(c.getLength() * 3)), t.r, t.open ? 20 : 12, false), o.kind === 'Muscle' ? .09 : (o.layer === 'vessels' ? .03 : 0), 0.9));
-      if (t.caps) [t.pts[0], t.pts[t.pts.length - 1]].forEach(p => { const s = this.addMesh(d, sphereGeo, v3(p)); s.scale.setScalar(t.r); });
-      d.cov.push({ curve: c, r: t.r });
-    });
+    if (o.tubes && o.tubes.length) {
+      d.tubeDefs = o.tubes.map(t => ({ pts: t.pts.map(v3), r: t.r, caps: !!t.caps, open: !!t.open, rough: o.kind === 'Muscle' ? .09 : (o.layer === 'vessels' ? .03 : 0), freq: 0.9 }));
+      d.tubeOnly = !(o.spheres || o.boxes || o.cyls || o.sheet || o.plate || o.custom);
+      this.buildTubeMeshes(d);
+    }
     (o.spheres || []).forEach(s => { const c = v3(s.c); const mm = this.addMesh(d, sphereGeo, c); mm.scale.setScalar(s.r); d.cov.push({ pt: c, r: s.r }); });
     (o.boxes || []).forEach(b => { const c = v3(b.c); this.addMesh(d, new BoxGeometry(b.s[0], b.s[1], b.s[2]), c);
       for (let y = -b.s[1] / 2; y <= b.s[1] / 2; y += .8) d.cov.push({ pt: c.clone().add(new Vector3(0, y, 0)), r: Math.max(b.s[0], b.s[2]) / 2 }); });
@@ -180,7 +236,8 @@ export class Specimen {
     const geos: Record<string, BufferGeometry> = {};
     let projector: { proj: (st: number[], dir: number[], iso: number) => number[] | null };
     if (realSkin) {
-      const shells = buildShells(realSkin);
+      const samples = this.order.filter(d => d.real).flatMap(d => d.meshes.map(m => m.geometry.attributes.position.array as Float32Array)).concat(pendingPositions());
+      const shells = buildShells(realSkin, samples);
       geos.skin = shells.skin; geos.fat = shells.fat; geos.deepFascia = shells.deepFascia;
       for (const sh of this.C.shells) decorateShell(geos[sh.id], sh.tone);
       const sp = new SkinProjector(shells.skin);
@@ -238,11 +295,9 @@ export class Specimen {
     const tubeStruct = (id: string, paths: (Vector3 | null)[][], r: number, color: string, cad: string) => {
       const d = addSurface(id, { color, cad, op: 1 });
       d.mat.color.set(this.colorFor(d)); d.mat.roughness = .45; d.eBase = .05;
-      paths.forEach(pts => { const q = pts.filter((x): x is Vector3 => !!x); if (q.length < 2) return; const c = curveOf(q);
-        this.addMesh(d, new TubeGeometry(c, Math.max(12, Math.round(c.getLength() * 3)), r, 8, false));
-        [q[0], q[q.length - 1]].forEach(p => { const s = this.addMesh(d, sphereGeo, p); s.scale.setScalar(r); });
-        if (!d.curve) d.curve = c; });
-      d.anchor = d.curve ? d.curve.getPoint(.5) : new Vector3();
+      d.tubeDefs = paths.map(pts => pts.filter((x): x is Vector3 => !!x)).filter(q => q.length >= 2).map(q => ({ pts: q, r, caps: true, rough: 0, freq: 0.9 }));
+      d.tubeOnly = true; d.anchorU = .5;
+      if (d.tubeDefs.length) this.buildTubeMeshes(d);
       return d;
     };
     const ap = (t: number, th: number, iso: number) => toV(armPt(G, t, th, iso));
@@ -250,7 +305,7 @@ export class Specimen {
     const A = (t: number, n: number, z: number) => { const q = armL(t, n, z); return V(q[0], q[1], q[2]); };
     tubeStruct('cephalicV', [[ap(18, 72 * DEG, -.75), ap(13, 72 * DEG, -.75), ap(8, 74 * DEG, -.75), ap(3, 78 * DEG, -.8), ap(-0.5, 82 * DEG, -.85), fp(13.6, 2.6, -.85), V(11.4, 2.3, 2.7), V(10.1, 1.8, 2.1), V(9.2, 1.6, 1.8)]], .3, P.vein, P.veinCadaver);
     tubeStruct('basilicV', [[ap(26, 150 * DEG, -.75), ap(20, 152 * DEG, -.75), ap(15, 156 * DEG, -.8), A(12, 4.5, 0.75), A(10, 4.5, 0.7)]], .3, P.vein, P.veinCadaver);
-    tubeStruct('ejv', [[fp(3.2, 15.5, -.6), fp(4.2, 12, -.6), fp(5.2, 8.6, -.65), fp(5.7, 6.2, -1.3), V(6.1, 4.0, 2.3), V(6.2, 3.2, 2.2)]], .27, P.vein, P.veinCadaver);
+    tubeStruct('ejv', [[fp(3.6, 13.2, -.7), fp(4.4, 11.4, -.65), fp(5.2, 8.6, -.65), fp(5.7, 6.2, -1.3), V(6.1, 4.0, 2.3), V(6.2, 3.2, 2.2)]], .27, P.vein, P.veinCadaver);
     const sc = (l1: number, s1: number, iso: number) => { const out: (Vector3 | null)[] = []; for (let k = 0; k <= 9; k++) { const f = k / 9; out.push(fp(4.9 + (l1 - 4.9) * f, 10 + (s1 - 10) * f, -1.15 + (iso + 1.15) * f)); } return out; };
     const scd = tubeStruct('supraclav', [sc(2.4, -3.5, -.7), sc(7.8, -3.0, -.7), sc(14.6, 0.5, -.7)], .14, P.cadaverNerve, P.cadaverNerve);
     scd.isNerveLike = true;

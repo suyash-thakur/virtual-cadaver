@@ -17,7 +17,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pipeline } from 'node:stream/promises';
 import { Readable } from 'node:stream';
-import { parseObj, merge, makeFrame, transform, normals, smoothNormals, clipAndCap, writeGlb } from './lib/mesh.mjs';
+import { parseObj, merge, makeFrame, transform, normals, smoothNormals, clipAndCap, writeGlb, CLIP_BELOW_HEAD_MM } from './lib/mesh.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const CACHE = resolve(here, '.bp3d-cache');
@@ -67,7 +67,7 @@ const GROUPS = {
   },
   body: {
     /** Whole-body skin from BodyParts3D, clipped below the lower chest and capped, used as the outer shell. */
-    skin: { fma: ['FMA7163'], pose: 'skin', clipZ: 1000, cap: true },
+    skin: { fma: ['FMA7163'], pose: 'skin', cap: true },
   },
   vessels: {
     subclavianA: { arch: 'isa', names: ['right subclavian artery'] },
@@ -133,7 +133,8 @@ async function main() {
     const meshes = [];
     for (const [id, spec] of Object.entries(group)) {
       let raw = load(id); if (!raw.pos.length) { console.warn(`skipping ${id}: no geometry`); continue; }
-      if (spec.clipZ != null) raw = clipAndCap(raw, spec.clipZ, spec.cap);
+      // Everything is cut at the same rest-frame level as the skin so nothing hangs out of the arm stump.
+      raw = clipAndCap(raw, frame.headMm[2] - CLIP_BELOW_HEAD_MM, !!spec.cap, spec.pose === 'skin');
       const pos = transform(raw, frame, spec.pose), nor = normals(pos, raw.idx);
       if (spec.pose === 'skin') { const s = smoothNormals(pos, raw.idx, nor, 2); nor.set(s); }
       meshes.push({ id, pos, nor, idx: raw.idx });

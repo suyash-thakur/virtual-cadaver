@@ -13,10 +13,24 @@ export interface BodyShells { skin: BufferGeometry; fat: BufferGeometry; deepFas
 /** Offsets in world units, matching the iso levels of the procedural field. */
 export const SHELL_OFFSET: Record<string, number> = { skin: 0, fat: -0.45, deepFascia: -1.0 };
 
-function offsetGeometry(src: BufferGeometry, offset: number): BufferGeometry {
+/**
+ * Inward offset of the skin. Where the body is thin, or at the rims of the cut arm where
+ * normals point diagonally, a full offset would cross the far wall and poke out; the offset
+ * is clamped to a fraction of the local thickness measured by a ray through the skin.
+ */
+function offsetGeometry(src: BufferGeometry, offset: number, probe?: Mesh): BufferGeometry {
   const p = src.attributes.position, n = src.attributes.normal;
   const out = new Float32Array(p.count * 3);
-  for (let i = 0; i < p.count; i++) { out[i * 3] = p.getX(i) + n.getX(i) * offset; out[i * 3 + 1] = p.getY(i) + n.getY(i) * offset; out[i * 3 + 2] = p.getZ(i) + n.getZ(i) * offset; }
+  const ray = new Raycaster(); const o = new Vector3(), d = new Vector3();
+  for (let i = 0; i < p.count; i++) {
+    let off = offset;
+    if (probe && offset < 0) {
+      o.set(p.getX(i), p.getY(i), p.getZ(i)); d.set(-n.getX(i), -n.getY(i), -n.getZ(i));
+      ray.set(o, d); ray.far = 25; const hit = ray.intersectObject(probe, false).find(h => h.distance > 0.05);
+      const thickness = hit ? hit.distance : 25; off = -Math.min(-offset, 0.35 * thickness);
+    }
+    out[i * 3] = p.getX(i) + n.getX(i) * off; out[i * 3 + 1] = p.getY(i) + n.getY(i) * off; out[i * 3 + 2] = p.getZ(i) + n.getZ(i) * off;
+  }
   const g = new BufferGeometry();
   g.setAttribute('position', new BufferAttribute(out, 3));
   // Own copy of the index: BVH builds reorder it in place, so sharing one would corrupt the other shells' trees.
@@ -58,11 +72,51 @@ function orientOutward(g: BufferGeometry): void {
   if (vol < 0 && g.index) { const idx = g.index.array; for (let t = 0; t < idx.length; t += 3) { const tmp = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = tmp; } g.index.needsUpdate = true; g.computeVertexNormals(); }
 }
 
-export function buildShells(skin: BufferGeometry): BodyShells {
+/**
+ * Pushes skin vertices outward wherever a deep structure would otherwise poke through:
+ * each sample point finds its nearest skin vertex and, if it lies at or beyond that vertex
+ * along the normal, the vertex (and, smoothed, its neighbours) moves out to cover it.
+ */
+export function inflateToEnclose(skin: BufferGeometry, samples: ArrayLike<number>[], margin = 0.35, maxPush = 3): number {
+  skin.computeVertexNormals();
+  const p = skin.attributes.position, nr = skin.attributes.normal, N = p.count;
+  const CELL = 1.5; const grid = new Map<string, number[]>();
+  const key = (x: number, y: number, z: number) => `${Math.floor(x / CELL)},${Math.floor(y / CELL)},${Math.floor(z / CELL)}`;
+  for (let i = 0; i < N; i++) { const k = key(p.getX(i), p.getY(i), p.getZ(i)); let l = grid.get(k); if (!l) { l = []; grid.set(k, l); } l.push(i); }
+  const push = new Float32Array(N);
+  for (const arr of samples) {
+    const step = Math.max(1, Math.floor(arr.length / 3 / 2500)) * 3;
+    for (let i = 0; i < arr.length; i += step) {
+      const x = arr[i], y = arr[i + 1], z = arr[i + 2];
+      let best = -1, bd = 2.5 * 2.5;
+      const cx = Math.floor(x / CELL), cy = Math.floor(y / CELL), cz = Math.floor(z / CELL);
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++) {
+        const l = grid.get(`${cx + dx},${cy + dy},${cz + dz}`); if (!l) continue;
+        for (const s of l) { const d2 = (p.getX(s) - x) ** 2 + (p.getY(s) - y) ** 2 + (p.getZ(s) - z) ** 2; if (d2 < bd) { bd = d2; best = s; } }
+      }
+      if (best < 0) continue;
+      const d = (x - p.getX(best)) * nr.getX(best) + (y - p.getY(best)) * nr.getY(best) + (z - p.getZ(best)) * nr.getZ(best);
+      if (d > -0.2) push[best] = Math.max(push[best], Math.min(maxPush, d + margin));
+    }
+  }
+  // Spread each push to neighbours so the skin bulges smoothly instead of spiking.
+  const idx = skin.index!.array; const nb: number[][] = Array.from({ length: N }, () => []);
+  for (let t = 0; t < idx.length; t += 3) { const a = idx[t], b = idx[t + 1], c = idx[t + 2]; nb[a].push(b, c); nb[b].push(a, c); nb[c].push(a, b); }
+  let cur = push;
+  for (let it = 0; it < 4; it++) { const out = new Float32Array(N); for (let v = 0; v < N; v++) { let m = cur[v]; for (const u of nb[v]) m = Math.max(m, cur[u] * 0.75); out[v] = m; } cur = out; }
+  let moved = 0;
+  for (let v = 0; v < N; v++) if (cur[v] > 0) { moved++; p.setXYZ(v, p.getX(v) + nr.getX(v) * cur[v], p.getY(v) + nr.getY(v) * cur[v], p.getZ(v) + nr.getZ(v) * cur[v]); }
+  p.needsUpdate = true; skin.computeVertexNormals();
+  return moved;
+}
+
+export function buildShells(skin: BufferGeometry, samples: ArrayLike<number>[] = []): BodyShells {
   orientOutward(skin);
+  if (samples.length) { const moved = inflateToEnclose(skin, samples); console.info(`skin fitted around deep structures: ${moved} vertices moved`); }
   // The 99%-reduced skin sits slightly inside the true surface; lift it so muscles do not poke through.
   const outer = offsetGeometry(skin, 0.4); outer.computeBoundingSphere();
-  return { skin: outer, fat: offsetGeometry(skin, SHELL_OFFSET.fat), deepFascia: offsetGeometry(skin, SHELL_OFFSET.deepFascia) };
+  ensureBVH(skin, 1); const probe = new Mesh(skin, new MeshBasicMaterial({ side: DoubleSide })); probe.updateMatrixWorld();
+  return { skin: outer, fat: offsetGeometry(skin, SHELL_OFFSET.fat, probe), deepFascia: offsetGeometry(skin, SHELL_OFFSET.deepFascia, probe) };
 }
 
 /**

@@ -8,7 +8,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseObj, merge, scaleMesh, makeFrame, transform, normals, writeGlb } from './lib/mesh.mjs';
+import { parseObj, merge, scaleMesh, makeFrame, transform, normals, writeGlb, clipAndCap, CLIP_BELOW_HEAD_MM } from './lib/mesh.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const OBJ = resolve(here, '.zanatomy-cache/obj');
@@ -20,7 +20,6 @@ const MAP = {
   pecMajor: { names: ['Clavicular head of pectoralis major muscle.r', 'Sternocostal head of pectoralis major muscle.r', '(Abdominal part of pectoralis major muscle).r'], pose: 'blend' },
   deltoid: { names: ['Clavicular part of deltoid muscle.r', 'Acromial part of deltoid muscle.r', 'Scapular spinal part of deltoid muscle.r'], pose: 'blend' },
   latissimus: { names: ['Latissimus dorsi muscle.r'], pose: 'blend' },
-  platysma: { names: ['Platysma.r'] },
   clavipectoral: { names: ['Clavipectoral fascia.r'] },
   nodes: { names: ['Anterior axillary nodes.r', 'Posterior axillary nodes.r', 'Central axillary nodes.r', 'Lateral axillary nodes.r', 'Apical axillary nodes.r'], pose: 'blend' },
 };
@@ -34,7 +33,7 @@ const frame = makeFrame(humerus);
 const meshes = [];
 for (const [id, spec] of Object.entries(MAP)) {
   const parts = spec.names.map(load).filter(Boolean); if (!parts.length) continue;
-  const raw = merge(parts);
+  const raw = clipAndCap(merge(parts), frame.headMm[2] - CLIP_BELOW_HEAD_MM, false);
   const pos = transform(raw, frame, spec.pose), nor = normals(pos, raw.idx);
   meshes.push({ id, pos, nor, idx: raw.idx });
   console.log(`${id}: ${pos.length / 3} vertices from ${parts.length} part(s)`);

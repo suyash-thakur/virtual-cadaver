@@ -66,6 +66,20 @@ closed double-walled solid), clips below the lower chest, caps the cut loops, an
 the hanging right arm into the abducted pose. Without the asset, the implicit-surface
 blob in the worker is still used.
 
+## Keeping everything inside the skin
+
+Three mechanisms, in order. (1) One pose field (`tools/lib/mesh.mjs` `poseWeight`) moves
+skin, bones, muscles and vessels together into the abducted-arm pose, and every asset is
+cut at the same rest-frame level just below the elbow, so nothing hangs out of the arm
+stump. (2) At load, `inflateToEnclose` pushes skin vertices outward wherever a real mesh
+would poke through (the reduced BodyParts3D skin sits inside the true surface at the neck
+and chest), smoothing the push over neighbours; the fat and deep fascia offsets are clamped
+to a fraction of the local thickness so they never cross the far wall. (3) Content tubes
+(nerves, the superficial veins, phrenic and accessory nerves) are authored against the old
+procedural body, so `Specimen.conformToSkin` samples each curve and tucks any point that
+is outside, or shallower than its radius, just under the nearest skin and rebuilds the tube.
+`tools/check-containment.mjs` reports the fraction of each asset outside the skin.
+
 ## Visible Human section panel
 
 `tools/fetch-visible-human.py` downloads cryosections 1180 to 1640 (chin to lower chest)

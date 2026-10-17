@@ -4,6 +4,8 @@ import type { Cov } from './geometry/body';
 import type { DeltoidGeo, SheetGeo } from './geometry/builders';
 import type { Mat, PeelUniforms } from './materials';
 
+export interface TubeDef { pts: Vector3[]; r: number; caps: boolean; open?: boolean; hit?: boolean; nerve?: boolean; rough: number; freq: number }
+
 /** Runtime record for one structure: content fields plus meshes, materials and animation state. */
 export interface RT {
   id: string; name: string; label?: string; kind: string; layer: Layer;
@@ -21,6 +23,12 @@ export interface RT {
   fold?: number; foldCur: number; foldSign?: number; sg?: SheetGeo; dg?: DeltoidGeo;
   shellKey?: 'skin' | 'fat' | 'fascia'; peel?: PeelUniforms;
   lines?: Vector3[][]; guides?: Mesh[]; isNerveLike?: boolean;
+  /** Tube definitions the meshes were built from, kept so the tubes can be rebuilt after conforming to the skin. */
+  tubeDefs?: TubeDef[];
+  /** True when every mesh of the structure comes from tubeDefs. */
+  tubeOnly?: boolean;
+  /** Curve parameter of the label anchor. */
+  anchorU?: number;
   /** True when the mesh came from a real asset rather than the procedural builder. */
   real?: boolean;
   /** Fold rig for real meshes: rotate about `pivot` around `axis`, weighted by distance along `dir`. */
