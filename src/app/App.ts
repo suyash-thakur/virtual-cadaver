@@ -6,6 +6,7 @@ import { Picker, curveParamNear } from '../engine/picking';
 import type { RT } from '../engine/registry';
 import type { Gfx } from '../engine/renderer';
 import { Specimen, type PaletteMode } from '../engine/specimen';
+import { loadAssets } from '../engine/assets';
 import { blendState, endState, initialState, isIncisionStep, stepState, type DissectState } from '../logic/dissect';
 import { computeLesion, customLesion, type LesionResult } from '../logic/lesion';
 import { computeTrace, type NerveGraph } from '../logic/trace';
@@ -74,6 +75,8 @@ export class App {
     this.updateTargets(); this.renderSheet(); this.layout();
     this.rig.snapTo('specimen');
     requestAnimationFrame(t => this.frame(t));
+    try { const ids = await loadAssets(this.spec); if (ids.length) console.info(`real meshes: ${ids.join(', ')}`); } catch (e) { console.warn('assets', e); }
+    this.applyColors();
     try { await this.spec.buildBody(); }
     catch (err) { console.error(err); el('loading').textContent = 'The skin layers could not be built on this device. The deeper layers still work.'; setTimeout(() => { el('loading').hidden = true; }, 4000); }
     if (this.spec.built) el('loading').hidden = true;

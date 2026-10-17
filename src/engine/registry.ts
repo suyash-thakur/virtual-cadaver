@@ -18,6 +18,8 @@ export interface RT {
   fold?: number; foldCur: number; foldSign?: number; sg?: SheetGeo; dg?: DeltoidGeo;
   shellKey?: 'skin' | 'fat' | 'fascia'; peel?: PeelUniforms;
   lines?: Vector3[][]; guides?: Mesh[]; isNerveLike?: boolean;
+  /** True when the mesh came from a real asset rather than the procedural builder. */
+  real?: boolean;
   /** True for the surface helpers (skin layers, superficial veins, landmarks) that are not in structures.json. */
   surface?: boolean;
 }

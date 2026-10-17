@@ -22,7 +22,7 @@ export function peelMaterial(color: string, rough: number, op: number, inner: st
       sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
         vPeel = peel; vCut = mix(uCutT, uCutA, warm);
         float dd = peel - vCut;
-        if (vCut > 0.001 && dd > 0.0) { transformed += normalize(objectNormal) * 0.9 * (1.0 - smoothstep(0.0, 0.07, dd)); }`);
+        if (vCut > 0.001 && dd > 0.0) { transformed += normalize(objectNormal) * 0.45 * (1.0 - smoothstep(0.0, 0.12, dd)); }`);
     sh.fragmentShader = 'uniform vec3 uInner;\nvarying float vPeel;\nvarying float vCut;\n' +
       sh.fragmentShader.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
         if (vPeel < vCut) discard;`).replace('#include <color_fragment>', `#include <color_fragment>
